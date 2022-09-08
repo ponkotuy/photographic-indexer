@@ -1,0 +1,10 @@
+app {
+  photos_dir = "/docker/photographic-indexer/photos"
+  // email =
+}
+
+db {
+  url = "jdbc:mysql://127.0.0.1:3306/pindexer"
+  username = "pindexer"
+  password =
+}
