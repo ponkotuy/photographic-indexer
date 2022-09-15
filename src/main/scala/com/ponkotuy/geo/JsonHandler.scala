@@ -23,7 +23,7 @@ object JsonHandler extends BodyHandler[Option[Json]] {
         } yield Charset.forName(charset)
         BodySubscribers.mapping[String, Option[Json]](
           BodySubscribers.ofString(charset.getOrElse(Charset.defaultCharset())),
-          raw => {println(raw); parse(raw).toOption}
+          raw => parse(raw).toOption
         )
       case _ =>
         none

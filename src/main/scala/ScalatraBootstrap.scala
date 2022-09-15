@@ -9,6 +9,6 @@ import java.lang
 class ScalatraBootstrap extends LifeCycle {
   override def init(context: ServletContext): Unit = {
     Initializer.run()
-    context.mount(new PhotographicIndexer, "/*")
+    context.mount(new PhotographicIndexer, "/app/*")
   }
 }

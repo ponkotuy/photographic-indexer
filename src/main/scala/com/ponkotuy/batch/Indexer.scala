@@ -21,7 +21,7 @@ class Indexer(conf: MyConfig) extends Runnable {
       val path = conf.app.photosDir.relativize(file).toString
       if(!DB.readOnly(ImageFile.exists(path))) {
         println(file)
-        ExifParser.parse(file).foreach{ exif =>
+        ExifParser.parse(file).foreach { exif =>
           createImageFile(exif, path)
         }
       }
@@ -32,6 +32,7 @@ class Indexer(conf: MyConfig) extends Runnable {
     try {
       val imageId = Image.find(exif.serialNo, exif.shotId).fold{
         val reverse = exif.latLon.flatMap{ p => nominatim.reverse(p.getLat, p.getLng) }
+        reverse.map(_.displayName.reverse.mkString).foreach(println)
         CreateImage(
           exif.serialNo,
           exif.shotId,
