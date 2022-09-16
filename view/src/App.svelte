@@ -1,30 +1,40 @@
-<script>
-	export let name;
+<script lang="ts">
+	import {host} from "./global";
+
+	type Geom = {
+		id: number
+		address: string
+		lat: number
+		lon: number
+	}
+
+	type Image = {
+		id: number
+		cameraId: number
+		shotId: number
+		shootingAt: string
+		geo: Geom | null
+	}
+
+	export let query: string;
+	export let images: Image[];
+
+	function search(){
+		const q = new URLSearchParams({q: query})
+		fetch(host + "/app/images/search?" + q)
+				.then(res => res.json())
+				.then(res => images = res.data);
+	}
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	<h1>Photographic Indexer</h1>
+	<label for="query">Search Query</label>
+	<input id="query" type="text" bind:value={query}>
+	<button on:click={search}>Search</button>
+	<ul>
+		{#each images as image}
+			<li>{image.id} {image.shootingAt} {image.geo.address}</li>
+		{/each}
+	</ul>
 </main>
-
-<style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
-</style>

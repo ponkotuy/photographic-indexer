@@ -20,8 +20,8 @@ class Indexer(conf: MyConfig) extends Runnable {
     files.foreach{ file =>
       val path = conf.app.photosDir.relativize(file).toString
       if(!DB.readOnly(ImageFile.exists(path))) {
-        println(file)
         ExifParser.parse(file).foreach { exif =>
+          println(file)
           createImageFile(exif, path)
         }
       }

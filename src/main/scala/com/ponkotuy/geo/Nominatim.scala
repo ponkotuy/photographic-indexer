@@ -5,15 +5,18 @@ import io.circe.Decoder.Result
 import io.circe.parser.*
 import io.circe.generic.auto.*
 
+import java.io.IOException
 import java.net.URI
-import java.net.http.HttpResponse.BodyHandlers
-import java.net.http.{HttpClient, HttpRequest}
+import java.net.http.HttpResponse.{BodyHandler, BodyHandlers}
+import java.net.http.{HttpClient, HttpRequest, HttpResponse}
+import scala.annotation.tailrec
+import scala.util.Try
 
 // https://wiki.openstreetmap.org/wiki/JA:Nominatim
 class Nominatim {
   val Host = "https://nominatim.openstreetmap.org"
 
-  private[this] val httpClient = HttpClient.newHttpClient()
+  private[this] val httpClient = new HttpClientHolder
 
   def reverse(lat: Double, lon: Double): Option[ReverseResult] = {
     val url = HttpUtil.params(s"${Host}/reverse",
@@ -31,6 +34,23 @@ class Nominatim {
       json <- res.body()
       result <- json.as[ReverseResult].toOption
     } yield result
+  }
+}
+
+class HttpClientHolder {
+  private[this] var httpClient = HttpClient.newHttpClient()
+
+  def send[T](req: HttpRequest, res: BodyHandler[T]): HttpResponse[T] = try {
+    httpClient.send(req, res)
+  } catch {
+    case e: IOException =>
+      println(s"error: ${e.getMessage}\nReconnection...")
+      reconnect()
+      send(req, res)
+  }
+
+  def reconnect(): Unit = {
+    httpClient = HttpClient.newHttpClient()
   }
 }
 

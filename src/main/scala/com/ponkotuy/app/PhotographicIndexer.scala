@@ -9,7 +9,7 @@ import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
 
-class PhotographicIndexer extends ScalatraServlet with Pagination {
+class PhotographicIndexer extends ScalatraServlet with CORSSetting with Pagination {
   before() {
     contentType = "application/json; charset=utf-8"
   }
