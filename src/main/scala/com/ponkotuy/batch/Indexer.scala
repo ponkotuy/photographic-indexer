@@ -17,9 +17,9 @@ class Indexer(conf: MyConfig) extends Runnable {
   override def run(): Unit = {
     val files = Files.walk(conf.app.photosDir).toScala(LazyList)
         .filter(Files.isRegularFile(_))
-    files.foreach{ file =>
-      val path = conf.app.photosDir.relativize(file).toString
-      if(!DB.readOnly(ImageFile.exists(path))) {
+    files.foreach { file =>
+      val path = ImagePath(file, conf.app.photosDir.relativize(file))
+      if(!DB.readOnly(ImageFile.exists(path.name))) {
         ExifParser.parse(file).foreach { exif =>
           println(file)
           createImageFile(exif, path)
@@ -28,7 +28,7 @@ class Indexer(conf: MyConfig) extends Runnable {
     }
   }
 
-  private def createImageFile(exif: Exif, path: String): Unit = DB localTx { implicit session =>
+  private def createImageFile(exif: Exif, path: ImagePath): Unit = DB localTx { implicit session =>
     try {
       val imageId = Image.find(exif.serialNo, exif.shotId).fold{
         val reverse = exif.latLon.flatMap{ p => nominatim.reverse(p.getLat, p.getLng) }
@@ -42,11 +42,15 @@ class Indexer(conf: MyConfig) extends Runnable {
           exif.latLon.map(_.getLng)
         ).create()
       }{ image => image.id }
-      ImageFile.create(imageId, path)
+      ImageFile.create(imageId, path.name, Files.size(path.absolute))
     } catch {
       case NonFatal(e) =>
         e.printStackTrace()
         throw e
     }
   }
+}
+
+case class ImagePath(absolute: Path, relative: Path) {
+  lazy val name: String = "/" + relative.toString
 }

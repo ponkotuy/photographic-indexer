@@ -4,7 +4,8 @@ const app = new App({
 	target: document.body,
 	props: {
 		query: "",
-		images: []
+		images: [],
+		allCount: 0
 	}
 });
 

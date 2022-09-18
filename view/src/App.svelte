@@ -1,5 +1,16 @@
 <script lang="ts">
+	import "carbon-components-svelte/css/g80.css";
 	import {host} from "./global";
+	import {
+		Form,
+		FormGroup,
+		Grid,
+		ListItem,
+		Search,
+		StructuredList, StructuredListBody, StructuredListCell,
+		StructuredListHead, StructuredListRow, UnorderedList
+	} from "carbon-components-svelte";
+	import _ from "lodash";
 
 	type Geom = {
 		id: number
@@ -8,33 +19,76 @@
 		lon: number
 	}
 
+	type ImageFile = {
+		id: number
+		path: string
+		filesize: number
+	}
+
 	type Image = {
 		id: number
 		cameraId: number
 		shotId: number
 		shootingAt: string
 		geo: Geom | null
+		files: ImageFile[]
 	}
 
 	export let query: string;
 	export let images: Image[];
+	export let allCount: number;
 
-	function search(){
+	function search(e){
+		e.preventDefault()
 		const q = new URLSearchParams({q: query})
 		fetch(host + "/app/images/search?" + q)
 				.then(res => res.json())
-				.then(res => images = res.data);
+				.then(res => {
+					images = res.data;
+					allCount = res.allCount;
+				});
+	}
+
+	function thumbnail(image: Image): ImageFile {
+		return _.minBy(image.files, f => f.filesize)
 	}
 </script>
 
 <main>
-	<h1>Photographic Indexer</h1>
-	<label for="query">Search Query</label>
-	<input id="query" type="text" bind:value={query}>
-	<button on:click={search}>Search</button>
-	<ul>
-		{#each images as image}
-			<li>{image.id} {image.shootingAt} {image.geo.address}</li>
-		{/each}
-	</ul>
+	<Grid>
+		<h1>Photographic Indexer</h1>
+		<Form on:submit={search}>
+			<FormGroup legendText="Search Query">
+				<Search id="query" bind:value={query} />
+			</FormGroup>
+		</Form>
+		<p>Count: {allCount}</p>
+		<StructuredList>
+			<StructuredListHead>
+				<StructuredListRow head>
+					<StructuredListCell head>id</StructuredListCell>
+					<StructuredListCell head>image</StructuredListCell>
+					<StructuredListCell head>detail</StructuredListCell>
+				</StructuredListRow>
+			</StructuredListHead>
+			<StructuredListBody>
+				{#each images as image}
+				<StructuredListRow>
+					<StructuredListCell>{image.id}</StructuredListCell>
+					<StructuredListCell>{thumbnail(image).path}</StructuredListCell>
+					<StructuredListCell>
+
+					</StructuredListCell>
+					<UnorderedList>
+						<ListItem>{image.shootingAt}</ListItem>
+						<ListItem>{image.geo.address}</ListItem>
+					</UnorderedList>
+				</StructuredListRow>
+				{/each}
+			</StructuredListBody>
+		</StructuredList>
+	</Grid>
 </main>
+
+<style>
+</style>

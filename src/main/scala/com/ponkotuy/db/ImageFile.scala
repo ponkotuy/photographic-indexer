@@ -3,20 +3,18 @@ package com.ponkotuy.db
 import java.time.LocalDateTime
 import scalikejdbc._
 
+case class ImageFile(id: Long, imageId: Long, path: String, filesize: Long)
 
-case class ImageFile(id: Long, image: Image, path: String)
-case class ImageFileRaw(id: Long, imageId: Long, path: String)
-
-object ImageFile extends SQLSyntaxSupport[ImageFileRaw] {
+object ImageFile extends SQLSyntaxSupport[ImageFile] {
   val imf = ImageFile.syntax("imf")
 
-  def apply(rn: ResultName[ImageFileRaw])(rs: WrappedResultSet): ImageFileRaw =
+  def apply(rn: ResultName[ImageFile])(rs: WrappedResultSet): ImageFile =
     autoConstruct(rs, rn)
 
-  def create(imageId: Long, path: String)(implicit session: DBSession): Long = {
+  def create(imageId: Long, path: String, filesize: Long)(implicit session: DBSession): Long = {
     withSQL {
       insert.into(ImageFile)
-          .namedValues(column.imageId -> imageId, column.path -> path)
+          .namedValues(column.imageId -> imageId, column.path -> path, column.filesize -> filesize)
     }.updateAndReturnGeneratedKey.apply()
   }
 
@@ -25,4 +23,8 @@ object ImageFile extends SQLSyntaxSupport[ImageFileRaw] {
       select.from(ImageFile as imf).where.eq(imf.path, path)
     }.map(ImageFile(imf.resultName)).single.apply().isDefined
   }
+
+  def findAllInImageIds(imageIds: Seq[Long])(implicit session: DBSession): List[ImageFile] = withSQL {
+    select.from(ImageFile as imf).where.in(imf.imageId, imageIds)
+  }.map(ImageFile(imf.resultName)).list.apply()
 }

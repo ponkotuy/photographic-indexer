@@ -21,6 +21,7 @@ create table image_file (
     id bigint not null auto_increment primary key,
     image_id bigint not null ,
     path varchar(767) not null,
+    filesize bigint not null,
     unique key (path),
     foreign key (image_id) references image(id)
 ) engine=InnoDB default charset=utf8mb4;
