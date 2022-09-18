@@ -6,8 +6,7 @@ import scalikejdbc.ConnectionPool
 import scala.concurrent.duration._
 
 object Initializer {
-  def run(): Unit = {
-    val conf = MyConfig.load().getOrElse(throw new RuntimeException("ConfigError"))
+  def run(conf: MyConfig): Unit = {
     Initializer.initDB(conf.db)
     val indexer = new Indexer(conf)
     CronRunner.execute(indexer, 1.hour)

@@ -63,7 +63,7 @@
 			</FormGroup>
 		</Form>
 		<p>Count: {allCount}</p>
-		<StructuredList>
+		<StructuredList condensed>
 			<StructuredListHead>
 				<StructuredListRow head>
 					<StructuredListCell head>id</StructuredListCell>
@@ -75,20 +75,19 @@
 				{#each images as image}
 				<StructuredListRow>
 					<StructuredListCell>{image.id}</StructuredListCell>
-					<StructuredListCell>{thumbnail(image).path}</StructuredListCell>
+					<StructuredListCell style="vertical-align: bottom"><img src="{host}/image{thumbnail(image).path}" width="240px"></StructuredListCell>
 					<StructuredListCell>
-
+						<UnorderedList>
+							<ListItem>{image.shootingAt}</ListItem>
+							<ListItem>{image.geo.address}</ListItem>
+							{#each image.files as file}
+								<ListItem>{file.path}</ListItem>
+							{/each}
+						</UnorderedList>
 					</StructuredListCell>
-					<UnorderedList>
-						<ListItem>{image.shootingAt}</ListItem>
-						<ListItem>{image.geo.address}</ListItem>
-					</UnorderedList>
 				</StructuredListRow>
 				{/each}
 			</StructuredListBody>
 		</StructuredList>
 	</Grid>
 </main>
-
-<style>
-</style>
