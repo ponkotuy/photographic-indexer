@@ -5,13 +5,14 @@
 	import {
 		Form,
 		FormGroup,
-		Grid,
+		Grid, Link,
 		ListItem,
 		Search,
 		StructuredList, StructuredListBody, StructuredListCell,
 		StructuredListHead, StructuredListRow, UnorderedList
 	} from "carbon-components-svelte";
 	import _ from "lodash";
+	import {onMount} from "svelte";
 
 	type Geom = {
 		id: number
@@ -35,12 +36,20 @@
 		files: ImageFile[]
 	}
 
+	export let data;
 	export let query = "";
 	export let images: Image[] = [];
 	export let allCount = 0;
 
+	onMount(() => {
+		if(data.q != null) {
+			query = data.q;
+			search(null);
+		}
+	});
+
 	function search(e){
-		e.preventDefault()
+		if(e != null) e.preventDefault();
 		const q = new URLSearchParams({q: query})
 		fetch(host + "/app/images/search?" + q)
 				.then(res => res.json())
@@ -79,7 +88,9 @@
 		<StructuredListBody>
 			{#each images as image}
 			<StructuredListRow>
-				<StructuredListCell>{image.id}</StructuredListCell>
+				<StructuredListCell>
+					<Link href="/image/{image.id}">{image.id}</Link>
+				</StructuredListCell>
 				<StructuredListCell style="vertical-align: bottom">
 					<img src="{host}/image{thumbnail(image).path}" width="240px">
 				</StructuredListCell>
@@ -88,7 +99,7 @@
 						<ListItem>{image.shootingAt}</ListItem>
 						<ListItem>{image.geo.address}</ListItem>
 						{#each image.files as file}
-							<ListItem>{file.path}</ListItem>
+							<ListItem><Link href="{host}/image{file.path}">{file.path}</Link></ListItem>
 						{/each}
 					</UnorderedList>
 				</StructuredListCell>

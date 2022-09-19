@@ -1,9 +1,9 @@
 package com.ponkotuy.batch
 
 import com.ponkotuy.config.{DBConfig, MyConfig}
-import scalikejdbc.ConnectionPool
+import scalikejdbc.{ConnectionPool, ConnectionPoolSettings}
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 object Initializer {
   def run(conf: MyConfig): Unit = {
@@ -13,6 +13,7 @@ object Initializer {
   }
 
   def initDB(conf: DBConfig): Unit = {
-    ConnectionPool.singleton(conf.url, conf.username, conf.password.getOrElse(""))
+    val settings = ConnectionPoolSettings(validationQuery = "select 1")
+    ConnectionPool.singleton(conf.url, conf.username, conf.password.getOrElse(""), settings)
   }
 }
