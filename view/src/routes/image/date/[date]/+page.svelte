@@ -40,7 +40,7 @@
         <Column lg={4}>
           <Link href="/image/{image.id}">
             <figure>
-              <img src="{host}/image{path}" style="aspect-ratio: 3 / 2; object-fit: contain; width: 100%;" title="{path}" alt="{path}">
+              <img src="{host}/image{path}" class="fixed" style="width: 100%;" title="{path}" alt="{path}">
               <figcaption>{hm(image.shootingAt)}</figcaption>
             </figure>
           </Link>
@@ -49,3 +49,10 @@
     </Row>
   </Grid>
 </Content>
+
+<style>
+  .fixed {
+      aspect-ratio: 3 / 2;
+      object-fit: contain;
+  }
+</style>

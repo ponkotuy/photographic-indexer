@@ -58,7 +58,6 @@
 	<StructuredList condensed>
 		<StructuredListHead>
 			<StructuredListRow head>
-				<StructuredListCell head>id</StructuredListCell>
 				<StructuredListCell head>image</StructuredListCell>
 				<StructuredListCell head>detail</StructuredListCell>
 			</StructuredListRow>
@@ -66,11 +65,10 @@
 		<StructuredListBody>
 			{#each images as image}
 			<StructuredListRow>
-				<StructuredListCell>
-					<Link href="/image/{image.id}">{image.id}</Link>
-				</StructuredListCell>
 				<StructuredListCell style="vertical-align: bottom">
-					<img src="{host}/image{thumbnail(image).path}" width="240px" alt="{thumbnail(image).path}">
+					<Link href="/image/{image.id}">
+						<img src="{host}/image{thumbnail(image).path}" width="320px" alt="{thumbnail(image).path}" class="fixed">
+					</Link>
 				</StructuredListCell>
 				<StructuredListCell>
 					<UnorderedList>
@@ -86,3 +84,10 @@
 		</StructuredListBody>
 	</StructuredList>
 </Content>
+
+<style>
+	.fixed {
+		aspect-ratio: 3 / 2;
+		object-fit: contain;
+	}
+</style>
