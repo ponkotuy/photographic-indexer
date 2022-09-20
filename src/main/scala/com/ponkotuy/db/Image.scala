@@ -12,6 +12,7 @@ import scala.util.control.NonFatal
 case class Image(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, files: Seq[ImageFile] = Nil, geo: Option[Geom] = None)
 case class ImageRaw(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None) {
   def toImage(geom: Option[Geom]): Image = Image(id, cameraId, shotId, shootingAt, Nil, geom)
+  def toWithAll(geom: Option[Geom], file: ImageFile) = ImageWithAll(id, cameraId, shotId, shootingAt, file, geom)
 }
 
 object Image extends SQLSyntaxSupport[ImageRaw] {

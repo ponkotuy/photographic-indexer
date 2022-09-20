@@ -1,6 +1,7 @@
 package com.ponkotuy.app
 
 import org.scalatra.ScalatraServlet
+import scala.jdk.CollectionConverters._
 
 trait CORSSetting { self: ScalatraServlet =>
   val Localhost = "\\Ahttp://localhost(:\\d+)?\\z".r

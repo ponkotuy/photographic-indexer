@@ -1,44 +1,25 @@
 <script lang="ts">
 	import "carbon-components-svelte/css/g80.css";
-	import {host} from "../global";
+	import {host} from "$lib/global";
 	import MyHeader from "$lib/MyHeader.svelte"
 	import {
+		Content,
 		Form,
 		FormGroup,
-		Grid, Link,
+		Link,
 		ListItem,
 		Search,
 		StructuredList, StructuredListBody, StructuredListCell,
 		StructuredListHead, StructuredListRow, UnorderedList
 	} from "carbon-components-svelte";
-	import _ from "lodash";
 	import {onMount} from "svelte";
-
-	type Geom = {
-		id: number
-		address: string
-		lat: number
-		lon: number
-	}
-
-	type ImageFile = {
-		id: number
-		path: string
-		filesize: number
-	}
-
-	type Image = {
-		id: number
-		cameraId: number
-		shotId: number
-		shootingAt: string
-		geo: Geom | null
-		files: ImageFile[]
-	}
+	import { goto } from '$app/navigation';
+	import type {ImageData} from "$lib/image_type"
+	import {thumbnail} from "$lib/image_type";
 
 	export let data;
 	export let query = "";
-	export let images: Image[] = [];
+	export let images: ImageData[] = [];
 	export let allCount = 0;
 
 	onMount(() => {
@@ -56,11 +37,8 @@
 				.then(res => {
 					images = res.data;
 					allCount = res.allCount;
+					goto('/?'+ q)
 				});
-	}
-
-	function thumbnail(image: Image): ImageFile {
-		return _.minBy(image.files, f => f.filesize)
 	}
 </script>
 
@@ -69,8 +47,8 @@
 	<meta name="description" content="Photographic Search Server" />
 </svelte:head>
 
-<Grid>
-	<MyHeader />
+<MyHeader />
+<Content>
 	<Form on:submit={search}>
 		<FormGroup legendText="Search Query">
 			<Search id="query" bind:value={query} />
@@ -92,7 +70,7 @@
 					<Link href="/image/{image.id}">{image.id}</Link>
 				</StructuredListCell>
 				<StructuredListCell style="vertical-align: bottom">
-					<img src="{host}/image{thumbnail(image).path}" width="240px">
+					<img src="{host}/image{thumbnail(image).path}" width="240px" alt="{thumbnail(image).path}">
 				</StructuredListCell>
 				<StructuredListCell>
 					<UnorderedList>
@@ -107,4 +85,4 @@
 			{/each}
 		</StructuredListBody>
 	</StructuredList>
-</Grid>
+</Content>

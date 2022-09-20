@@ -1,4 +1,6 @@
+<script>
+  import {Header} from "carbon-components-svelte";
+</script>
 
-<main>
-  <h1>Photographic Indexer</h1>
-</main>
+<Header platformName="Photographic Indexer" >
+</Header>
