@@ -19,17 +19,22 @@ class PhotographicIndexer extends ScalatraServlet with CORSSetting with Paginati
 
   get("/images/:id"){
     val id = params("id").toLong
-    ImageWithAll.find(id)(DB.readOnlySession()).asJson.noSpaces
+    DB.readOnly { implicit session =>
+      ImageWithAll.find(id).asJson.noSpaces
+    }
   }
 
   get("/images/search") {
-    implicit val session: DBSession = DB.readOnlySession()
     val q = params("q")
-    paging { page => Image.searchAddress(q, page) } { Image.searchAddressCount(q) }
+    DB.readOnly { implicit session =>
+      paging { page => Image.searchAddress(q, page) }{ Image.searchAddressCount(q) }
+    }
   }
 
   get("/images/date/:date") {
     val date = LocalDate.parse(params("date"), DateTimeFormatter.ISO_LOCAL_DATE)
-    ImageWithAll.findFromDate(date)(DB.readOnlySession()).asJson.noSpaces
+    DB.readOnly { implicit session =>
+      ImageWithAll.findFromDate(date).asJson.noSpaces
+    }
   }
 }

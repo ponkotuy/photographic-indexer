@@ -21,7 +21,7 @@ object Initializer {
     ds.setTimeBetweenEvictionRunsMillis(60.seconds.toMillis)
     ds.setMinIdle(2)
     ds.setValidationQuery("SELECT 1")
-    ds.setMaxWaitMillis(1.seconds.toMillis)
+    ds.setMaxWaitMillis(5.seconds.toMillis)
     ConnectionPool.singleton(new DataSourceConnectionPool(ds))
   }
 }
