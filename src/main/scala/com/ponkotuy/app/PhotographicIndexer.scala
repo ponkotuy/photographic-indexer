@@ -2,7 +2,7 @@ package com.ponkotuy.app
 
 import com.ponkotuy.batch.ThumbnailGenerator
 import com.ponkotuy.config.AppConfig
-import com.ponkotuy.db.{Image, ImageFile, ImageWithAll}
+import com.ponkotuy.db.{Image, ImageFile, ImageWithAll, Thumbnail}
 import com.ponkotuy.res.{Pagination, PagingResponse}
 import org.scalatra.*
 import scalikejdbc.*
@@ -32,8 +32,12 @@ class PhotographicIndexer(appConfig: AppConfig) extends ScalatraServlet with COR
     contentType = "image/jpeg"
     val id = params("id").toLong
     implicit val session: DBSession = AutoSession
-    val file = ImageFile.findAllInImageIds(id :: Nil).minBy(_.filesize)
-    generator.gen(appConfig.photosDir.resolve(file.path.tail))
+    Thumbnail.find(id).map(_.file).getOrElse {
+      val file = ImageFile.findAllInImageIds(id :: Nil).minBy(_.filesize)
+      val binary = generator.gen(appConfig.photosDir.resolve(file.path.tail))
+      Thumbnail.create(id, binary)
+      binary
+    }
   }
 
   get("/images/search") {

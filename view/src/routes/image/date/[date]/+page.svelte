@@ -5,7 +5,7 @@
   import {CaretLeft, CaretRight} from "carbon-icons-svelte"
   import {host} from "$lib/global";
   import {thumbnail} from "$lib/image_type";
-  import {DateTime} from "luxon"
+  import {DateTime} from "luxon";
 
   /** @type {import('./$types').PageLoad} */
   export let data;
@@ -40,7 +40,7 @@
         <Column lg={4}>
           <Link href="/image/{image.id}">
             <figure>
-              <img src="{host}/image{path}" class="fixed" style="width: 100%;" title="{path}" alt="{path}">
+              <img src="{host}/app/images/{image.id}/thumbnail" class="fixed" style="width: 100%;" title="{path}" alt="{path}">
               <figcaption>{hm(image.shootingAt)}</figcaption>
             </figure>
           </Link>

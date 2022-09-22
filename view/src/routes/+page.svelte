@@ -16,6 +16,7 @@
 	import { goto } from '$app/navigation';
 	import type {ImageData} from "$lib/image_type"
 	import {thumbnail} from "$lib/image_type";
+	import {DateTime} from "luxon";
 
 	export let data;
 	export let query = "";
@@ -29,7 +30,7 @@
 		}
 	});
 
-	function search(e){
+	function search(e) {
 		if(e != null) e.preventDefault();
 		const q = new URLSearchParams({q: query})
 		fetch(host + "/app/images/search?" + q)
@@ -39,6 +40,10 @@
 					allCount = res.allCount;
 					goto('/?'+ q)
 				});
+	}
+
+	function isoDate(at: String) {
+		return DateTime.fromISO(at).toISODate();
 	}
 </script>
 
@@ -72,7 +77,7 @@
 				</StructuredListCell>
 				<StructuredListCell>
 					<UnorderedList>
-						<ListItem>{image.shootingAt}</ListItem>
+						<ListItem><Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link></ListItem>
 						<ListItem>{image.geo.address}</ListItem>
 						{#each image.files as file}
 							<ListItem><Link href="{host}/image{file.path}">{file.path}</Link></ListItem>
