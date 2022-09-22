@@ -67,7 +67,7 @@
 			<StructuredListRow>
 				<StructuredListCell style="vertical-align: bottom">
 					<Link href="/image/{image.id}">
-						<img src="{host}/image{thumbnail(image).path}" width="320px" alt="{thumbnail(image).path}" class="fixed">
+						<img src="{host}/app/images/{image.id}/thumbnail" width="320px" alt="{thumbnail(image).path}" class="fixed">
 					</Link>
 				</StructuredListCell>
 				<StructuredListCell>

@@ -3,6 +3,7 @@ val ScalatraVersion = "3.0.0-M2"
 ThisBuild / scalaVersion := "3.1.3"
 ThisBuild / organization := "com.ponkotuy"
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
+ThisBuild / javaOptions += "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
 lazy val hello = (project in file("."))
   .settings(

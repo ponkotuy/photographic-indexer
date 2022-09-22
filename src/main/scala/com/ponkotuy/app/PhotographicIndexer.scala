@@ -1,6 +1,8 @@
 package com.ponkotuy.app
 
-import com.ponkotuy.db.{Image, ImageWithAll}
+import com.ponkotuy.batch.ThumbnailGenerator
+import com.ponkotuy.config.AppConfig
+import com.ponkotuy.db.{Image, ImageFile, ImageWithAll}
 import com.ponkotuy.res.{Pagination, PagingResponse}
 import org.scalatra.*
 import scalikejdbc.*
@@ -12,16 +14,26 @@ import io.circe.syntax.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class PhotographicIndexer extends ScalatraServlet with CORSSetting with Pagination {
+class PhotographicIndexer(appConfig: AppConfig) extends ScalatraServlet with CORSSetting with Pagination {
   before() {
     contentType = "application/json; charset=utf-8"
   }
 
-  get("/images/:id"){
+  get("/images/:id") {
     val id = params("id").toLong
     DB.readOnly { implicit session =>
       ImageWithAll.find(id).asJson.noSpaces
     }
+  }
+
+  private[this] val generator = ThumbnailGenerator(960, 640)
+
+  get("/images/:id/thumbnail") {
+    contentType = "image/jpeg"
+    val id = params("id").toLong
+    implicit val session: DBSession = AutoSession
+    val file = ImageFile.findAllInImageIds(id :: Nil).minBy(_.filesize)
+    generator.gen(appConfig.photosDir.resolve(file.path.tail))
   }
 
   get("/images/search") {
