@@ -15,6 +15,12 @@ implicit class RichConfig(val underlying: Config) extends AnyVal {
     None
   }
 
+  def getOptInt(path: String): Option[Int] = if(underlying.hasPath(path)) {
+    Some(underlying.getInt(path))
+  } else {
+    None
+  }
+
   def getOptConfig(path: String): Option[Config] = if(underlying.hasPath(path)) {
     Some(underlying.getConfig(path))
   } else {

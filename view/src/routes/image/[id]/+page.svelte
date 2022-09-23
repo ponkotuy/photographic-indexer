@@ -2,7 +2,8 @@
   import "carbon-components-svelte/css/g80.css";
   import MyHeader from "$lib/MyHeader.svelte";
   import {
-    Content, ListItem,
+    Button,
+    Content, Link, ListItem,
     StructuredList,
     StructuredListBody,
     StructuredListCell, StructuredListHead,
@@ -11,7 +12,6 @@
   } from "carbon-components-svelte";
   import {host} from "$lib/global.js";
 
-  /** @type {import('./$types').PageLoad} */
   export let data;
 
   const exts = ["jpg", "jpeg", "png", "webp"];
@@ -46,7 +46,9 @@
         <StructuredListCell>
           <UnorderedList>
             {#each data.files as file}
-              <ListItem>{file.path}</ListItem>
+              <ListItem>
+                <Link href="{host}/static{file.path}">{file.path}</Link>
+              </ListItem>
             {/each}
           </UnorderedList>
         </StructuredListCell>
