@@ -18,11 +18,11 @@ object ImageFile extends SQLSyntaxSupport[ImageFile] {
     }.updateAndReturnGeneratedKey.apply()
   }
 
-  def exists(path: String)(implicit session: DBSession): Boolean = {
-    withSQL {
+  def exists(path: String)(implicit session: DBSession): Boolean = findFromPath(path).isDefined
+
+  def findFromPath(path: String)(implicit session: DBSession): Option[ImageFile] = withSQL {
       select.from(ImageFile as imf).where.eq(imf.path, path)
-    }.map(ImageFile(imf.resultName)).single.apply().isDefined
-  }
+    }.map(ImageFile(imf.resultName)).single.apply()
 
   def findAllInImageIds(imageIds: Seq[Long])(implicit session: DBSession): List[ImageFile] = withSQL {
     select.from(ImageFile as imf).where.in(imf.imageId, imageIds)

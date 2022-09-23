@@ -16,7 +16,7 @@ services:
       - MYSQL_DATABASE=pindexer
       - MYSQL_USER=pindexer
   flyway:
-    image: flyway/flyway:9.2.1
+    image: flyway/flyway:9.3.1
     command: -url=jdbc:mysql://db -schemas=pindexer -user=root -password=${ENV_MYSQL_ROOT_PASSWORD} migrate
     volumes:
       - ./docker/flyway/sql:/flyway/sql
