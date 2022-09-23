@@ -80,7 +80,7 @@
 						<ListItem><Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link></ListItem>
 						<ListItem>{image.geo.address}</ListItem>
 						{#each image.files as file}
-							<ListItem><Link href="{host}/image{file.path}">{file.path}</Link></ListItem>
+							<ListItem><Link href="{host}/static{file.path}">{file.path}</Link></ListItem>
 						{/each}
 					</UnorderedList>
 				</StructuredListCell>

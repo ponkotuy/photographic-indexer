@@ -1,9 +1,13 @@
 package com.ponkotuy.db
 
-import java.time.LocalDateTime
-import scalikejdbc._
+import com.ponkotuy.util.Extensions
 
-case class ImageFile(id: Long, imageId: Long, path: String, filesize: Long)
+import java.time.LocalDateTime
+import scalikejdbc.*
+
+case class ImageFile(id: Long, imageId: Long, path: String, filesize: Long) {
+  def isRetouch: Boolean = Extensions.isRetouchFile(path)
+}
 
 object ImageFile extends SQLSyntaxSupport[ImageFile] {
   val imf = ImageFile.syntax("imf")

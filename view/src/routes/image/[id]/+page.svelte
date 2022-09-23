@@ -56,7 +56,7 @@
   {#each data.files.filter(file => isValidImage(file.path)) as file}
     <Tile style="margin: 16px 0;">
       <figure style="text-align: center;">
-        <img src="{host}/image{file.path}" style="max-width: 100%" title="{file.path}" alt="{file.path}">
+        <img src="{host}/static{file.path}" style="max-width: 100%" title="{file.path}" alt="{file.path}">
         <figcaption>{file.path}</figcaption>
       </figure>
     </Tile>

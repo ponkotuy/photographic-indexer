@@ -3,6 +3,7 @@ package com.ponkotuy.batch
 import com.ponkotuy.config.{DBConfig, MyConfig}
 import com.ponkotuy.db.{CreateImage, Image, ImageFile}
 import com.ponkotuy.geo.Nominatim
+import com.ponkotuy.util.Extensions
 import scalikejdbc.*
 
 import java.lang.Thread
@@ -18,6 +19,7 @@ class Indexer(conf: MyConfig) extends Runnable {
   override def run(): Unit = {
     val files = Files.walk(conf.app.photosDir).toScala(LazyList)
         .filter(Files.isRegularFile(_))
+        .filter { file => Extensions.isTarget(file.toString) }
     files.foreach { file =>
       val path = ImagePath(file, conf.app.photosDir.relativize(file))
       if(!DB.readOnly(ImageFile.exists(path.name))) {
@@ -72,39 +74,4 @@ class Indexer(conf: MyConfig) extends Runnable {
 case class ImagePath(absolute: Path, relative: Path) {
   lazy val name: String = "/" + relative.toString
   lazy val lastname: String = relative.getFileName.toString
-}
-
-object Extensions {
-  val Images: Seq[String] = "jpeg" :: "jpg" :: "tiff" :: "tif" :: "png" :: "bmp" :: "webp" :: "gif" :: Nil
-  val Raws: Seq[String] =
-    "cr2" :: "cr3" :: "crw" :: // Canon
-        "raf" :: // FUJIFILM
-        "rwl" ::  // Leica
-        "nef" :: "nrw" :: // Nikon
-        "orf" :: // OM
-        "rw2" :: // Panasonic
-        "pef" :: // PENTAX
-        "x3f" :: // SIGMA
-        "arw" :: "sr2" :: "srf" ::// SONY
-        "dng" :: Nil // Common
-  val Retouches: Seq[String] =
-    "xmp" :: // Darktable
-    "dop" :: // DxO Photolab
-    "dr4" :: // Digital Photo Professional
-    "nksc" :: // Nikon Capture NX-D
-        Nil
-
-  def isRetouchFile(str: String): Boolean = {
-    val xs = str.split('.')
-    2 < xs.length &&
-        ((Raws ++ Images).contains(toLower(xs(1))) || Retouches.contains(toLower(xs.last)))
-  }
-
-  private def toLower(str: String) = str.toLowerCase(Locale.ENGLISH)
-
-  def retouchOrigin(lastname: String): String = {
-    val xs = lastname.split('.')
-    require(2 < xs.length, s"${lastname} is not retouch filename")
-    xs.init.mkString(".")
-  }
 }

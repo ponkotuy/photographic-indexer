@@ -11,6 +11,6 @@ class ScalatraBootstrap extends LifeCycle {
     val conf = MyConfig.load().getOrElse(throw new RuntimeException("ConfigError"))
     Initializer.run(conf)
     context.mount(new PhotographicIndexer(conf.app), "/app/*")
-    context.mount(new StaticImage(conf), "/image/*")
+    context.mount(new StaticFile(conf), "/static/*")
   }
 }

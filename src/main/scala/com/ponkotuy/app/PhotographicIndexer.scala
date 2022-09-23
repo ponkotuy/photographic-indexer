@@ -33,7 +33,7 @@ class PhotographicIndexer(appConfig: AppConfig) extends ScalatraServlet with COR
     val id = params("id").toLong
     implicit val session: DBSession = AutoSession
     Thumbnail.find(id).map(_.file).getOrElse {
-      val file = ImageFile.findAllInImageIds(id :: Nil).minBy(_.filesize)
+      val file = ImageFile.findAllInImageIds(id :: Nil).filterNot(_.isRetouch).minBy(_.filesize)
       val binary = generator.gen(appConfig.photosDir.resolve(file.path.tail))
       Thumbnail.create(id, binary)
       binary
