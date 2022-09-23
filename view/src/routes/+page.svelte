@@ -5,7 +5,7 @@
 	import {
 		Content,
 		Form,
-		FormGroup,
+		FormGroup, InlineNotification,
 		Link,
 		ListItem, Pagination,
 		Search,
@@ -21,7 +21,7 @@
 	export let data;
 	export let query = "";
 	export let images: ImageData[] = [];
-	export let allCount = 0;
+	export let allCount = -1;
 	let page = 1;
 	let pageSize = 20;
 
@@ -66,38 +66,44 @@
 		</FormGroup>
 	</Form>
 
-	<Pagination totalItems={allCount} pageSizes={[20, 50]} bind:page={page} bind:pageSize={pageSize} on:update={updatePage} />
+	{#if allCount === 0}
+		<InlineNotification kind="warning" title="Not found image" />
+	{/if}
 
-	<StructuredList condensed>
-		<StructuredListHead>
-			<StructuredListRow head>
-				<StructuredListCell head>image</StructuredListCell>
-				<StructuredListCell head>detail</StructuredListCell>
-			</StructuredListRow>
-		</StructuredListHead>
-		<StructuredListBody>
-			{#each images as image}
-			<StructuredListRow>
-				<StructuredListCell style="vertical-align: bottom">
-					<Link href="/image/{image.id}">
-						<img src="{host}/app/images/{image.id}/thumbnail" width="320px" alt="{thumbnail(image).path}" class="fixed">
-					</Link>
-				</StructuredListCell>
-				<StructuredListCell>
-					<UnorderedList>
-						<ListItem><Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link></ListItem>
-						<ListItem>{image.geo.address}</ListItem>
-						{#each image.files as file}
-							<ListItem><Link href="{host}/static{file.path}">{file.path}</Link></ListItem>
-						{/each}
-					</UnorderedList>
-				</StructuredListCell>
-			</StructuredListRow>
-			{/each}
-		</StructuredListBody>
-	</StructuredList>
+	{#if 0 < allCount}
+		<Pagination totalItems={allCount} pageSizes={[20, 50]} bind:page={page} bind:pageSize={pageSize} on:update={updatePage} />
 
-	<Pagination totalItems={allCount} pageSizeInputDisabled pageSize={pageSize} bind:page={page} on:update={updatePage} />
+		<StructuredList condensed>
+			<StructuredListHead>
+				<StructuredListRow head>
+					<StructuredListCell head>image</StructuredListCell>
+					<StructuredListCell head>detail</StructuredListCell>
+				</StructuredListRow>
+			</StructuredListHead>
+			<StructuredListBody>
+				{#each images as image}
+				<StructuredListRow>
+					<StructuredListCell style="vertical-align: bottom">
+						<Link href="/image/{image.id}">
+							<img src="{host}/app/images/{image.id}/thumbnail" width="320px" alt="{thumbnail(image).path}" class="fixed">
+						</Link>
+					</StructuredListCell>
+					<StructuredListCell>
+						<UnorderedList>
+							<ListItem><Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link></ListItem>
+							<ListItem>{image.geo.address}</ListItem>
+							{#each image.files as file}
+								<ListItem><Link href="{host}/static{file.path}">{file.path}</Link></ListItem>
+							{/each}
+						</UnorderedList>
+					</StructuredListCell>
+				</StructuredListRow>
+				{/each}
+			</StructuredListBody>
+		</StructuredList>
+
+		<Pagination totalItems={allCount} pageSizeInputDisabled pageSize={pageSize} bind:page={page} on:update={updatePage} />
+	{/if}
 </Content>
 
 <style>

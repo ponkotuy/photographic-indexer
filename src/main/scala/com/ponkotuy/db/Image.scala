@@ -4,7 +4,6 @@ import com.ponkotuy.res.Paging
 
 import java.time.LocalDateTime
 import scalikejdbc.*
-import scalikejdbc.sqls.{count, distinct}
 
 import scala.util.Try
 import scala.util.control.NonFatal
@@ -12,7 +11,6 @@ import scala.util.control.NonFatal
 case class Image(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, files: Seq[ImageFile] = Nil, geo: Option[Geom] = None)
 case class ImageRaw(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None) {
   def toImage(geom: Option[Geom]): Image = Image(id, cameraId, shotId, shootingAt, Nil, geom)
-  def toWithAll(geom: Option[Geom], file: ImageFile) = ImageWithAll(id, cameraId, shotId, shootingAt, file, geom)
 }
 
 object Image extends SQLSyntaxSupport[ImageRaw] {
@@ -31,24 +29,6 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
   def find(cameraId: Int, shotId: Int)(implicit session: DBSession): Option[ImageRaw] = withSQL {
     select.from(Image as i).where.eq(i.cameraId, cameraId).and.eq(i.shotId, shotId)
   }.map(Image(i.resultName)).single.apply()
-
-  def searchAddress(text: String, paging: Paging = Paging.NoLimit)(implicit session: DBSession): List[Image] = {
-    val fulltext = sqls"match (${g.address}) against (${text} in natural language mode)"
-    val images = withSQL {
-      select(i.resultAll +: Geom.select:_*)
-          .from(Image as i).innerJoin(Geom as g).on(i.geoId, g.id)
-          .where(sqls.gt(fulltext, 0))
-          .orderBy(fulltext.desc)
-          .limit(paging.limit).offset(paging.offset)
-    }.map(Image.applyWithGeom(i.resultName, g.resultName)).list.apply()
-    val files = ImageFile.findAllInImageIds(images.map(_.id))
-    images.map(image => image.copy(files = files.filter(_.imageId == image.id)))
-  }
-
-  def searchAddressCount(text: String)(implicit session: DBSession): Long = withSQL {
-    select(count(distinct(i.id))).from(Image as i).innerJoin(Geom as g).on(i.geoId, g.id)
-        .where(sqls"match (${g.address}) against (${text} in natural language mode)")
-  }.map(_.int(1)).single.apply().get
 
   def create(cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None)(implicit session: DBSession): Long = {
     withSQL {
