@@ -7,7 +7,7 @@
 		Form,
 		FormGroup,
 		Link,
-		ListItem,
+		ListItem, Pagination,
 		Search,
 		StructuredList, StructuredListBody, StructuredListCell,
 		StructuredListHead, StructuredListRow, UnorderedList
@@ -22,6 +22,8 @@
 	export let query = "";
 	export let images: ImageData[] = [];
 	export let allCount = 0;
+	let page = 1;
+	let pageSize = 20;
 
 	onMount(() => {
 		if(data.q != null) {
@@ -32,7 +34,7 @@
 
 	function search(e) {
 		if(e != null) e.preventDefault();
-		const q = new URLSearchParams({q: query})
+		const q = new URLSearchParams({q: query, page: page - 1, perPage: pageSize})
 		fetch(host + "/app/images/search?" + q)
 				.then(res => res.json())
 				.then(res => {
@@ -44,6 +46,10 @@
 
 	function isoDate(at: String) {
 		return DateTime.fromISO(at).toISODate();
+	}
+
+	function updatePage() {
+		search(null)
 	}
 </script>
 
@@ -59,7 +65,9 @@
 			<Search id="query" bind:value={query} />
 		</FormGroup>
 	</Form>
-	<p>Count: {allCount}</p>
+
+	<Pagination totalItems={allCount} pageSizes={[20, 50]} bind:page={page} bind:pageSize={pageSize} on:update={updatePage} />
+
 	<StructuredList condensed>
 		<StructuredListHead>
 			<StructuredListRow head>
@@ -88,6 +96,8 @@
 			{/each}
 		</StructuredListBody>
 	</StructuredList>
+
+	<Pagination totalItems={allCount} pageSizeInputDisabled pageSize={pageSize} bind:page={page} on:update={updatePage} />
 </Content>
 
 <style>
