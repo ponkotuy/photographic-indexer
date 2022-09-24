@@ -3,29 +3,38 @@
 	import {host} from "$lib/global";
 	import MyHeader from "$lib/MyHeader.svelte"
 	import {
-		Button, Column,
+		Button,
+		Column,
 		Content,
 		Form,
-		FormGroup, Grid, InlineNotification,
+		FormGroup,
+		Grid,
+		InlineNotification,
 		Link,
-		ListItem, Pagination, Row,
+		ListItem,
+		Pagination,
+		Row,
 		Search,
-		StructuredList, StructuredListBody, StructuredListCell,
-		StructuredListHead, StructuredListRow, Tag, UnorderedList
+		StructuredList,
+		StructuredListBody,
+		StructuredListCell,
+		StructuredListHead,
+		StructuredListRow,
+		Tag,
+		UnorderedList
 	} from "carbon-components-svelte";
 	import {onMount} from "svelte";
-	import { goto } from '$app/navigation';
+	import {goto} from '$app/navigation';
 	import type {ImageData} from "$lib/image_type"
 	import {thumbnail} from "$lib/image_type";
 	import {DateTime} from "luxon";
-	import type {IndexParams} from "./+page";
+	import {page as pp} from '$app/stores'
 
 	type DateCount = {
 		date: string
 		count: number
 	}
 
-	export let data: IndexParams;
 	export let address = "";
 	export let path = "";
 	export let images: ImageData[] = [];
@@ -35,23 +44,22 @@
 	let pageSize = 20;
 
 	onMount(() => {
-		let execSearch = false;
-		if(data.address != null) {
-			address = data.address;
-			execSearch = true;
-		}
-		if(data.path != null) {
-			path = data.path;
-			execSearch = true;
-		}
-		if(execSearch) search();
+		const params = $pp.url.searchParams;
+		address = params.get('address') || '';
+		path = params.get('path') || '';
+		if(address != '' || path != '') search();
 	});
 
+	function searchSubmit(e) {
+		e.preventDefault();
+		search();
+	}
+
 	function search() {
-		const allParams = new URLSearchParams({address, path, page: (page - 1).toString(), perPage: pageSize.toString()})
-		const coreParams = new URLSearchParams({address, path})
-		if(coreParams.get('address') == '') coreParams.delete('address')
-		if(coreParams.get('path') == '') coreParams.delete('path')
+		const allParams = new URLSearchParams({address, path, page: (page - 1).toString(), perPage: pageSize.toString()});
+		const coreParams = new URLSearchParams({address, path});
+		if(coreParams.get('address') == '') coreParams.delete('address');
+		if(coreParams.get('path') == '') coreParams.delete('path');
 		fetch(host + "/app/images/search?" + allParams)
 				.then(res => res.json())
 				.then(res => {
@@ -61,15 +69,11 @@
 				});
 		fetch(host + "/app/images/search_date_count?" + coreParams)
 				.then(res => res.json())
-				.then(res => dateCounts = res)
+				.then(res => dateCounts = res);
 	}
 
 	function isoDate(at: string): string {
 		return DateTime.fromISO(at).toISODate();
-	}
-
-	function updatePage() {
-		search()
 	}
 
 	function disableSubmit(address: string, path: string): boolean {
@@ -84,7 +88,7 @@
 
 <MyHeader />
 <Content>
-	<Form on:submit|preventDefault={search} disabled={disableSubmit(address, path)} style="margin-bottom: 24px;">
+	<Form on:submit={searchSubmit} disabled={disableSubmit(address, path)} style="margin-bottom: 24px;">
 		<FormGroup legendText="Search Address Query">
 			<Search id="address" bind:value={address} />
 		</FormGroup>
@@ -112,7 +116,7 @@
 
 		<h3>Image Result</h3>
 
-		<Pagination totalItems={allCount} pageSizes={[20, 50]} bind:page={page} bind:pageSize={pageSize} on:update={updatePage} />
+		<Pagination totalItems={allCount} pageSizes={[20, 50]} bind:page={page} bind:pageSize={pageSize} on:update={search} />
 
 		<StructuredList condensed>
 			<StructuredListHead>
@@ -145,7 +149,7 @@
 			</StructuredListBody>
 		</StructuredList>
 
-		<Pagination totalItems={allCount} pageSizeInputDisabled pageSize={pageSize} bind:page={page} on:update={updatePage} />
+		<Pagination totalItems={allCount} pageSizeInputDisabled pageSize={pageSize} bind:page={page} on:update={search} />
 	{/if}
 </Content>
 
