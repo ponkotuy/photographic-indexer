@@ -1,5 +1,6 @@
 package com.ponkotuy.db
 
+import com.ponkotuy.req.SearchParams
 import com.ponkotuy.res.Paging
 import scalikejdbc.*
 import scalikejdbc.sqls.{count, distinct}
@@ -18,9 +19,11 @@ object ImageWithAll {
       groupConcat(imf.path, sqls"imf_paths") ::
       groupConcat(imf.filesize,sqls"imf_filesizes") :: Nil
   private[this] val selectAll = i.resultAll +: (imfSelect ++ Geom.select)
-  private[this] val selectWithJoin = select(selectAll: _*).from(Image as i)
+  private def selectWithJoin(where: SQLSyntax) = select(selectAll: _*).from(Image as i)
       .leftJoin(Geom as g).on(i.geoId, g.id)
       .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+      .where(where)
+      .groupBy(i.id)
 
   def apply(rs: WrappedResultSet): Image = {
     val imResult = autoConstruct(rs, i.resultName)
@@ -38,47 +41,44 @@ object ImageWithAll {
   }
 
   def find(id: Long)(implicit session: DBSession): Option[Image] = withSQL {
-      selectWithJoin.where.eq(i.id, id)
+      selectWithJoin(sqls.eq(i.id, id))
     }.map(apply).single.apply()
 
   def findAllInIds(ids: Seq[Long])(implicit session: DBSession): Seq[Image] = withSQL {
-    selectWithJoin.where.in(i.id, ids).groupBy(i.id)
+    selectWithJoin(sqls.in(i.id, ids))
   }.map(apply).list.apply()
 
   def findFromDate(date: LocalDate)(implicit session: DBSession): Seq[Image] = withSQL {
-      selectWithJoin
-          .where.between(i.shootingAt, date.atStartOfDay(), date.plusDays(1).atStartOfDay())
+      selectWithJoin(sqls.between(i.shootingAt, date.atStartOfDay(), date.plusDays(1).atStartOfDay()))
           .orderBy(i.shootingAt)
     }.map(apply).list.apply()
 
-  private def fulltextQuery(address: Option[String], pathQuery: Option[String]): SQLSyntax = {
-    sqls.toAndConditionOpt(
-      address.map(x => sqls"match (${g.address}) against (${x} in natural language mode)"),
-      pathQuery.map(x => sqls"match(${ImageFile.column.path}) against (${x} in natural language mode)")
-    ).getOrElse(sqls"true")
-  }
-
   def searchFulltext(
-      address: Option[String],
-      pathQuery: Option[String],
+      search: SearchParams,
       paging: Paging = Paging.NoLimit
   )(implicit session: DBSession): Seq[Image] = {
-    println(fulltextQuery(address, pathQuery))
     val result = withSQL {
-      selectWithJoin
-          .where(fulltextQuery(address, pathQuery))
-//          .where(sqls.gt(fulltext, 0))
-          .groupBy(i.id)
-//          .orderBy(fulltext.desc)
+      selectWithJoin(search.query)
           .limit(paging.limit).offset(paging.offset)
     }.map(apply).list.apply()
     findAllInIds(result.map(_.id))
   }
 
-  def searchFulltextCount(address: Option[String], pathQuery: Option[String])(implicit session: DBSession): Long = withSQL{
+  def searchFulltextDateCount(search: SearchParams)(implicit session: DBSession): Map[LocalDate, Int] = withSQL {
+    val dateCol = sqls"cast(${i.shootingAt} as date)"
+    select(dateCol, count(distinct(i.id))).from(Image as i)
+        .leftJoin(Geom as g).on(i.geoId, g.id)
+        .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+        .where(search.query)
+        .groupBy(dateCol)
+  }.map { rs =>
+    rs.localDate(1) -> rs.int(2)
+  }.list.apply().toMap
+
+  def searchFulltextCount(search: SearchParams)(implicit session: DBSession): Long = withSQL {
     select(count(distinct(i.id))).from(Image as i)
         .leftJoin(Geom as g).on(i.geoId, g.id)
         .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
-        .where(fulltextQuery(address, pathQuery))
+        .where(search.query)
   }.map(_.int(1)).single.apply().get
 }

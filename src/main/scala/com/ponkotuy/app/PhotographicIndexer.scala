@@ -3,7 +3,8 @@ package com.ponkotuy.app
 import com.ponkotuy.batch.ThumbnailGenerator
 import com.ponkotuy.config.AppConfig
 import com.ponkotuy.db.{Image, ImageFile, ImageWithAll, Thumbnail}
-import com.ponkotuy.res.{Pagination, PagingResponse}
+import com.ponkotuy.req.{SearchParams, SearchParamsGenerator}
+import com.ponkotuy.res.{DateCount, Pagination, PagingResponse}
 import org.scalatra.*
 import scalikejdbc.*
 import io.circe.*
@@ -14,7 +15,11 @@ import io.circe.syntax.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class PhotographicIndexer(appConfig: AppConfig) extends ScalatraServlet with CORSSetting with Pagination {
+class PhotographicIndexer(appConfig: AppConfig)
+    extends ScalatraServlet
+        with CORSSetting
+        with Pagination
+        with SearchParamsGenerator {
   before() {
     contentType = "application/json; charset=utf-8"
   }
@@ -41,14 +46,21 @@ class PhotographicIndexer(appConfig: AppConfig) extends ScalatraServlet with COR
   }
 
   get("/images/search") {
-    val address = params.get("address")
-    val pathQuery = params.get("path")
+    val params = getSearchParams()
     DB.readOnly { implicit session =>
       paging { page =>
-        ImageWithAll.searchFulltext(address, pathQuery, page)
+        ImageWithAll.searchFulltext(params, page)
       }{
-        ImageWithAll.searchFulltextCount(address, pathQuery)
+        ImageWithAll.searchFulltextCount(params)
       }
+    }
+  }
+
+  get("/images/search_date_count") {
+    val params = getSearchParams()
+    DB.readOnly { implicit session =>
+      val result = ImageWithAll.searchFulltextDateCount(params)
+      result.toVector.map((date, count) => DateCount(date, count)).sortBy(- _.count).take(5).asJson.noSpaces
     }
   }
 

@@ -3,15 +3,15 @@
 	import {host} from "$lib/global";
 	import MyHeader from "$lib/MyHeader.svelte"
 	import {
-		Button,
+		Button, Column,
 		Content,
 		Form,
-		FormGroup, InlineNotification,
+		FormGroup, Grid, InlineNotification,
 		Link,
-		ListItem, Pagination,
+		ListItem, Pagination, Row,
 		Search,
 		StructuredList, StructuredListBody, StructuredListCell,
-		StructuredListHead, StructuredListRow, UnorderedList
+		StructuredListHead, StructuredListRow, Tag, UnorderedList
 	} from "carbon-components-svelte";
 	import {onMount} from "svelte";
 	import { goto } from '$app/navigation';
@@ -19,11 +19,17 @@
 	import {thumbnail} from "$lib/image_type";
 	import {DateTime} from "luxon";
 
+	type DateCount = {
+		date: string
+		count: number
+	}
+
 	export let data;
 	export let address = "";
 	export let path = "";
 	export let images: ImageData[] = [];
 	export let allCount = -1;
+	export let dateCounts: DateCount[] = [];
 	let page = 1;
 	let pageSize = 20;
 
@@ -42,15 +48,20 @@
 
 	function search(e) {
 		if(e != null) e.preventDefault();
-		const params = new URLSearchParams({address, path, page: page - 1, perPage: pageSize})
-		fetch(host + "/app/images/search?" + params)
+		const allParams = new URLSearchParams({address, path, page: page - 1, perPage: pageSize})
+		const coreParams = new URLSearchParams({address, path})
+		if(coreParams.get('address') == '') coreParams.delete('address')
+		if(coreParams.get('path') == '') coreParams.delete('path')
+		fetch(host + "/app/images/search?" + allParams)
 				.then(res => res.json())
 				.then(res => {
 					images = res.data;
 					allCount = res.allCount;
-					const params = new URLSearchParams({address, path})
-					goto(`/?${params}`)
+					goto(`/?${coreParams}`)
 				});
+		fetch(host + "/app/images/search_date_count?" + coreParams)
+				.then(res => res.json())
+				.then(res => dateCounts = res)
 	}
 
 	function isoDate(at: String) {
@@ -59,6 +70,10 @@
 
 	function updatePage() {
 		search(null)
+	}
+
+	function disableSubmit(address, path) {
+		return (address == '' && path == '');
 	}
 </script>
 
@@ -69,14 +84,14 @@
 
 <MyHeader />
 <Content>
-	<Form on:submit={search} style="margin-bottom: 24px;">
+	<Form on:submit={search} disabled={disableSubmit(address, path)} style="margin-bottom: 24px;">
 		<FormGroup legendText="Search Address Query">
 			<Search id="address" bind:value={address} />
 		</FormGroup>
 		<FormGroup legendText="Search Path(File) Query">
 			<Search id="path" bind:value={path} />
 		</FormGroup>
-		<Button type="submit" disabled="{address === '' && path === ''}">Search</Button>
+		<Button type="submit" disabled={disableSubmit(address, path)}>Search</Button>
 	</Form>
 
 	{#if allCount === 0}
@@ -84,6 +99,19 @@
 	{/if}
 
 	{#if 0 < allCount}
+		<h3>Date Result</h3>
+		<Grid style="margin-bottom: 24px;">
+			<Row>
+				{#each dateCounts as dc}
+					<Column>
+						<Tag type="outline"><Link href="/image/date/{dc.date}" light>{dc.date}({dc.count})</Link></Tag>
+					</Column>
+				{/each}
+			</Row>
+		</Grid>
+
+		<h3>Image Result</h3>
+
 		<Pagination totalItems={allCount} pageSizes={[20, 50]} bind:page={page} bind:pageSize={pageSize} on:update={updatePage} />
 
 		<StructuredList condensed>

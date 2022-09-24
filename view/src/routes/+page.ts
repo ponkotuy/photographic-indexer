@@ -1,6 +1,7 @@
 
 /** @type {import('./$types').PageLoad} */
 export function load({url}) {
-  const q = url.searchParams.get('q');
-  return {q};
+  const address = url.searchParams.get('address');
+  const path = url.searchParams.get('path')
+  return {address, path};
 }
