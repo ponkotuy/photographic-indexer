@@ -1,4 +1,9 @@
 
+export type IndexParams = {
+  address: string
+  path: string
+}
+
 /** @type {import('./$types').PageLoad} */
 export function load({url}) {
   const address = url.searchParams.get('address');

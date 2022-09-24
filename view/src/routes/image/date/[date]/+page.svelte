@@ -1,16 +1,17 @@
 <script lang="ts">
   import "carbon-components-svelte/css/g80.css";
   import MyHeader from "$lib/MyHeader.svelte";
-  import {Button, Column, Content, Grid, Link, Row, Tile, TooltipIcon} from "carbon-components-svelte";
+  import {Button, Column, Content, Grid, Link, Row} from "carbon-components-svelte";
   import {CaretLeft, CaretRight} from "carbon-icons-svelte"
   import {host} from "$lib/global";
   import {thumbnail} from "$lib/image_type";
   import {DateTime} from "luxon";
+  import type {DatePageResult} from './+page'
 
-  export let data;
+  export let data: DatePageResult;
   let datetime = DateTime.fromISO(data.date);
 
-  function hm(date: String): String {
+  function hm(date: string): string {
     return DateTime.fromISO(date).toFormat('H:mm');
   }
 </script>

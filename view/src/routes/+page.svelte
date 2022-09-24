@@ -18,13 +18,14 @@
 	import type {ImageData} from "$lib/image_type"
 	import {thumbnail} from "$lib/image_type";
 	import {DateTime} from "luxon";
+	import type {IndexParams} from "./+page";
 
 	type DateCount = {
 		date: string
 		count: number
 	}
 
-	export let data;
+	export let data: IndexParams;
 	export let address = "";
 	export let path = "";
 	export let images: ImageData[] = [];
@@ -43,12 +44,11 @@
 			path = data.path;
 			execSearch = true;
 		}
-		if(execSearch) search(null);
+		if(execSearch) search();
 	});
 
-	function search(e) {
-		if(e != null) e.preventDefault();
-		const allParams = new URLSearchParams({address, path, page: page - 1, perPage: pageSize})
+	function search() {
+		const allParams = new URLSearchParams({address, path, page: (page - 1).toString(), perPage: pageSize.toString()})
 		const coreParams = new URLSearchParams({address, path})
 		if(coreParams.get('address') == '') coreParams.delete('address')
 		if(coreParams.get('path') == '') coreParams.delete('path')
@@ -64,15 +64,15 @@
 				.then(res => dateCounts = res)
 	}
 
-	function isoDate(at: String) {
+	function isoDate(at: string): string {
 		return DateTime.fromISO(at).toISODate();
 	}
 
 	function updatePage() {
-		search(null)
+		search()
 	}
 
-	function disableSubmit(address, path) {
+	function disableSubmit(address: string, path: string): boolean {
 		return (address == '' && path == '');
 	}
 </script>
@@ -84,7 +84,7 @@
 
 <MyHeader />
 <Content>
-	<Form on:submit={search} disabled={disableSubmit(address, path)} style="margin-bottom: 24px;">
+	<Form on:submit|preventDefault={search} disabled={disableSubmit(address, path)} style="margin-bottom: 24px;">
 		<FormGroup legendText="Search Address Query">
 			<Search id="address" bind:value={address} />
 		</FormGroup>
@@ -104,7 +104,7 @@
 			<Row>
 				{#each dateCounts as dc}
 					<Column>
-						<Tag type="outline"><Link href="/image/date/{dc.date}" light>{dc.date}({dc.count})</Link></Tag>
+						<Tag type="outline"><Link href="/image/date/{dc.date}">{dc.date}({dc.count})</Link></Tag>
 					</Column>
 				{/each}
 			</Row>

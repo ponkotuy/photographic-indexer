@@ -2,7 +2,6 @@
   import "carbon-components-svelte/css/g80.css";
   import MyHeader from "$lib/MyHeader.svelte";
   import {
-    Button,
     Content, Link, ListItem,
     StructuredList,
     StructuredListBody,
@@ -11,12 +10,14 @@
     Tile, UnorderedList
   } from "carbon-components-svelte";
   import {host} from "$lib/global.js";
+  import type {ImageData} from "$lib/image_type"
 
-  export let data;
+  export let data: ImageData;
 
   const exts = ["jpg", "jpeg", "png", "webp"];
   function isValidImage(path: String): Boolean {
-    const ext = path.split('.').pop().toLowerCase();
+    const ext: string | undefined = path.split('.').pop()?.toLowerCase();
+    if(!ext) return false;
     return exts.includes(ext);
   }
 </script>

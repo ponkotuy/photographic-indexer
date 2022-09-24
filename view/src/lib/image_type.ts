@@ -23,6 +23,8 @@ export type ImageData = {
   files: ImageFile[]
 }
 
-export function thumbnail(image: ImageData): ImageFile | undefined {
-  return _.minBy(image.files, f => f.filesize)
+export function thumbnail(image: ImageData): ImageFile {
+  const minImage = _.minBy(image.files, f => f.filesize);
+  if(minImage) return minImage;
+  throw new Error("image.files is empty");
 }
