@@ -3,6 +3,7 @@
 	import {host} from "$lib/global";
 	import MyHeader from "$lib/MyHeader.svelte"
 	import {
+		Button,
 		Content,
 		Form,
 		FormGroup, InlineNotification,
@@ -19,28 +20,36 @@
 	import {DateTime} from "luxon";
 
 	export let data;
-	export let query = "";
+	export let address = "";
+	export let path = "";
 	export let images: ImageData[] = [];
 	export let allCount = -1;
 	let page = 1;
 	let pageSize = 20;
 
 	onMount(() => {
-		if(data.q != null) {
-			query = data.q;
-			search(null);
+		let execSearch = false;
+		if(data.address != null) {
+			address = data.address;
+			execSearch = true;
 		}
+		if(data.path != null) {
+			path = data.path;
+			execSearch = true;
+		}
+		if(execSearch) search(null);
 	});
 
 	function search(e) {
 		if(e != null) e.preventDefault();
-		const q = new URLSearchParams({q: query, page: page - 1, perPage: pageSize})
-		fetch(host + "/app/images/search?" + q)
+		const params = new URLSearchParams({address, path, page: page - 1, perPage: pageSize})
+		fetch(host + "/app/images/search?" + params)
 				.then(res => res.json())
 				.then(res => {
 					images = res.data;
 					allCount = res.allCount;
-					goto('/?'+ q)
+					const params = new URLSearchParams({address, path})
+					goto(`/?${params}`)
 				});
 	}
 
@@ -60,10 +69,14 @@
 
 <MyHeader />
 <Content>
-	<Form on:submit={search}>
-		<FormGroup legendText="Search Query">
-			<Search id="query" bind:value={query} />
+	<Form on:submit={search} style="margin-bottom: 24px;">
+		<FormGroup legendText="Search Address Query">
+			<Search id="address" bind:value={address} />
 		</FormGroup>
+		<FormGroup legendText="Search Path(File) Query">
+			<Search id="path" bind:value={path} />
+		</FormGroup>
+		<Button type="submit" disabled="{address === '' && path === ''}">Search</Button>
 	</Form>
 
 	{#if allCount === 0}
@@ -91,7 +104,9 @@
 					<StructuredListCell>
 						<UnorderedList>
 							<ListItem><Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link></ListItem>
-							<ListItem>{image.geo.address}</ListItem>
+							{#if image.geo}
+								<ListItem>{image.geo.address}</ListItem>
+							{/if}
 							{#each image.files as file}
 								<ListItem><Link href="{host}/static{file.path}">{file.path}</Link></ListItem>
 							{/each}

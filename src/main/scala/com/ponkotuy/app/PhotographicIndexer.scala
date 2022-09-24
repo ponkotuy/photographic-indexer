@@ -41,9 +41,14 @@ class PhotographicIndexer(appConfig: AppConfig) extends ScalatraServlet with COR
   }
 
   get("/images/search") {
-    val q = params("q")
+    val address = params.get("address")
+    val pathQuery = params.get("path")
     DB.readOnly { implicit session =>
-      paging { page => ImageWithAll.searchAddress(q, page) }{ ImageWithAll.searchAddressCount(q) }
+      paging { page =>
+        ImageWithAll.searchFulltext(address, pathQuery, page)
+      }{
+        ImageWithAll.searchFulltextCount(address, pathQuery)
+      }
     }
   }
 

@@ -41,25 +41,44 @@ object ImageWithAll {
       selectWithJoin.where.eq(i.id, id)
     }.map(apply).single.apply()
 
+  def findAllInIds(ids: Seq[Long])(implicit session: DBSession): Seq[Image] = withSQL {
+    selectWithJoin.where.in(i.id, ids).groupBy(i.id)
+  }.map(apply).list.apply()
+
   def findFromDate(date: LocalDate)(implicit session: DBSession): Seq[Image] = withSQL {
       selectWithJoin
           .where.between(i.shootingAt, date.atStartOfDay(), date.plusDays(1).atStartOfDay())
           .orderBy(i.shootingAt)
     }.map(apply).list.apply()
 
-  def searchAddress(text: String, paging: Paging = Paging.NoLimit)(implicit session: DBSession): Seq[Image] = {
-    val fulltext = sqls"match (${g.address}) against (${text} in natural language mode)"
-    withSQL {
-      selectWithJoin
-          .where(sqls.gt(fulltext, 0))
-          .groupBy(i.id)
-          .orderBy(fulltext.desc)
-          .limit(paging.limit).offset(paging.offset)
-    }.map(apply).list.apply()
+  private def fulltextQuery(address: Option[String], pathQuery: Option[String]): SQLSyntax = {
+    sqls.toAndConditionOpt(
+      address.map(x => sqls"match (${g.address}) against (${x} in natural language mode)"),
+      pathQuery.map(x => sqls"match(${ImageFile.column.path}) against (${x} in natural language mode)")
+    ).getOrElse(sqls"true")
   }
 
-  def searchAddressCount(text: String)(implicit session: DBSession): Long = withSQL{
-    select(count(distinct(i.id))).from(Image as i).innerJoin(Geom as g).on(i.geoId, g.id)
-        .where(sqls"match (${g.address}) against (${text} in natural language mode)")
+  def searchFulltext(
+      address: Option[String],
+      pathQuery: Option[String],
+      paging: Paging = Paging.NoLimit
+  )(implicit session: DBSession): Seq[Image] = {
+    println(fulltextQuery(address, pathQuery))
+    val result = withSQL {
+      selectWithJoin
+          .where(fulltextQuery(address, pathQuery))
+//          .where(sqls.gt(fulltext, 0))
+          .groupBy(i.id)
+//          .orderBy(fulltext.desc)
+          .limit(paging.limit).offset(paging.offset)
+    }.map(apply).list.apply()
+    findAllInIds(result.map(_.id))
+  }
+
+  def searchFulltextCount(address: Option[String], pathQuery: Option[String])(implicit session: DBSession): Long = withSQL{
+    select(count(distinct(i.id))).from(Image as i)
+        .leftJoin(Geom as g).on(i.geoId, g.id)
+        .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+        .where(fulltextQuery(address, pathQuery))
   }.map(_.int(1)).single.apply().get
 }
