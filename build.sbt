@@ -1,3 +1,6 @@
+import com.typesafe.sbt.packager.docker._
+import NativePackagerHelper._
+
 val ScalatraVersion = "3.0.0-M2"
 
 ThisBuild / scalaVersion := "3.1.3"
@@ -33,7 +36,11 @@ lazy val hello = (project in file("."))
     dockerBaseImage := "amd64/eclipse-temurin:18-jre-jammy",
     dockerUsername := Some("ponkotuy"),
     dockerUpdateLatest := true,
-    Docker / daemonUserUid := Some("1000")
+    Docker / daemonUserUid := Some("1000"),
+    Universal / mappings ++= directory("view/build").map { case (f, to) =>
+      f -> rebase(file("build"), "view")(file(to)).get
+    },
+    dockerCommands += Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view")
   )
 
 val jettyRunner = "org.eclipse.jetty" %  "jetty-runner" % "11.0.11"
