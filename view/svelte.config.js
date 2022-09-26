@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
-import { optimizeImports, elements } from "carbon-preprocess-svelte";
+import { optimizeImports, elements } from 'carbon-preprocess-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -9,7 +9,7 @@ const config = {
 	preprocess: [preprocess(), optimizeImports(), elements()],
 
 	kit: {
-	  adapter: adapter()
+		adapter: adapter()
 	}
 };
 

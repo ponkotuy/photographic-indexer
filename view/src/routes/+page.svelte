@@ -1,7 +1,7 @@
 <script lang="ts">
-	import "carbon-components-svelte/css/g80.css";
-	import {host} from "$lib/global";
-	import MyHeader from "$lib/MyHeader.svelte"
+	import 'carbon-components-svelte/css/g80.css';
+	import { host } from '$lib/global';
+	import MyHeader from '$lib/MyHeader.svelte';
 	import {
 		Button,
 		Column,
@@ -22,21 +22,21 @@
 		StructuredListRow,
 		Tag,
 		UnorderedList
-	} from "carbon-components-svelte";
-	import {onMount} from "svelte";
-	import {goto} from '$app/navigation';
-	import type {ImageData} from "$lib/image_type"
-	import {thumbnail} from "$lib/image_type";
-	import {DateTime} from "luxon";
-	import {page as pp} from '$app/stores'
+	} from 'carbon-components-svelte';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import type { ImageData } from '$lib/image_type';
+	import { thumbnail } from '$lib/image_type';
+	import { DateTime } from 'luxon';
+	import { page as pp } from '$app/stores';
 
 	type DateCount = {
-		date: string
-		count: number
-	}
+		date: string;
+		count: number;
+	};
 
-	export let address = "";
-	export let path = "";
+	export let address = '';
+	export let path = '';
 	export let images: ImageData[] = [];
 	export let allCount = -1;
 	export let dateCounts: DateCount[] = [];
@@ -47,7 +47,7 @@
 		const params = $pp.url.searchParams;
 		address = params.get('address') || '';
 		path = params.get('path') || '';
-		if(address != '' || path != '') search();
+		if (address != '' || path != '') search();
 	});
 
 	function searchSubmit(e) {
@@ -56,20 +56,25 @@
 	}
 
 	function search() {
-		const allParams = new URLSearchParams({address, path, page: (page - 1).toString(), perPage: pageSize.toString()});
-		const coreParams = new URLSearchParams({address, path});
-		if(coreParams.get('address') == '') coreParams.delete('address');
-		if(coreParams.get('path') == '') coreParams.delete('path');
-		fetch(host + "/app/images/search?" + allParams)
-				.then(res => res.json())
-				.then(res => {
-					images = res.data;
-					allCount = res.allCount;
-					goto(`/?${coreParams}`)
-				});
-		fetch(host + "/app/images/search_date_count?" + coreParams)
-				.then(res => res.json())
-				.then(res => dateCounts = res);
+		const allParams = new URLSearchParams({
+			address,
+			path,
+			page: (page - 1).toString(),
+			perPage: pageSize.toString()
+		});
+		const coreParams = new URLSearchParams({ address, path });
+		if (coreParams.get('address') == '') coreParams.delete('address');
+		if (coreParams.get('path') == '') coreParams.delete('path');
+		fetch(host + '/app/images/search?' + allParams)
+			.then((res) => res.json())
+			.then((res) => {
+				images = res.data;
+				allCount = res.allCount;
+				goto(`/?${coreParams}`);
+			});
+		fetch(host + '/app/images/search_date_count?' + coreParams)
+			.then((res) => res.json())
+			.then((res) => (dateCounts = res));
 	}
 
 	function isoDate(at: string): string {
@@ -77,7 +82,7 @@
 	}
 
 	function disableSubmit(address: string, path: string): boolean {
-		return (address == '' && path == '');
+		return address == '' && path == '';
 	}
 </script>
 
@@ -88,7 +93,11 @@
 
 <MyHeader />
 <Content>
-	<Form on:submit={searchSubmit} disabled={disableSubmit(address, path)} style="margin-bottom: 24px;">
+	<Form
+		on:submit={searchSubmit}
+		disabled={disableSubmit(address, path)}
+		style="margin-bottom: 24px;"
+	>
 		<FormGroup legendText="Search Address Query">
 			<Search id="address" bind:value={address} />
 		</FormGroup>
@@ -108,7 +117,8 @@
 			<Row>
 				{#each dateCounts as dc}
 					<Column>
-						<Tag type="outline"><Link href="/image/date/{dc.date}">{dc.date}({dc.count})</Link></Tag>
+						<Tag type="outline"><Link href="/image/date/{dc.date}">{dc.date}({dc.count})</Link></Tag
+						>
 					</Column>
 				{/each}
 			</Row>
@@ -116,7 +126,13 @@
 
 		<h3>Image Result</h3>
 
-		<Pagination totalItems={allCount} pageSizes={[20, 50]} bind:page={page} bind:pageSize={pageSize} on:update={search} />
+		<Pagination
+			totalItems={allCount}
+			pageSizes={[20, 50]}
+			bind:page
+			bind:pageSize
+			on:update={search}
+		/>
 
 		<StructuredList condensed>
 			<StructuredListHead>
@@ -127,29 +143,43 @@
 			</StructuredListHead>
 			<StructuredListBody>
 				{#each images as image}
-				<StructuredListRow>
-					<StructuredListCell style="vertical-align: bottom">
-						<Link href="/image/{image.id}">
-							<img src="{host}/app/images/{image.id}/thumbnail" width="320px" alt="{thumbnail(image).path}" class="fixed">
-						</Link>
-					</StructuredListCell>
-					<StructuredListCell>
-						<UnorderedList>
-							<ListItem><Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link></ListItem>
-							{#if image.geo}
-								<ListItem>{image.geo.address}</ListItem>
-							{/if}
-							{#each image.files as file}
-								<ListItem><Link href="{host}/static{file.path}">{file.path}</Link></ListItem>
-							{/each}
-						</UnorderedList>
-					</StructuredListCell>
-				</StructuredListRow>
+					<StructuredListRow>
+						<StructuredListCell style="vertical-align: bottom">
+							<Link href="/image/{image.id}">
+								<img
+									src="{host}/app/images/{image.id}/thumbnail"
+									width="320px"
+									alt={thumbnail(image).path}
+									class="fixed"
+								/>
+							</Link>
+						</StructuredListCell>
+						<StructuredListCell>
+							<UnorderedList>
+								<ListItem
+									><Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link
+									></ListItem
+								>
+								{#if image.geo}
+									<ListItem>{image.geo.address}</ListItem>
+								{/if}
+								{#each image.files as file}
+									<ListItem><Link href="{host}/static{file.path}">{file.path}</Link></ListItem>
+								{/each}
+							</UnorderedList>
+						</StructuredListCell>
+					</StructuredListRow>
 				{/each}
 			</StructuredListBody>
 		</StructuredList>
 
-		<Pagination totalItems={allCount} pageSizeInputDisabled pageSize={pageSize} bind:page={page} on:update={search} />
+		<Pagination
+			totalItems={allCount}
+			pageSizeInputDisabled
+			{pageSize}
+			bind:page
+			on:update={search}
+		/>
 	{/if}
 </Content>
 
