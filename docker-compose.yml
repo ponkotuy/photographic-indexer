@@ -24,3 +24,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  web:
+    image: ponkotuy/photographic-indexer:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - /docker/photographic-indexer/photos:/docker/photographic-indexer/photos
+    environment:
+      - ENV_MYSQL_PASSWORD
+      - ENV_DB_URL=jdbc:mysql://db:3306/pindexer
+      - ENV_APP_EMAIL
+    depends_on:
+      - db
+      - flyway
