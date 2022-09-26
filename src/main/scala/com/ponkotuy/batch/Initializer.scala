@@ -14,6 +14,7 @@ object Initializer {
   }
 
   def initDB(conf: DBConfig): Unit = {
+    println(s"Initialize DB: ${conf.url}")
     val ds = new BasicDataSource
     ds.setUrl(conf.url)
     ds.setUsername(conf.username)

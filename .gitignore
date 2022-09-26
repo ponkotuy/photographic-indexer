@@ -77,7 +77,6 @@ metals.sbt
 /.lib/
 
 # ignore config
-src/main/resources/application.conf
 .env
 
 # ignore drivers
