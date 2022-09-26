@@ -18,11 +18,11 @@
 
 	export let data: ImageData;
 
-	const exts = ['jpg', 'jpeg', 'png', 'webp'];
+	const extensions = ['jpg', 'jpeg', 'png', 'webp'];
 	function isValidImage(path: String): Boolean {
 		const ext: string | undefined = path.split('.').pop()?.toLowerCase();
 		if (!ext) return false;
-		return exts.includes(ext);
+		return extensions.includes(ext);
 	}
 </script>
 

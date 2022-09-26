@@ -81,3 +81,7 @@ metals.sbt
 
 # ignore drivers
 docker/flyway/drivers
+
+# ignore copied view
+src/main/webapp/*
+!src/main/webapp/WEB-INF
