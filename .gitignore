@@ -80,4 +80,4 @@ metals.sbt
 .env
 
 # ignore drivers
-docker/flyway/drivers
+docker/flyway/drivers/*.jar
