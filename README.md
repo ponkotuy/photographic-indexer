@@ -1,12 +1,32 @@
-# Photographic Indexer #
+# Photographic Indexer
 
-## Build & Run ##
-
-```sh
-$ cd photographic-indexer
-$ sbt
-> jetty:start
-> browse
+## Setup
+```shell
+$ git clone git@github.com:ponkotuy/photographic-indexer.git
+$ cd photographic-indexer/docker/flyway/drivers
+$ ./download_mysql.sh
 ```
 
-If `browse` doesn't launch your browser, manually open [http://localhost:8080/](http://localhost:8080/) in your browser.
+## Local Run
+```shell
+$ cd path/to/photographic-indexer
+$ docker-compose up -d
+```
+
+## Development
+### Backend(Scala+Scalatra)
+```shell
+$ docker-compose up db # DB
+$ sbt ~container:start
+```
+
+If you need migration,
+
+```shell
+$ docker-compose up flyway db
+```
+
+### Frontend(SvelteKit)
+```shell
+$ npm run dev -- --open
+```
