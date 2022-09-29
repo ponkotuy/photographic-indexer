@@ -2,11 +2,12 @@ import com.typesafe.sbt.packager.docker._
 import NativePackagerHelper._
 
 val ScalatraVersion = "3.0.0-M2"
+val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
 ThisBuild / scalaVersion := "3.1.3"
 ThisBuild / organization := "com.ponkotuy"
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
-ThisBuild / javaOptions += "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
+ThisBuild / javaOptions += defaultJOption
 
 lazy val hello = (project in file("."))
   .enablePlugins(ContainerPlugin)
@@ -37,6 +38,7 @@ lazy val hello = (project in file("."))
     dockerUsername := Some("ponkotuy"),
     dockerUpdateLatest := true,
     Docker / daemonUserUid := Some("1000"),
+    Universal / javaOptions += defaultJOption,
     Universal / mappings ++= directory("view/build").map { case (f, to) =>
       f -> rebase(file("build"), "view")(file(to)).get
     },
