@@ -16,4 +16,4 @@ jobs:
         env:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-        run: docker-compose up
+        run: docker-compose -f docker-compose.build.yml up
