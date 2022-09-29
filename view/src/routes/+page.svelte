@@ -65,14 +65,14 @@
 		const coreParams = new URLSearchParams({ address, path });
 		if (coreParams.get('address') == '') coreParams.delete('address');
 		if (coreParams.get('path') == '') coreParams.delete('path');
-		fetch(host + '/app/images/search?' + allParams)
+		fetch(host() + '/app/images/search?' + allParams)
 			.then((res) => res.json())
 			.then((res) => {
 				images = res.data;
 				allCount = res.allCount;
 				goto(`/?${coreParams}`);
 			});
-		fetch(host + '/app/images/search_date_count?' + coreParams)
+		fetch(host() + '/app/images/search_date_count?' + coreParams)
 			.then((res) => res.json())
 			.then((res) => (dateCounts = res));
 	}
@@ -147,7 +147,7 @@
 						<StructuredListCell style="vertical-align: bottom">
 							<Link href="/image/{image.id}">
 								<img
-									src="{host}/app/images/{image.id}/thumbnail"
+									src="{host()}/app/images/{image.id}/thumbnail"
 									width="320px"
 									alt={thumbnail(image).path}
 									class="fixed"
@@ -164,7 +164,7 @@
 									<ListItem>{image.geo.address}</ListItem>
 								{/if}
 								{#each image.files as file}
-									<ListItem><Link href="{host}/static{file.path}">{file.path}</Link></ListItem>
+									<ListItem><Link href="{host()}/static{file.path}">{file.path}</Link></ListItem>
 								{/each}
 							</UnorderedList>
 						</StructuredListCell>

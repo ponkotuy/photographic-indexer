@@ -34,6 +34,7 @@ services:
       - ENV_MYSQL_PASSWORD
       - ENV_DB_URL=jdbc:mysql://db:3306/pindexer
       - ENV_APP_EMAIL
+      - ENV_APP_PHOTOS_DIR
     depends_on:
       db:
         condition: service_healthy
