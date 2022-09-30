@@ -38,11 +38,11 @@ lazy val hello = (project in file("."))
     dockerUsername := Some("ponkotuy"),
     dockerUpdateLatest := true,
     Docker / daemonUserUid := Some("1000"),
-    Universal / javaOptions += defaultJOption,
     Universal / mappings ++= directory("view/build").map { case (f, to) =>
       f -> rebase(file("build"), "view")(file(to)).get
     },
-    dockerCommands += Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view")
+    dockerCommands ++= Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view") ::
+      ExecCmd("CMD", "-J" + defaultJOption) :: Nil
   )
 
 val jettyRunner = "org.eclipse.jetty" %  "jetty-runner" % "11.0.11"
