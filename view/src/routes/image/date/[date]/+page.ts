@@ -10,7 +10,7 @@ export type DatePageResult = {
 /** @type {import('./$types').PageLoad} */
 export async function load({ params }): Promise<DatePageResult> {
 	const date = params.date;
-	let images: ImageData[] = await fetch(`${host}/app/images/date/${date}`).then((res) =>
+	let images: ImageData[] = await fetch(`${host()}/app/images/date/${date}`).then((res) =>
 		res.json()
 	);
 	images = _.sortBy(images, (image) => image.shootingAt);

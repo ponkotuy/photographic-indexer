@@ -3,11 +3,12 @@ import NativePackagerHelper._
 
 val ScalatraVersion = "3.0.0-M2"
 val CirceVersion = "0.14.3"
+val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
 ThisBuild / scalaVersion := "3.1.3"
 ThisBuild / organization := "com.ponkotuy"
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
-ThisBuild / javaOptions += "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
+ThisBuild / javaOptions += defaultJOption
 
 lazy val hello = (project in file("."))
   .enablePlugins(ContainerPlugin)
@@ -15,7 +16,7 @@ lazy val hello = (project in file("."))
   .enablePlugins(DockerPlugin)
   .settings(
     name := "Photographic Indexer",
-    version := "0.1.0-SNAPSHOT",
+    version := "0.1.0",
     resolvers += "GBIF Repository" at "https://repository.gbif.org/repository/releases/",
     libraryDependencies ++= Seq(
       "org.scalatra" %% "scalatra" % ScalatraVersion,
@@ -41,7 +42,8 @@ lazy val hello = (project in file("."))
     Universal / mappings ++= directory("view/build").map { case (f, to) =>
       f -> rebase(file("build"), "view")(file(to)).get
     },
-    dockerCommands += Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view")
+    dockerCommands ++= Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view") ::
+      ExecCmd("CMD", "-J" + defaultJOption) :: Nil
   )
 
 val jettyRunner = "org.eclipse.jetty" %  "jetty-runner" % "11.0.12"

@@ -41,7 +41,7 @@
 					<Link href="/image/{image.id}">
 						<figure>
 							<img
-								src="{host}/app/images/{image.id}/thumbnail"
+								src="{host()}/app/images/{image.id}/thumbnail"
 								class="fixed"
 								style="width: 100%;"
 								title={path}

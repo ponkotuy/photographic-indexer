@@ -13,7 +13,7 @@
 		Tile,
 		UnorderedList
 	} from 'carbon-components-svelte';
-	import { host } from '$lib/global.js';
+	import { host } from '$lib/global';
 	import type { ImageData } from '$lib/image_type';
 
 	export let data: ImageData;
@@ -52,7 +52,7 @@
 					<UnorderedList>
 						{#each data.files as file}
 							<ListItem>
-								<Link href="{host}/static{file.path}">{file.path}</Link>
+								<Link href="{host()}/static{file.path}">{file.path}</Link>
 							</ListItem>
 						{/each}
 					</UnorderedList>
@@ -64,7 +64,7 @@
 		<Tile style="margin: 16px 0;">
 			<figure style="text-align: center;">
 				<img
-					src="{host}/static{file.path}"
+					src="{host()}/static{file.path}"
 					style="max-width: 100%"
 					title={file.path}
 					alt={file.path}

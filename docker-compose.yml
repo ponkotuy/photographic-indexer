@@ -29,7 +29,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - /docker/photographic-indexer/photos:/docker/photographic-indexer/photos
+      - ${ENV_APP_PHOTOS_DIR}:/docker/photographic-indexer/photos
     environment:
       - ENV_MYSQL_PASSWORD
       - ENV_DB_URL=jdbc:mysql://db:3306/pindexer
