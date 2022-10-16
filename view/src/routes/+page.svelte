@@ -117,8 +117,9 @@
 			<Row>
 				{#each dateCounts as dc}
 					<Column>
-						<Tag type="outline"><Link href="/image/date/{dc.date}">{dc.date}({dc.count})</Link></Tag
-						>
+						<Tag type="outline">
+							<Link href="/image/date/{dc.date}">{dc.date}({dc.count})</Link>
+						</Tag>
 					</Column>
 				{/each}
 			</Row>
@@ -156,10 +157,9 @@
 						</StructuredListCell>
 						<StructuredListCell>
 							<UnorderedList>
-								<ListItem
-									><Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link
-									></ListItem
-								>
+								<ListItem>
+									<Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link>
+								</ListItem>
 								{#if image.geo}
 									<ListItem>{image.geo.address}</ListItem>
 								{/if}

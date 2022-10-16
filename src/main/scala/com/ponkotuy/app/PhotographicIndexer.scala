@@ -12,6 +12,7 @@ import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
 
+import java.nio.file.{Files, Path}
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -31,6 +32,19 @@ class PhotographicIndexer(appConfig: AppConfig)
     }
   }
 
+  // Delete all files, db records
+  delete("/images/:id") {
+    val id = params("id").toLong
+    DB localTx { implicit session =>
+      val files = ImageFile.findAllInImageIds(id :: Nil)
+      files.foreach(f => ImageFile.remove(f.id))
+      Image.remove(id)
+      files.foreach { file =>
+        Files.delete(imagePath(file))
+      }
+    }
+  }
+
   private[this] val generator = ThumbnailGenerator(960, 640)
 
   get("/images/:id/thumbnail") {
@@ -39,7 +53,7 @@ class PhotographicIndexer(appConfig: AppConfig)
     implicit val session: DBSession = AutoSession
     Thumbnail.find(id).map(_.file).getOrElse {
       val file = ImageFile.findAllInImageIds(id :: Nil).filterNot(_.isRetouch).minBy(_.filesize)
-      val binary = generator.gen(appConfig.photosDir.resolve(file.path.tail))
+      val binary = generator.gen(imagePath(file))
       Thumbnail.create(id, binary)
       binary
     }
@@ -70,4 +84,6 @@ class PhotographicIndexer(appConfig: AppConfig)
       ImageWithAll.findFromDate(date).asJson.noSpaces
     }
   }
+
+  def imagePath(file: ImageFile): Path = appConfig.photosDir.resolve(file.path.tail)
 }

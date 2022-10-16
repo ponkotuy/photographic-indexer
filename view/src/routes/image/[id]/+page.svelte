@@ -2,9 +2,10 @@
 	import 'carbon-components-svelte/css/g80.css';
 	import MyHeader from '$lib/MyHeader.svelte';
 	import {
+		Button,
 		Content,
 		Link,
-		ListItem,
+		ListItem, Modal,
 		StructuredList,
 		StructuredListBody,
 		StructuredListCell,
@@ -15,14 +16,21 @@
 	} from 'carbon-components-svelte';
 	import { host } from '$lib/global';
 	import type { ImageData } from '$lib/image_type';
+	import {TrashCan} from "carbon-icons-svelte";
 
 	export let data: ImageData;
+	export let open: boolean = false;
 
 	const extensions = ['jpg', 'jpeg', 'png', 'webp'];
 	function isValidImage(path: String): Boolean {
 		const ext: string | undefined = path.split('.').pop()?.toLowerCase();
 		if (!ext) return false;
 		return extensions.includes(ext);
+	}
+
+	function remove() {
+		fetch(`${host()}/app/images/${data.id}`, {method: 'DELETE'})
+				.then(() => history.back());
 	}
 </script>
 
@@ -56,6 +64,31 @@
 							</ListItem>
 						{/each}
 					</UnorderedList>
+				</StructuredListCell>
+			</StructuredListRow>
+			<StructuredListRow>
+				<StructuredListCell head>Operation</StructuredListCell>
+				<StructuredListCell>
+					<Button
+							kind="danger"
+							size="small"
+							icon={TrashCan}
+							iconDescription="Delete"
+							on:click={() => open = true}>
+					</Button>
+					<Modal
+							danger
+							bind:open
+							modalHeading="Delete a image"
+							primaryButtonText="Delete"
+							secondaryButtonText="cancel"
+							on:click:button--primary={remove}
+							on:click:button--secondary={() => { open = false }}
+							on:open
+							on:close
+							on:submit>
+						<p>Delete all bound record and files.</p>
+					</Modal>
 				</StructuredListCell>
 			</StructuredListRow>
 		</StructuredListBody>

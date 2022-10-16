@@ -31,4 +31,8 @@ object ImageFile extends SQLSyntaxSupport[ImageFile] {
   def findAllInImageIds(imageIds: Seq[Long])(implicit session: DBSession): List[ImageFile] = withSQL {
     select.from(ImageFile as imf).where.in(imf.imageId, imageIds)
   }.map(ImageFile(imf.resultName)).list.apply()
+
+  def remove(id: Long)(implicit session: DBSession) = applyUpdate {
+    delete.from(ImageFile).where.eq(column.id, id)
+  }
 }

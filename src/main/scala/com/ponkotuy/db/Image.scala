@@ -40,6 +40,10 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
       )
     }.updateAndReturnGeneratedKey.apply()
   }
+
+  def remove(id: Long)(implicit session: DBSession) = applyUpdate {
+    delete.from(Image).where.eq(column.id, id)
+  }
 }
 
 case class CreateImage(
