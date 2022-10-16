@@ -30,3 +30,6 @@ $ docker-compose up flyway db
 ```shell
 $ npm run dev -- --open
 ```
+
+### Release
+Rewrite the version of build.sbt, commit and release on GitHub. Docker images are pushed to DockerHub by GitHub Actions.
