@@ -30,12 +30,19 @@ object Extensions {
   val All: Seq[String] = Images ++ Raws ++ Retouches
 
   private def toLower(str: String) = str.toLowerCase(Locale.ENGLISH)
+  private def extractExtension(path: String): Option[String] = {
+    val xs = path.split('.')
+    if(2 <= xs.length) Some(toLower(xs.last)) else None
+  }
 
   def isRetouchFile(path: String): Boolean = {
     val xs = path.split('.')
     2 < xs.length &&
         ((Raws ++ Images).contains(toLower(xs(1))) || Retouches.contains(toLower(xs.last)))
   }
+
+  def isRawFile(path: String): Boolean = extractExtension(path).exists(Raws.contains)
+  def isImageFile(path: String): Boolean = extractExtension(path).exists(Images.contains)
 
   def isTarget(path: String): Boolean = ext(path).exists(All.contains)
 

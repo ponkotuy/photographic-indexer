@@ -1,10 +1,11 @@
 package com.ponkotuy.app
 
-import com.ponkotuy.batch.ThumbnailGenerator
+import com.ponkotuy.batch.{ExifParser, ThumbnailGenerator}
 import com.ponkotuy.config.AppConfig
 import com.ponkotuy.db.{Image, ImageFile, ImageWithAll, Thumbnail}
 import com.ponkotuy.req.{SearchParams, SearchParamsGenerator}
 import com.ponkotuy.res.{DateCount, Pagination, PagingResponse}
+import com.ponkotuy.util.Extensions.{isImageFile, isRawFile}
 import org.scalatra.*
 import scalikejdbc.*
 import io.circe.*
@@ -21,21 +22,34 @@ class PhotographicIndexer(appConfig: AppConfig)
         with CORSSetting
         with Pagination
         with SearchParamsGenerator {
+
+  import com.ponkotuy.util.CustomEncoder.fraction
+
   before() {
     contentType = "application/json; charset=utf-8"
   }
 
   get("/images/:id") {
     val id = params("id").toLong
+    val withExif = params.get("exif").exists(_.toBoolean)
     DB.readOnly { implicit session =>
-      ImageWithAll.find(id).asJson.noSpaces
+      ImageWithAll.find(id).map { image =>
+        if(withExif) {
+          val result = for {
+            file <- image.files.find(f => isRawFile(f.path))
+                .orElse(image.files.find(f => isImageFile(f.path)))
+            detail <- ExifParser.parseDetail(imagePath(file))
+          } yield image.copy(exif = Some(detail))
+          result.getOrElse(image)
+        } else image
+      }.asJson.noSpaces
     }
   }
 
   // Delete all files, db records
   delete("/images/:id") {
     val id = params("id").toLong
-    DB localTx { implicit session =>
+    DB.localTx { implicit session =>
       val files = ImageFile.findAllInImageIds(id :: Nil)
       files.foreach(f => ImageFile.remove(f.id))
       Image.remove(id)

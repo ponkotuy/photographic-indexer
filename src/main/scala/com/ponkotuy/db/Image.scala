@@ -1,5 +1,6 @@
 package com.ponkotuy.db
 
+import com.ponkotuy.batch.ExifDetail
 import com.ponkotuy.res.Paging
 
 import java.time.LocalDateTime
@@ -8,7 +9,16 @@ import scalikejdbc.*
 import scala.util.Try
 import scala.util.control.NonFatal
 
-case class Image(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, files: Seq[ImageFile] = Nil, geo: Option[Geom] = None)
+case class Image(
+    id: Long, 
+    cameraId: Int,
+    shotId: Int,
+    shootingAt: LocalDateTime,
+    files: Seq[ImageFile] = Nil,
+    geo: Option[Geom] = None,
+    exif: Option[ExifDetail] = None
+)
+
 case class ImageRaw(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None) {
   def toImage(geom: Option[Geom]): Image = Image(id, cameraId, shotId, shootingAt, Nil, geom)
 }

@@ -32,7 +32,8 @@ lazy val hello = (project in file("."))
       "io.circe" %% "circe-parser" % CirceVersion,
       "com.typesafe" % "config" % "1.4.2",
       "com.drewnoakes" % "metadata-extractor" % "2.18.0",
-      "org.gbif" % "gbif-parsers" % "0.59"
+      "org.gbif" % "gbif-parsers" % "0.59",
+      "org.apache.commons" % "commons-math3" % "3.6.1"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
     dockerBaseImage := "amd64/eclipse-temurin:18-jre-jammy",

@@ -66,6 +66,26 @@
 					</UnorderedList>
 				</StructuredListCell>
 			</StructuredListRow>
+			{#if data.exif}
+				<StructuredListRow>
+					<StructuredListCell head>
+						<div>Camera</div>
+						{#if data.exif.camera}<div>Lens</div>{/if}
+						{#if data.exif.focal}<div>Focal length</div>{/if}
+						<div>Exposure</div>
+					</StructuredListCell>
+					<StructuredListCell>
+						<div>{data.exif.camera}</div>
+						{#if data.exif.lens}<div>{data.exif.lens}</div>{/if}
+						{#if data.exif.focal}<div>{data.exif.focal} mm (35mm equivalent)</div>{/if}
+						<div>
+							{#if data.exif.aperture}<span class="exposure">f/{data.exif.aperture}</span>{/if}
+							<span class="exposure">{data.exif.exposureTime} sec</span>
+							<span class="exposure">ISO {data.exif.iso}</span>
+						</div>
+					</StructuredListCell>
+				</StructuredListRow>
+			{/if}
 			<StructuredListRow>
 				<StructuredListCell head>Operation</StructuredListCell>
 				<StructuredListCell>
@@ -107,3 +127,9 @@
 		</Tile>
 	{/each}
 </Content>
+
+<style>
+	span.exposure {
+		margin-right: 10px;
+	}
+</style>

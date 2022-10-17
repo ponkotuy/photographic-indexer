@@ -13,6 +13,15 @@ export type ImageFile = {
 	filesize: number;
 };
 
+export type Exif = {
+	camera: string;
+	lens: string | null;
+	focal: number | null;
+	aperture: number | null;
+	exposureTime: string;
+	iso: number;
+}
+
 export type ImageData = {
 	id: number;
 	cameraId: number;
@@ -20,6 +29,7 @@ export type ImageData = {
 	shootingAt: string;
 	geo: Geom | null;
 	files: ImageFile[];
+	exif: Exif | null;
 };
 
 export function thumbnail(image: ImageData): ImageFile {
