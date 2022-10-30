@@ -36,7 +36,7 @@ lazy val hello = (project in file("."))
       "org.apache.commons" % "commons-math3" % "3.6.1"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
-    dockerBaseImage := "amd64/eclipse-temurin:18-jre-jammy",
+    dockerBaseImage := "amd64/eclipse-temurin:19-jre-jammy",
     dockerUsername := Some("ponkotuy"),
     dockerUpdateLatest := true,
     Docker / daemonUserUid := Some("1000"),
