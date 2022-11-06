@@ -1,11 +1,13 @@
 package com.ponkotuy.app
 
 import org.scalatra.ScalatraServlet
-import scala.jdk.CollectionConverters._
+
+import scala.jdk.CollectionConverters.*
+import scala.util.matching.Regex
 
 trait CORSSetting { self: ScalatraServlet =>
-  val Localhost = "\\Ahttp://localhost(:\\d+)?\\z".r
-  val Methods = "GET" :: "POST" :: "OPTIONS" :: "DELETE" :: Nil
+  val Localhost: Regex = "\\Ahttp://localhost(:\\d+)?\\z".r
+  val Methods: List[String] = "GET" :: "POST" :: "OPTIONS" :: "DELETE" :: Nil
 
   before() {
     val origin = Option(request.getHeader("Origin"))

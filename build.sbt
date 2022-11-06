@@ -21,7 +21,7 @@ lazy val hello = (project in file("."))
     libraryDependencies ++= Seq(
       "org.scalatra" %% "scalatra" % ScalatraVersion,
       "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test",
-      "ch.qos.logback" % "logback-classic" % "1.4.3" % "runtime",
+      "ch.qos.logback" % "logback-classic" % "1.4.4" % "runtime",
       "org.eclipse.jetty" % "jetty-webapp" % "11.0.12" % "container;compile",
       "jakarta.servlet" % "jakarta.servlet-api" % "5.0.0",
       "org.scalikejdbc" %% "scalikejdbc" % "4.0.0",

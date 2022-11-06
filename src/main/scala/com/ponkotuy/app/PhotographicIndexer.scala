@@ -2,8 +2,8 @@ package com.ponkotuy.app
 
 import com.ponkotuy.batch.{ExifParser, ThumbnailGenerator}
 import com.ponkotuy.config.AppConfig
-import com.ponkotuy.db.{Image, ImageFile, ImageWithAll, Thumbnail}
-import com.ponkotuy.req.{SearchParams, SearchParamsGenerator}
+import com.ponkotuy.db.{Image, ImageFile, ImageWithAll, Tag, Thumbnail}
+import com.ponkotuy.req.{PutTag, SearchParams, SearchParamsGenerator}
 import com.ponkotuy.res.{DateCount, Pagination, PagingResponse}
 import com.ponkotuy.util.Extensions.{isImageFile, isRawFile}
 import org.scalatra.*
@@ -21,7 +21,8 @@ class PhotographicIndexer(appConfig: AppConfig)
     extends ScalatraServlet
         with CORSSetting
         with Pagination
-        with SearchParamsGenerator {
+        with SearchParamsGenerator
+        with ParseJSON {
 
   import com.ponkotuy.util.CustomEncoder.fraction
 
@@ -97,6 +98,21 @@ class PhotographicIndexer(appConfig: AppConfig)
     DB.readOnly { implicit session =>
       ImageWithAll.findFromDate(date).asJson.noSpaces
     }
+  }
+
+  get("/images/tags") {
+    DB.readOnly { implicit session =>
+      Tag.findAll().asJson.noSpaces
+    }
+  }
+
+  put("/images/tags") {
+    parseJson[PutTag]().map { tag =>
+      DB.localTx { implicit session =>
+        Tag.create(tag.name)
+        Ok("Success")
+      }
+    }.merge
   }
 
   def imagePath(file: ImageFile): Path = appConfig.photosDir.resolve(file.path.tail)
