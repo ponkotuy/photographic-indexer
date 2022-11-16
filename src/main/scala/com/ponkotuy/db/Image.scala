@@ -10,17 +10,18 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 case class Image(
-    id: Long, 
+    id: Long,
     cameraId: Int,
     shotId: Int,
     shootingAt: LocalDateTime,
     files: Seq[ImageFile] = Nil,
+    tags: Seq[Tag] = Nil,
     geo: Option[Geom] = None,
     exif: Option[ExifDetail] = None
 )
 
 case class ImageRaw(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None) {
-  def toImage(geom: Option[Geom]): Image = Image(id, cameraId, shotId, shootingAt, Nil, geom)
+  def toImage(geom: Option[Geom]): Image = Image(id, cameraId, shotId, shootingAt, geo = geom)
 }
 
 object Image extends SQLSyntaxSupport[ImageRaw] {

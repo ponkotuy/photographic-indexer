@@ -2,8 +2,8 @@ package com.ponkotuy.app
 
 import com.ponkotuy.batch.{ExifParser, ThumbnailGenerator}
 import com.ponkotuy.config.AppConfig
-import com.ponkotuy.db.{Image, ImageFile, ImageWithAll, Tag, Thumbnail}
-import com.ponkotuy.req.{PutTag, SearchParams, SearchParamsGenerator}
+import com.ponkotuy.db.{Image, ImageFile, ImageTag, ImageWithAll, Tag, Thumbnail}
+import com.ponkotuy.req.{PutImageTag, PutTag, SearchParams, SearchParamsGenerator}
 import com.ponkotuy.res.{DateCount, Pagination, PagingResponse}
 import com.ponkotuy.util.Extensions.{isImageFile, isRawFile}
 import org.scalatra.*
@@ -57,6 +57,24 @@ class PhotographicIndexer(appConfig: AppConfig)
       files.foreach { file =>
         Files.delete(imagePath(file))
       }
+    }
+  }
+
+  put("/images/:imageId/tag/:tagId") {
+    val imageId = params("imageId").toLong
+    val tagId = params("tagId").toLong
+    DB.localTx { implicit session =>
+      ImageTag.create(imageId, tagId)
+    }
+    Ok("Success")
+  }
+
+  delete("/images/:imageId/tag/:tagId") {
+    val imageId = params("imageId").toLong
+    val tagId = params("tagId").toLong
+    DB.localTx { implicit session =>
+      ImageTag.remove(imageId, tagId)
+      Ok("Success")
     }
   }
 

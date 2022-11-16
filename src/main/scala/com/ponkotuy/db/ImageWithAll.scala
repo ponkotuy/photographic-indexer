@@ -13,15 +13,21 @@ object ImageWithAll {
   import Image.i
   import Geom.g
   import ImageFile.imf
+  import ImageTag.it
+  import Tag.t
 
   private def groupConcat(sql: SQLSyntax, name: SQLSyntax) = sqls"group_concat(${sql}) as ${name}"
   private[this] val imfSelect = groupConcat(imf.id, sqls"imf_ids") ::
       groupConcat(imf.path, sqls"imf_paths") ::
       groupConcat(imf.filesize,sqls"imf_filesizes") :: Nil
-  private[this] val selectAll = i.resultAll +: (imfSelect ++ Geom.select)
+  private[this] val tSelect = groupConcat(t.id, sqls"t_ids") ::
+      groupConcat(t.name, sqls"t_names") :: Nil
+  private[this] val selectAll = i.resultAll +: (imfSelect ++ tSelect ++ Geom.select)
   private def selectWithJoin(where: SQLSyntax) = select(selectAll: _*).from(Image as i)
       .leftJoin(Geom as g).on(i.geoId, g.id)
       .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+      .leftJoin(ImageTag as it).on(i.id, it.imageId)
+      .leftJoin(Tag as t).on(it.tagId, t.id)
       .where(where)
       .groupBy(i.id)
 
@@ -30,14 +36,30 @@ object ImageWithAll {
     val gResult = Try{
       Geom.apply(g.resultName)(rs)
     }.toOption
+    val files = extractFiles(rs, imResult)
+    val tags = extractTags(rs, imResult)
+    imResult.toImage(gResult).copy(files = files, tags = tags)
+  }
+
+  private def extractFiles(rs: WrappedResultSet, raw: ImageRaw): Seq[ImageFile] = {
     val ids = rs.string("imf_ids").split(',')
     val paths = rs.string("imf_paths").split(',')
     val filesizes = rs.string("imf_filesizes").split(',')
-    @nowarn()
+    @nowarn
     val files = (ids :: paths :: filesizes :: Nil).transpose.map { case List(id, path, filesize) =>
-      ImageFile(id.toLong, imResult.id, path, filesize.toLong)
+      ImageFile(id.toLong, raw.id, path, filesize.toLong)
     }
-    imResult.toImage(gResult).copy(files = files)
+    files
+  }
+
+  private def extractTags(rs: WrappedResultSet, raw: ImageRaw): Seq[Tag] = {
+    val ids = rs.stringOpt("t_ids").map(_.split(',')).getOrElse(Array.empty[String]).distinct
+    val names = rs.stringOpt("t_names").map(_.split(',')).getOrElse(Array.empty[String]).distinct
+    @nowarn
+    val tags = (ids :: names :: Nil).transpose.map { case List(id, name) =>
+      Tag(id.toLong, name)
+    }
+    tags
   }
 
   def find(id: Long)(implicit session: DBSession): Option[Image] = withSQL {

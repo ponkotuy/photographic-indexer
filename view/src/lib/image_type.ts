@@ -32,6 +32,11 @@ export type ImageData = {
 	exif: Exif | null;
 };
 
+export type Tag = {
+	id: number;
+	name: string;
+}
+
 export function thumbnail(image: ImageData): ImageFile {
 	const minImage = _.minBy(image.files, (f) => f.filesize);
 	if (minImage) return minImage;
