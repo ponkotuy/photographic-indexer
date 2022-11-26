@@ -1,5 +1,6 @@
 <script lang="ts">
 	import 'carbon-components-svelte/css/g80.css';
+	import '$lib/app.css'
 	import { host } from '$lib/global';
 	import MyHeader from '$lib/MyHeader.svelte';
 	import {
@@ -245,10 +246,3 @@
 		<TextInput id="tagName" labelText="Tag name" bind:value={tagName} />
 	</Modal>
 </Content>
-
-<style>
-	.fixed {
-		aspect-ratio: 3 / 2;
-		object-fit: contain;
-	}
-</style>

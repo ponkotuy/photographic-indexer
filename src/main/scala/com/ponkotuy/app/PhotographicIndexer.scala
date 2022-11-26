@@ -4,8 +4,9 @@ import com.ponkotuy.batch.{ExifParser, ThumbnailGenerator}
 import com.ponkotuy.config.AppConfig
 import com.ponkotuy.db.{Image, ImageFile, ImageTag, ImageWithAll, Tag, Thumbnail}
 import com.ponkotuy.req.{PutImageTag, PutTag, SearchParams, SearchParamsGenerator}
-import com.ponkotuy.res.{DateCount, Pagination, PagingResponse}
+import com.ponkotuy.res.{AggregateDate, DateCount, Pagination, PagingResponse}
 import com.ponkotuy.util.Extensions.{isImageFile, isRawFile}
+import com.ponkotuy.util.CustomFormatter.monthFormatter
 import org.scalatra.*
 import scalikejdbc.*
 import io.circe.*
@@ -14,7 +15,7 @@ import io.circe.parser.*
 import io.circe.syntax.*
 
 import java.nio.file.{Files, Path}
-import java.time.LocalDate
+import java.time.{LocalDate, YearMonth}
 import java.time.format.DateTimeFormatter
 
 class PhotographicIndexer(appConfig: AppConfig)
@@ -131,6 +132,17 @@ class PhotographicIndexer(appConfig: AppConfig)
         Ok("Success")
       }
     }.merge
+  }
+
+  get("/images/calendar/:month") {
+    val month = YearMonth.parse(params("month"), monthFormatter)
+    DB.readOnly { implicit session =>
+      ImageWithAll.aggregateMonthlyByDate(month)
+        .map { (date, images) => AggregateDate.fromImages(date, images) }
+        .toVector
+        .sortBy(_.date)
+        .asJson.noSpaces
+    }
   }
 
   def imagePath(file: ImageFile): Path = appConfig.photosDir.resolve(file.path.tail)

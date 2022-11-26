@@ -2,10 +2,11 @@ package com.ponkotuy.db
 
 import com.ponkotuy.req.SearchParams
 import com.ponkotuy.res.Paging
+import com.ponkotuy.util.CustomFormatter.monthFormatter
 import scalikejdbc.*
 import scalikejdbc.sqls.{count, distinct}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, YearMonth}
 import scala.annotation.nowarn
 import scala.util.Try
 
@@ -70,10 +71,23 @@ object ImageWithAll {
     selectWithJoin(sqls.in(i.id, ids))
   }.map(apply).list.apply()
 
-  def findFromDate(date: LocalDate)(implicit session: DBSession): Seq[Image] = withSQL {
-      selectWithJoin(sqls.between(i.shootingAt, date.atStartOfDay(), date.plusDays(1).atStartOfDay()))
-          .orderBy(i.shootingAt)
+  def findFromDate(date: LocalDate)(implicit session: DBSession): Seq[Image] = {
+    val start = date.atStartOfDay()
+    val end = start.plusDays(1)
+    withSQL {
+      selectWithJoin(sqls.between(i.shootingAt, start, end)).orderBy(i.shootingAt)
     }.map(apply).list.apply()
+  }
+
+
+  def aggregateMonthlyByDate(month: YearMonth)(implicit session: DBSession): Map[LocalDate, Seq[Image]] = {
+    val start = month.atDay(1).atStartOfDay()
+    val end = start.plusMonths(1)
+    val images: List[Image] = withSQL {
+      selectWithJoin(sqls.between(i.shootingAt, start, end)).orderBy(i.shootingAt)
+    }.map(apply).list.apply()
+    images.groupBy(_.shootingAt.toLocalDate)
+  }
 
   def searchFulltext(
       search: SearchParams,

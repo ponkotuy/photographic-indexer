@@ -1,5 +1,6 @@
 <script lang="ts">
 	import 'carbon-components-svelte/css/g80.css';
+	import '$lib/app.css'
 	import MyHeader from '$lib/MyHeader.svelte';
 	import { Button, Column, Content, Grid, Link, Row } from 'carbon-components-svelte';
 	import { CaretLeft, CaretRight } from 'carbon-icons-svelte';
@@ -55,10 +56,3 @@
 		</Row>
 	</Grid>
 </Content>
-
-<style>
-	.fixed {
-		aspect-ratio: 3 / 2;
-		object-fit: contain;
-	}
-</style>
