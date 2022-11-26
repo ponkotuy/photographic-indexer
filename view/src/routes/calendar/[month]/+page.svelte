@@ -2,20 +2,20 @@
   import 'carbon-components-svelte/css/g80.css';
   import '$lib/app.css'
   import MyHeader from "../../../lib/MyHeader.svelte";
-  import {Column, Content, Grid, Link, Row} from "carbon-components-svelte";
+  import {Button, Column, Content, Grid, Link, Row} from "carbon-components-svelte";
   import type {CalendarPageResult} from "./+page";
   import {DateTime} from "luxon";
   import {host} from "$lib/global.js";
   import {thumbnail} from "$lib/image_type.js";
+  import {CaretLeft, CaretRight} from "carbon-icons-svelte";
 
   export let data: CalendarPageResult;
 
+  const YMUser = "LLLL, yyyy";
+  const YMMachine = "yyyyMM";
+
   function parse(date: string): DateTime {
     return DateTime.fromISO(date);
-  }
-
-  function getYM(date: string): string {
-    return parse(date).toFormat("LLLL, yyyy")
   }
 
   function getDay(date: string): number {
@@ -32,7 +32,24 @@
   {#if data.agg.length === 0}
     <h3>Not found images...</h3>
   {:else}
-    <h2>{getYM(data.agg[0].date)}</h2>
+    {@const datetime = parse(data.agg[0].date)}
+    <Grid narrow>
+      <Row>
+        <Column lg={3}>
+          <Button href="/calendar/{datetime.minus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
+            <CaretLeft size={24} />{datetime.minus({ months: 1}).toFormat(YMUser)}
+          </Button>
+        </Column>
+        <Column lg={10} style="text-align: center;">
+          <h2>{datetime.toFormat(YMUser)}</h2>
+        </Column>
+        <Column lg={3}>
+          <Button href="/image/calendar/{datetime.plus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
+            {datetime.plus({ months: 1}).toFormat(YMUser)}<CaretRight size={24} />
+          </Button>
+        </Column>
+      </Row>
+    </Grid>
     <Grid>
       <Row padding>
         {#each data.agg as day}

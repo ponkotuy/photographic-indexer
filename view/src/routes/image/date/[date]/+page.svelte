@@ -26,7 +26,7 @@
 					<CaretLeft size={24} />Yesterday
 				</Button>
 			</Column>
-			<Column lg={12} style="text-align: center"><h2>{data.date}({data.images.length})</h2></Column>
+			<Column lg={12} style="text-align: center;"><h2>{data.date}({data.images.length})</h2></Column>
 			<Column lg={2}>
 				<Button href="/image/date/{datetime.plus({ days: 1 }).toISODate()}" kind="ghost">
 					Tomorrow<CaretRight size={24} />
