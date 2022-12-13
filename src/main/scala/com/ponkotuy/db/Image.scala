@@ -14,14 +14,15 @@ case class Image(
     cameraId: Int,
     shotId: Int,
     shootingAt: LocalDateTime,
+    isPublic: Boolean = false,
     files: Seq[ImageFile] = Nil,
     tags: Seq[Tag] = Nil,
     geo: Option[Geom] = None,
     exif: Option[ExifDetail] = None
 )
 
-case class ImageRaw(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None) {
-  def toImage(geom: Option[Geom]): Image = Image(id, cameraId, shotId, shootingAt, geo = geom)
+case class ImageRaw(id: Long, cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None, isPublic: Boolean = false) {
+  def toImage(geom: Option[Geom]): Image = Image(id, cameraId, shotId, shootingAt, geo = geom, isPublic = isPublic)
 }
 
 object Image extends SQLSyntaxSupport[ImageRaw] {
@@ -41,16 +42,21 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
     select.from(Image as i).where.eq(i.cameraId, cameraId).and.eq(i.shotId, shotId)
   }.map(Image(i.resultName)).single.apply()
 
-  def create(cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None)(implicit session: DBSession): Long = {
+  def create(cameraId: Int, shotId: Int, shootingAt: LocalDateTime, geoId: Option[Long] = None, isPublic: Boolean = false)(implicit session: DBSession): Long = {
     withSQL {
       insert.into(Image).namedValues(
         column.cameraId -> cameraId,
         column.shotId -> shotId,
         column.shootingAt -> shootingAt,
-        column.geoId -> geoId
+        column.geoId -> geoId,
+        column.isPublic -> isPublic
       )
     }.updateAndReturnGeneratedKey.apply()
   }
+
+  def updatePublic(id: Long, isPublic: Boolean)(implicit session: DBSession): Int = withSQL {
+    update(Image).set(column.isPublic -> isPublic).where.eq(column.id, id)
+  }.update.apply()
 
   def remove(id: Long)(implicit session: DBSession) = applyUpdate {
     delete.from(Image).where.eq(column.id, id)
@@ -63,7 +69,8 @@ case class CreateImage(
     shootingAt: LocalDateTime,
     address: Option[String],
     lat: Option[Double],
-    lon: Option[Double]
+    lon: Option[Double],
+    isPublic: Boolean = false
 ) {
   def create(): Long = DB localTx { implicit session =>
     try {
@@ -72,7 +79,7 @@ case class CreateImage(
         lat <- lat
         lon <- lon
       } yield Geom.create(address, lat, lon)
-      Image.create(cameraId, shotId, shootingAt, geomId)
+      Image.create(cameraId, shotId, shootingAt, geomId, isPublic)
     } catch {
       case NonFatal(e) =>
         e.printStackTrace()

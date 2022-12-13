@@ -20,7 +20,7 @@ export type Exif = {
 	aperture: number | null;
 	exposureTime: string;
 	iso: number;
-}
+};
 
 export type ImageData = {
 	id: number;
@@ -30,12 +30,14 @@ export type ImageData = {
 	geo: Geom | null;
 	files: ImageFile[];
 	exif: Exif | null;
+	tags: Tag[];
+	isPublic: boolean;
 };
 
 export type Tag = {
 	id: number;
 	name: string;
-}
+};
 
 export function thumbnail(image: ImageData): ImageFile {
 	const minImage = _.minBy(image.files, (f) => f.filesize);

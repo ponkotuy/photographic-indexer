@@ -21,7 +21,7 @@
 		StructuredListCell,
 		StructuredListHead,
 		StructuredListRow,
-		Tag, TextInput,
+		Tag, TextInput, Toggle,
 		UnorderedList
 	} from 'carbon-components-svelte';
 	import { onMount } from 'svelte';
@@ -30,7 +30,7 @@
 	import { thumbnail } from '$lib/image_type';
 	import { DateTime } from 'luxon';
 	import { page as pp } from '$app/stores';
-	import {Add, Image} from "carbon-icons-svelte";
+	import {Add} from "carbon-icons-svelte";
 
 	type DateCount = {
 		date: string;
@@ -72,8 +72,12 @@
 		if (coreParams.get('address') == '') coreParams.delete('address');
 		if (coreParams.get('path') == '') coreParams.delete('path');
 		fetch(host() + '/app/images/search?' + allParams)
+			.then(res => res.text())
+			.then(res => console.log(JSON.parse(res)));
+		fetch(host() + '/app/images/search?' + allParams)
 			.then(res => res.json())
 			.then(res => {
+				console.log(res);
 				images = res.data;
 				allCount = res.allCount;
 				goto(`/?${coreParams}`);
@@ -103,7 +107,7 @@
 			.then(json => {tags = json; open = false;});
 	}
 
-	async function setTag(image: Image, tag: Tag) {
+	async function setTag(image: ImageData, tag: Tag) {
 		const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, {method: 'PUT'})
 		if(result.ok) {
 			image.tags.push(tag);
@@ -111,12 +115,18 @@
 		}
 	}
 
-	async function removeTag(image: Image, tag: Tag) {
+	async function removeTag(image: ImageData, tag: Tag) {
 		const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, {method: 'DELETE'})
 		if(result.ok) {
 			image.tags = image.tags.filter(t => t.id != tag.id);
 			updateImage();
 		}
+	}
+
+	async function togglePublic(image: ImageData) {
+		const method = image.isPublic ? 'DELETE' : 'PUT';
+		await fetch(host() + `/app/images/${image.id}/public`, {method});
+		image.isPublic = !image.isPublic;
 	}
 
 	function updateImage() {
@@ -206,18 +216,28 @@
 								{/each}
 							</UnorderedList>
 							<div>
-							{#each image.tags as tag}
-								<Tag filter on:close={() => removeTag(image, tag)} style="vertical-align: bottom;">{tag.name}</Tag>
-							{/each}
-							<OverflowMenu style="width: auto; height: auto; display: inline;">
-								<Button slot="menu" icon={Add} size="small">Tag</Button>
-								{#each tags as tag}
-									{#if !image.tags.map(t => t.id).includes(tag.id)}
-										<OverflowMenuItem text={tag.name} on:click={() => setTag(image, tag)} />
-									{/if}
+								{#each image.tags as tag}
+									<Tag filter on:close={() => removeTag(image, tag)} style="vertical-align: bottom;">{tag.name}</Tag>
 								{/each}
-								<OverflowMenuItem hasDivider text="+ New tag" on:click={() => open = true} />
-							</OverflowMenu>
+								<OverflowMenu style="width: auto; height: auto; display: inline;">
+									<Button slot="menu" icon={Add} size="small">Tag</Button>
+									{#each tags as tag}
+										{#if !image.tags.map(t => t.id).includes(tag.id)}
+											<OverflowMenuItem text={tag.name} on:click={() => setTag(image, tag)} />
+										{/if}
+									{/each}
+									<OverflowMenuItem hasDivider text="+ New tag" on:click={() => open = true} />
+								</OverflowMenu>
+								<Toggle
+									size="sm"
+									style="margin-top: 5px"
+									labelText="Public"
+									labelA="Private"
+									labelB="Public"
+									hideLabel
+									toggled={image.isPublic}
+									on:toggle={() => togglePublic(image)}
+								/>
 							</div>
 						</StructuredListCell>
 					</StructuredListRow>

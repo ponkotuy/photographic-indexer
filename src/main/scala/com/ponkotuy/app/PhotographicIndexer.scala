@@ -93,6 +93,18 @@ class PhotographicIndexer(appConfig: AppConfig)
     }
   }
 
+  put("/images/:id/public") {
+    val id = params("id").toLong
+    Image.updatePublic(id, true)(AutoSession)
+    Ok("Success")
+  }
+
+  delete("/images/:id/public") {
+    val id = params("id").toLong
+    Image.updatePublic(id, false)(AutoSession)
+    Ok("Success")
+  }
+
   get("/images/search") {
     val params = getSearchParams()
     DB.readOnly { implicit session =>
