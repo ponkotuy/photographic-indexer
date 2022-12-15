@@ -44,8 +44,8 @@ object ExifParser {
   private def timeParser(str: String): LocalDateTime = LocalDateTime.parse(str, Formatter)
 
   def parse(file: Path): Option[Exif] = {
-    val tags = getTags(file).getOrElse(return None)
     for {
+      tags <- getTags(file)
       serialNoRaw <- find(tags, "Body Serial Number")
       serialNo <- serialNoRaw.getDescription.toIntOption
       shotIdRaw <- find(tags, "Exposure Sequence Number")
@@ -63,20 +63,20 @@ object ExifParser {
   }
 
   def parseDetail(file: Path): Option[ExifDetail] = {
-    val tags = getTags(file).getOrElse(return None)
-    val camera = find(tags, "Model").map(_.getDescription).getOrElse("Unknown")
-    val focal = find(tags, "Focal Length 35")
-        .map(tag => parseLength(tag.getDescription))
-        .filterNot(_ == 0)
-    val lens = find(tags, "Lens")
-        .orElse(find(tags, "LensModel"))
-        .map(_.getDescription)
-        .filterNot(_ == "Unknown")
-    val aperture = for {
-      tag <- find(tags, "F-Number")
-      fNumber <- NumberPattern.findFirstIn(tag.getDescription)
-    } yield BigDecimal(fNumber)
     for {
+      tags <- getTags(file)
+      camera = find(tags, "Model").map(_.getDescription).getOrElse("Unknown")
+      focal = find(tags, "Focal Length 35")
+          .map(tag => parseLength(tag.getDescription))
+          .filterNot(_ == 0)
+      lens = find(tags, "Lens")
+          .orElse(find(tags, "LensModel"))
+          .map(_.getDescription)
+          .filterNot(_ == "Unknown")
+      aperture = for {
+        tag <- find(tags, "F-Number")
+        fNumber <- NumberPattern.findFirstIn(tag.getDescription)
+      } yield BigDecimal(fNumber)
       exposure <- find(tags, "Exposure Time").map(tag => parseExposure(tag.getDescription))
       iso <- find(tags, "ISO Speed Ratings").map(tag => tag.getDescription.toInt)
     } yield ExifDetail(camera, lens, focal, aperture, exposure, iso)
