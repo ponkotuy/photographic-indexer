@@ -32,6 +32,8 @@ object ImageWithAll {
       .where(where)
       .groupBy(i.id)
 
+  val isPublic: SQLSyntax = sqls.eq(i.isPublic, true)
+
   def apply(rs: WrappedResultSet): Image = {
     val imResult = autoConstruct(rs, i.resultName)
     val gResult = Try{
@@ -67,12 +69,13 @@ object ImageWithAll {
       selectWithJoin(sqls.eq(i.id, id))
     }.map(apply).single.apply()
 
-  def findAllInIds(ids: Seq[Long])(implicit session: DBSession): Seq[Image] = withSQL {
-    selectWithJoin(sqls.in(i.id, ids))
+  def findAll(where: SQLSyntax, paging: Paging = Paging.NoLimit)(implicit session: DBSession): Seq[Image] = withSQL{
+    selectWithJoin(where).limit(paging.limit).offset(paging.offset)
   }.map(apply).list.apply()
 
-  def findAllPublic(paging: Paging = Paging.NoLimit)(implicit session: DBSession): Seq[Image] = withSQL {
-    selectWithJoin(sqls.eq(i.isPublic, true)).limit(paging.limit).offset(paging.offset)
+
+  def findAllInIds(ids: Seq[Long])(implicit session: DBSession): Seq[Image] = withSQL {
+    selectWithJoin(sqls.in(i.id, ids))
   }.map(apply).list.apply()
 
   def findFromDate(date: LocalDate)(implicit session: DBSession): Seq[Image] = {
@@ -83,6 +86,9 @@ object ImageWithAll {
     }.map(apply).list.apply()
   }
 
+  def findRandom(where: SQLSyntax)(implicit session: DBSession): Option[Image] = withSQL {
+    selectWithJoin(where).orderBy(sqls"rand()").limit(1)
+  }.map(apply).single.apply()
 
   def aggregateMonthlyByDate(month: YearMonth)(implicit session: DBSession): Map[LocalDate, Seq[Image]] = {
     val start = month.atDay(1).atStartOfDay()
@@ -122,7 +128,7 @@ object ImageWithAll {
         .where(search.query)
   }.map(_.int(1)).single.apply().get
 
-  def findAllPublicCount()(implicit session: DBSession): Long = withSQL {
-    select(count(distinct(i.id))).from(Image as i).where.eq(i.isPublic, true)
+  def findAllCount(where: SQLSyntax)(implicit session: DBSession): Long = withSQL {
+    select(count(distinct(i.id))).from(Image as i).where(where)
   }.map(_.int(1)).single.apply().get
 }

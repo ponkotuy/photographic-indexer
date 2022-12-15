@@ -23,10 +23,16 @@ class PublicImage()
   get("/") {
     DB.readOnly { implicit session =>
       paging { page =>
-        ImageWithAll.findAllPublic(page)
+        ImageWithAll.findAll(ImageWithAll.isPublic, page)
       } {
-        ImageWithAll.findAllPublicCount()
+        ImageWithAll.findAllCount(ImageWithAll.isPublic)
       }
+    }
+  }
+
+  get("/random") {
+    DB.readOnly { implicit session =>
+      ImageWithAll.findRandom(ImageWithAll.isPublic).asJson.noSpaces
     }
   }
 }
