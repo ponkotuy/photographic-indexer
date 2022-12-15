@@ -71,6 +71,10 @@ object ImageWithAll {
     selectWithJoin(sqls.in(i.id, ids))
   }.map(apply).list.apply()
 
+  def findAllPublic(paging: Paging = Paging.NoLimit)(implicit session: DBSession): Seq[Image] = withSQL {
+    selectWithJoin(sqls.eq(i.isPublic, true)).limit(paging.limit).offset(paging.offset)
+  }.map(apply).list.apply()
+
   def findFromDate(date: LocalDate)(implicit session: DBSession): Seq[Image] = {
     val start = date.atStartOfDay()
     val end = start.plusDays(1)
@@ -116,5 +120,9 @@ object ImageWithAll {
         .leftJoin(Geom as g).on(i.geoId, g.id)
         .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
         .where(search.query)
+  }.map(_.int(1)).single.apply().get
+
+  def findAllPublicCount()(implicit session: DBSession): Long = withSQL {
+    select(count(distinct(i.id))).from(Image as i).where.eq(i.isPublic, true)
   }.map(_.int(1)).single.apply().get
 }

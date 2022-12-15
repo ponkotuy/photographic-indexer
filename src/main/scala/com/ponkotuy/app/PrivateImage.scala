@@ -18,20 +18,19 @@ import java.nio.file.{Files, Path}
 import java.time.{LocalDate, YearMonth}
 import java.time.format.DateTimeFormatter
 
-class PhotographicIndexer(appConfig: AppConfig)
+class PrivateImage(appConfig: AppConfig)
     extends ScalatraServlet
         with CORSSetting
         with Pagination
         with SearchParamsGenerator
         with ParseJSON {
-
   import com.ponkotuy.util.CustomEncoder.fraction
 
   before() {
     contentType = "application/json; charset=utf-8"
   }
 
-  get("/images/:id") {
+  get("/:id") {
     val id = params("id").toLong
     val withExif = params.get("exif").exists(_.toBoolean)
     DB.readOnly { implicit session =>
@@ -49,7 +48,7 @@ class PhotographicIndexer(appConfig: AppConfig)
   }
 
   // Delete all files, db records
-  delete("/images/:id") {
+  delete("/:id") {
     val id = params("id").toLong
     DB.localTx { implicit session =>
       val files = ImageFile.findAllInImageIds(id :: Nil)
@@ -61,7 +60,7 @@ class PhotographicIndexer(appConfig: AppConfig)
     }
   }
 
-  put("/images/:imageId/tag/:tagId") {
+  put("/:imageId/tag/:tagId") {
     val imageId = params("imageId").toLong
     val tagId = params("tagId").toLong
     DB.localTx { implicit session =>
@@ -70,7 +69,7 @@ class PhotographicIndexer(appConfig: AppConfig)
     Ok("Success")
   }
 
-  delete("/images/:imageId/tag/:tagId") {
+  delete("/:imageId/tag/:tagId") {
     val imageId = params("imageId").toLong
     val tagId = params("tagId").toLong
     DB.localTx { implicit session =>
@@ -81,7 +80,7 @@ class PhotographicIndexer(appConfig: AppConfig)
 
   private[this] val generator = ThumbnailGenerator(960, 640)
 
-  get("/images/:id/thumbnail") {
+  get("/:id/thumbnail") {
     contentType = "image/jpeg"
     val id = params("id").toLong
     implicit val session: DBSession = AutoSession
@@ -93,20 +92,20 @@ class PhotographicIndexer(appConfig: AppConfig)
     }
   }
 
-  put("/images/:id/public") {
+  put("/:id/public") {
     val id = params("id").toLong
     Image.updatePublic(id, true)(AutoSession)
     Ok("Success")
   }
 
-  delete("/images/:id/public") {
+  delete("/:id/public") {
     val id = params("id").toLong
     Image.updatePublic(id, false)(AutoSession)
     Ok("Success")
   }
 
-  get("/images/search") {
-    val params = getSearchParams()
+  get("/search") {
+    val params = getSearchParams
     DB.readOnly { implicit session =>
       paging { page =>
         ImageWithAll.searchFulltext(params, page)
@@ -116,28 +115,28 @@ class PhotographicIndexer(appConfig: AppConfig)
     }
   }
 
-  get("/images/search_date_count") {
-    val params = getSearchParams()
+  get("/search_date_count") {
+    val params = getSearchParams
     DB.readOnly { implicit session =>
       val result = ImageWithAll.searchFulltextDateCount(params)
       result.toVector.map((date, count) => DateCount(date, count)).sortBy(- _.count).take(5).asJson.noSpaces
     }
   }
 
-  get("/images/date/:date") {
+  get("/date/:date") {
     val date = LocalDate.parse(params("date"), DateTimeFormatter.ISO_LOCAL_DATE)
     DB.readOnly { implicit session =>
       ImageWithAll.findFromDate(date).asJson.noSpaces
     }
   }
 
-  get("/images/tags") {
+  get("/tags") {
     DB.readOnly { implicit session =>
       Tag.findAll().asJson.noSpaces
     }
   }
 
-  put("/images/tags") {
+  put("/tags") {
     parseJson[PutTag]().map { tag =>
       DB.localTx { implicit session =>
         Tag.create(tag.name)
@@ -146,7 +145,7 @@ class PhotographicIndexer(appConfig: AppConfig)
     }.merge
   }
 
-  get("/images/calendar/:month") {
+  get("/calendar/:month") {
     val month = YearMonth.parse(params("month"), monthFormatter)
     DB.readOnly { implicit session =>
       ImageWithAll.aggregateMonthlyByDate(month)

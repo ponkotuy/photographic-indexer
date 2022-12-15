@@ -10,7 +10,8 @@ class ScalatraBootstrap extends LifeCycle {
   override def init(context: ServletContext): Unit = {
     val conf = MyConfig.load().getOrElse(throw new RuntimeException("ConfigError"))
     Initializer.run(conf)
-    context.mount(new PhotographicIndexer(conf.app), "/app/*")
+    context.mount(new PrivateImage(conf.app), "/app/images/*")
+    context.mount(new PublicImage, "/public/images/*")
     context.mount(new StaticFile(conf), "/static/*")
   }
 }

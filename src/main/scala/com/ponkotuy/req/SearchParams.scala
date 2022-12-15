@@ -14,7 +14,7 @@ case class SearchParams(address: Option[String], path: Option[String]) {
 }
 
 trait SearchParamsGenerator { self: ScalatraServlet =>
-  def getSearchParams(): SearchParams = {
+  def getSearchParams: SearchParams = {
     val address = params.get("address").filterNot(_ == "")
     val pathQuery = params.get("path").filterNot(_ == "")
     SearchParams(address, pathQuery)
