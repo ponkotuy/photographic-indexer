@@ -105,6 +105,7 @@ object ImageWithAll {
   )(implicit session: DBSession): Seq[Image] = {
     val result = withSQL {
       selectWithJoin(search.query)
+          .orderBy(search.orderColumns:_*)
           .limit(paging.limit).offset(paging.offset)
     }.map(apply).list.apply()
     findAllInIds(result.map(_.id))

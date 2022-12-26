@@ -6,11 +6,19 @@ import scalikejdbc.*
 
 case class SearchParams(address: Option[String], path: Option[String]) {
   import Geom.g
-  
+
   def query: SQLSyntax = sqls.toAndConditionOpt(
-    address.map(x => sqls"match (${g.address}) against (${x} in natural language mode)"),
-    path.map(x => sqls"match(${ImageFile.column.path}) against (${x} in natural language mode)")
-  ).getOrElse(sqls"true") 
+    address.map(againstAddress),
+    path.map(againstPath)
+  ).getOrElse(sqls"true")
+
+  def orderColumns: Seq[SQLSyntax] = address.map(againstAddress).map(_.desc).toSeq
+
+  private def againstAddress(address: String) =
+    sqls"match (${g.address}) against (${address} in natural language mode)"
+
+  private def againstPath(path: String) =
+    sqls"match (${ImageFile.column.path}) against (${path} in boolean mode)"
 }
 
 trait SearchParamsGenerator { self: ScalatraServlet =>
