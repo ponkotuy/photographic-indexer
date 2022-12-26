@@ -5,7 +5,7 @@ import com.ponkotuy.config.RichConfig
 
 import java.nio.file.{Path, Paths}
 
-case class MyConfig(app: AppConfig, db: DBConfig)
+case class MyConfig(app: AppConfig, db: DBConfig, flickr: Option[FlickrConfig])
 
 object MyConfig {
   def load(): Option[MyConfig] = {
@@ -15,6 +15,10 @@ object MyConfig {
       app <- AppConfig.load(appRaw)
       dbRaw <- conf.getOptConfig("db")
       db <- DBConfig.load(dbRaw)
-    } yield MyConfig(app, db)
+    } yield {
+      val flickrRaw = conf.getOptConfig("flickr")
+      val flickr = flickrRaw.flatMap(FlickrConfig.load)
+      MyConfig(app, db, flickr)
+    }
   }
 }

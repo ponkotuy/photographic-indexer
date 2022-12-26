@@ -21,8 +21,8 @@ lazy val hello = (project in file("."))
     libraryDependencies ++= Seq(
       "org.scalatra" %% "scalatra" % ScalatraVersion,
       "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test",
-      "ch.qos.logback" % "logback-classic" % "1.4.4" % "runtime",
-      "org.eclipse.jetty" % "jetty-webapp" % "11.0.12" % "container;compile",
+      "ch.qos.logback" % "logback-classic" % "1.4.5" % "runtime",
+      "org.eclipse.jetty" % "jetty-webapp" % "11.0.13" % "container;compile",
       "jakarta.servlet" % "jakarta.servlet-api" % "5.0.0",
       "org.scalikejdbc" %% "scalikejdbc" % "4.0.0",
       "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "4.0.0",
@@ -33,7 +33,8 @@ lazy val hello = (project in file("."))
       "com.typesafe" % "config" % "1.4.2",
       "com.drewnoakes" % "metadata-extractor" % "2.18.0",
       "org.gbif" % "gbif-parsers" % "0.59",
-      "org.apache.commons" % "commons-math3" % "3.6.1"
+      "org.apache.commons" % "commons-math3" % "3.6.1",
+      "com.flickr4java" % "flickr4java" % "3.0.6"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
     dockerBaseImage := "amd64/eclipse-temurin:19-jre-jammy",
