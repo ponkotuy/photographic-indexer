@@ -1,18 +1,19 @@
 package com.ponkotuy.req
 
-import com.ponkotuy.db.{ImageFile, Geom}
+import com.ponkotuy.db.{ImageFile, Geom, Image}
 import org.scalatra.ScalatraServlet
 import scalikejdbc.*
 
 case class SearchParams(address: Option[String], path: Option[String]) {
   import Geom.g
+  import Image.i
 
   def query: SQLSyntax = sqls.toAndConditionOpt(
     address.map(againstAddress),
     path.map(againstPath)
   ).getOrElse(sqls"true")
 
-  def orderColumns: Seq[SQLSyntax] = address.map(againstAddress).map(_.desc).toSeq
+  def orderColumns: Seq[SQLSyntax] = address.map(againstAddress).map(_.desc).toSeq :+ i.id
 
   private def againstAddress(address: String) =
     sqls"match (${g.address}) against (${address} in natural language mode)"

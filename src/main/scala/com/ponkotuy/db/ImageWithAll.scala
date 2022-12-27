@@ -73,7 +73,6 @@ object ImageWithAll {
     selectWithJoin(where).limit(paging.limit).offset(paging.offset)
   }.map(apply).list.apply()
 
-
   def findAllInIds(ids: Seq[Long])(implicit session: DBSession): Seq[Image] = withSQL {
     selectWithJoin(sqls.in(i.id, ids))
   }.map(apply).list.apply()

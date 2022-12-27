@@ -1,6 +1,6 @@
 <script lang="ts">
 	import 'carbon-components-svelte/css/g80.css';
-	import '$lib/app.css'
+	import '$lib/app.css';
 	import { host } from '$lib/global';
 	import MyHeader from '$lib/MyHeader.svelte';
 	import {
@@ -12,8 +12,7 @@
 		Grid,
 		InlineNotification,
 		Link,
-		ListItem, Modal, OverflowMenu, OverflowMenuItem,
-		Pagination,
+		ListItem, Pagination,
 		Row,
 		Search,
 		StructuredList,
@@ -21,7 +20,7 @@
 		StructuredListCell,
 		StructuredListHead,
 		StructuredListRow,
-		Tag, TextInput, Toggle,
+		Tag, Toggle,
 		UnorderedList
 	} from 'carbon-components-svelte';
 	import { onMount } from 'svelte';
@@ -30,7 +29,7 @@
 	import { thumbnail } from '$lib/image_type';
 	import { DateTime } from 'luxon';
 	import { page as pp } from '$app/stores';
-	import {Add} from "carbon-icons-svelte";
+	import ImageTag from "$lib/ImageTag.svelte";
 
 	type DateCount = {
 		date: string;
@@ -42,9 +41,6 @@
 	export let images: ImageData[] = [];
 	export let allCount = -1;
 	export let dateCounts: DateCount[] = [];
-	export let tags: Tag[] = [];
-	export let open = false;
-	export let tagName = '';
 	let page = 1;
 	let pageSize = 20;
 
@@ -53,7 +49,6 @@
 		address = params.get('address') || '';
 		path = params.get('path') || '';
 		if (address != '' || path != '') search();
-		refreshTags();
 	});
 
 	function searchSubmit(e) {
@@ -72,12 +67,8 @@
 		if (coreParams.get('address') == '') coreParams.delete('address');
 		if (coreParams.get('path') == '') coreParams.delete('path');
 		fetch(host() + '/app/images/search?' + allParams)
-			.then(res => res.text())
-			.then(res => console.log(JSON.parse(res)));
-		fetch(host() + '/app/images/search?' + allParams)
 			.then(res => res.json())
 			.then(res => {
-				console.log(res);
 				images = res.data;
 				allCount = res.allCount;
 				goto(`/?${coreParams}`);
@@ -93,34 +84,6 @@
 
 	function disableSubmit(address: string, path: string): boolean {
 		return address == '' && path == '';
-	}
-
-	function addTag(name: string) {
-		const body = JSON.stringify({name});
-		fetch(host() + '/app/images/tags', {method: 'PUT', body})
-			.then(() => refreshTags());
-	}
-
-	function refreshTags() {
-		fetch(host() + '/app/images/tags')
-			.then(res => res.json())
-			.then(json => {tags = json; open = false;});
-	}
-
-	async function setTag(image: ImageData, tag: Tag) {
-		const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, {method: 'PUT'})
-		if(result.ok) {
-			image.tags.push(tag);
-			updateImage();
-		}
-	}
-
-	async function removeTag(image: ImageData, tag: Tag) {
-		const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, {method: 'DELETE'})
-		if(result.ok) {
-			image.tags = image.tags.filter(t => t.id != tag.id);
-			updateImage();
-		}
 	}
 
 	async function togglePublic(image: ImageData) {
@@ -215,19 +178,8 @@
 									<ListItem><Link href="{host()}/static{file.path}">{file.path}</Link></ListItem>
 								{/each}
 							</UnorderedList>
+							<ImageTag image={image} refresh={updateImage} />
 							<div>
-								{#each image.tags as tag}
-									<Tag filter on:close={() => removeTag(image, tag)} style="vertical-align: bottom;">{tag.name}</Tag>
-								{/each}
-								<OverflowMenu style="width: auto; height: auto; display: inline;">
-									<Button slot="menu" icon={Add} size="small">Tag</Button>
-									{#each tags as tag}
-										{#if !image.tags.map(t => t.id).includes(tag.id)}
-											<OverflowMenuItem text={tag.name} on:click={() => setTag(image, tag)} />
-										{/if}
-									{/each}
-									<OverflowMenuItem hasDivider text="+ New tag" on:click={() => open = true} />
-								</OverflowMenu>
 								<Toggle
 									size="sm"
 									style="margin-top: 5px"
@@ -254,15 +206,4 @@
 		/>
 	{/if}
 
-	<Modal
-			bind:open
-			modalHeading="Create new tag"
-			primaryButtonText="Add tag"
-			secondaryButtonText="Cancel"
-			on:click:button--secondary={() => open = false}
-			on:submit={() => addTag(tagName)}
-	>
-		<p>Add a new tag in Photographic Indexer.</p>
-		<TextInput id="tagName" labelText="Tag name" bind:value={tagName} />
-	</Modal>
 </Content>

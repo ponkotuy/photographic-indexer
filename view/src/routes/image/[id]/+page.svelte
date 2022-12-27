@@ -5,21 +5,22 @@
 		Button,
 		Content,
 		Link,
-		ListItem, Modal,
-		StructuredList,
+		ListItem, Modal, StructuredList,
 		StructuredListBody,
 		StructuredListCell,
 		StructuredListHead,
-		StructuredListRow,
+		StructuredListRow, Tag,
 		Tile,
 		UnorderedList
-	} from 'carbon-components-svelte';
+	} from "carbon-components-svelte";
 	import { host } from '$lib/global';
 	import type { ImageData } from '$lib/image_type';
-	import {TrashCan} from "carbon-icons-svelte";
+	import { TrashCan } from "carbon-icons-svelte";
+	import ImageTag from "$lib/ImageTag.svelte";
 
 	export let data: ImageData;
 	export let open: boolean = false;
+	export let tags: Tag[] = [];
 
 	const extensions = ['jpg', 'jpeg', 'png', 'webp'];
 	function isValidImage(path: String): Boolean {
@@ -66,11 +67,17 @@
 					</UnorderedList>
 				</StructuredListCell>
 			</StructuredListRow>
+			<StructuredListRow>
+				<StructuredListCell head>Tags</StructuredListCell>
+				<StructuredListCell>
+					<ImageTag image={data} />
+				</StructuredListCell>
+			</StructuredListRow>
 			{#if data.exif}
 				<StructuredListRow>
 					<StructuredListCell head>
 						<div>Camera</div>
-						{#if data.exif.camera}<div>Lens</div>{/if}
+						{#if data.exif.lens}<div>Lens</div>{/if}
 						{#if data.exif.focal}<div>Focal length</div>{/if}
 						<div>Exposure</div>
 					</StructuredListCell>
