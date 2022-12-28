@@ -3,7 +3,7 @@ package com.ponkotuy.app
 import com.ponkotuy.batch.{ExifParser, ThumbnailGenerator}
 import com.ponkotuy.config.AppConfig
 import com.ponkotuy.db.{Image, ImageFile, ImageTag, ImageWithAll, Tag, Thumbnail}
-import com.ponkotuy.req.{PutImageTag, PutTag, SearchParams, SearchParamsGenerator}
+import com.ponkotuy.req.{PutImageTag, PutNote, PutTag, SearchParams, SearchParamsGenerator}
 import com.ponkotuy.res.{AggregateDate, DateCount, Pagination, PagingResponse}
 import com.ponkotuy.util.Extensions.{isImageFile, isRawFile}
 import com.ponkotuy.util.CustomFormatter.monthFormatter
@@ -58,6 +58,16 @@ class PrivateImage(appConfig: AppConfig)
         Files.delete(imagePath(file))
       }
     }
+  }
+
+  put("/:id/note") {
+    val id = params("id").toLong
+    parseJson[PutNote]().map{ obj =>
+      DB.localTx { implicit session =>
+        Image.updateNote(id, obj.note.filterNot(_ == ""))
+        Ok("Success")
+      }
+    }.merge
   }
 
   put("/:imageId/tag/:tagId") {

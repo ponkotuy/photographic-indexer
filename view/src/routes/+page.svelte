@@ -30,6 +30,7 @@
 	import { DateTime } from 'luxon';
 	import { page as pp } from '$app/stores';
 	import ImageTag from "$lib/ImageTag.svelte";
+	import ImageNote from "$lib/ImageNote.svelte";
 
 	type DateCount = {
 		date: string;
@@ -174,12 +175,13 @@
 								{#if image.geo}
 									<ListItem>{image.geo.address}</ListItem>
 								{/if}
-								{#each image.files as file}
-									<ListItem><Link href="{host()}/static{file.path}">{file.path}</Link></ListItem>
-								{/each}
+								<UnorderedList nested>
+									{#each image.files as file}
+										<ListItem><Link href="{host()}/static{file.path}">{file.path}</Link></ListItem>
+									{/each}
+								</UnorderedList>
 							</UnorderedList>
-							<ImageTag image={image} refresh={updateImage} />
-							<div>
+							<div class="space-form">
 								<Toggle
 									size="sm"
 									style="margin-top: 5px"
@@ -191,6 +193,8 @@
 									on:toggle={() => togglePublic(image)}
 								/>
 							</div>
+							<div class="space-form"><ImageTag image={image} refresh={updateImage} /></div>
+							<div class="space-form"><ImageNote imageId={image.id} note={image.note} /></div>
 						</StructuredListCell>
 					</StructuredListRow>
 				{/each}
@@ -205,5 +209,10 @@
 			on:update={search}
 		/>
 	{/if}
-
 </Content>
+
+<style>
+	.space-form {
+		margin-top: 4px;
+	}
+</style>
