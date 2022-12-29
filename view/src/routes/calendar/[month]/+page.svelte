@@ -9,6 +9,7 @@
   import {thumbnail} from "$lib/image_type.js";
   import {CaretLeft, CaretRight} from "carbon-icons-svelte";
   import LoadImage from "$lib/LoadImage.svelte";
+  import MonthsMenu from "./MonthsMenu.svelte";
 
   export let data: CalendarPageResult;
 
@@ -36,13 +37,16 @@
     {@const datetime = parse(data.agg[0].date)}
     <Grid narrow>
       <Row>
-        <Column lg={3}>
+        <Column lg={4}>
           <Button href="/calendar/{datetime.minus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
             <CaretLeft size={24} />{datetime.minus({ months: 1}).toFormat(YMUser)}
           </Button>
         </Column>
-        <Column lg={10} style="text-align: center;">
+        <Column lg={8} style="text-align: center;">
           <h2>{datetime.toFormat(YMUser)}</h2>
+        </Column>
+        <Column lg={1}>
+          <MonthsMenu now={datetime.toFormat(YMMachine)} style="padding: 11px 16px;" />
         </Column>
         <Column lg={3}>
           <Button href="/image/calendar/{datetime.plus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
