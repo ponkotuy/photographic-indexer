@@ -166,5 +166,11 @@ class PrivateImage(appConfig: AppConfig)
     }
   }
 
+  get("/calendar/months") {
+    DB.readOnly { implicit session =>
+      Image.months().asJson.noSpaces
+    }
+  }
+
   def imagePath(file: ImageFile): Path = appConfig.photosDir.resolve(file.path.tail)
 }

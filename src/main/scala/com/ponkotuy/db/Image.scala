@@ -52,6 +52,11 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
     select.from(Image as i).where.eq(i.cameraId, cameraId).and.eq(i.shotId, shotId)
   }.map(Image(i.resultName)).single.apply()
 
+  def months()(implicit session: DBSession): Seq[String] = withSQL {
+    select(sqls.distinct(sqls"date_format(${i.shootingAt}, '%Y%m') as months")).from(Image as i)
+        .orderBy(sqls"months".desc)
+  }.map(rs => rs.string(1)).list.apply()
+
   def create(
       cameraId: Int,
       shotId: Int,

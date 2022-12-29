@@ -10,20 +10,26 @@ $ ./download_mysql.sh
 ## Local Run
 ```shell
 $ cd path/to/photographic-indexer
-$ docker-compose up -d
+$ docker compose up -d
+```
+
+## Local Run FlickrCrawl
+After running local and setting config values, execute a following command.
+```shell
+$ docker compose exec sbt "runMain com.ponkotuy.FlickrCrawler"
 ```
 
 ## Development
 ### Backend(Scala+Scalatra)
 ```shell
-$ docker-compose up db # DB
+$ docker compose up db # DB
 $ sbt ~container:start
 ```
 
 If you need migration,
 
 ```shell
-$ docker-compose up flyway db
+$ docker compose up flyway db
 ```
 
 ### Frontend(SvelteKit)

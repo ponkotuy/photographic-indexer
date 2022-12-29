@@ -2,12 +2,13 @@
 	import 'carbon-components-svelte/css/g80.css';
 	import '$lib/app.css'
 	import MyHeader from '$lib/MyHeader.svelte';
-	import { Button, Column, Content, Grid, ImageLoader, Link, Pagination, Row } from "carbon-components-svelte";
+	import { Button, Column, Content, Grid, Link, Pagination, Row } from "carbon-components-svelte";
 	import { CaretLeft, CaretRight } from 'carbon-icons-svelte';
 	import { host } from '$lib/global';
 	import { thumbnail } from '$lib/image_type';
 	import { DateTime } from 'luxon';
 	import type { DatePageResult } from './+page';
+	import LoadImage from "$lib/LoadImage.svelte";
 
 	export let data: DatePageResult;
 	export let page = 1;
@@ -64,7 +65,7 @@
 				<Column lg={4}>
 					<Link href="/image/{image.id}">
 						<figure>
-							<ImageLoader
+							<LoadImage
 								src="{host()}/app/images/{image.id}/thumbnail"
 								class="fixed"
 								style="width: 100%;"

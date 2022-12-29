@@ -9,8 +9,7 @@
 		Content,
 		Form,
 		FormGroup,
-		Grid, ImageLoader,
-		InlineNotification,
+		Grid, InlineNotification,
 		Link,
 		ListItem, Pagination,
 		Row,
@@ -31,6 +30,7 @@
 	import { page as pp } from '$app/stores';
 	import ImageTag from "$lib/ImageTag.svelte";
 	import ImageNote from "$lib/ImageNote.svelte";
+	import LoadImage from "$lib/LoadImage.svelte";
 
 	type DateCount = {
 		date: string;
@@ -152,9 +152,9 @@
 					<StructuredListRow>
 						<StructuredListCell style="vertical-align: bottom">
 							<Link href="/image/{image.id}">
-								<ImageLoader
+								<LoadImage
 									src="{host()}/app/images/{image.id}/thumbnail"
-									width="320px"
+									style="width: 320px"
 									alt={thumbnail(image).path}
 									class="fixed"
 								/>

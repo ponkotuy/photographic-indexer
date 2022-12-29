@@ -33,7 +33,6 @@ object FlickrCrawler {
       Thread.sleep(2000)
       photos.last.id
     }.sliding(2).takeWhile(group => group.head != group(1)).size // sizeは評価を起こすために必要
-
   }
 
   def updateFromFlickr(photo: FlickrPhoto): Unit = {
@@ -51,7 +50,8 @@ object FlickrCrawler {
           val note = photo.description.fold(photo.title)(description => s"${photo.title} - ${description}")
           Image.save(image.id, isPublic = photo.isPublic, note = Some(note))
 
-          val diffTags = photo.tags.toSet -- image.tags.view.map(_.name).toSet
+          val flickrTags = photo.tags :+ "flickr"
+          val diffTags = flickrTags.toSet -- image.tags.view.map(_.name).toSet
           diffTags.foreach { tag =>
             val tagId = tagMap.getOrElse(tag, Tag.create(tag))
             ImageTag.create(image.id, tagId)

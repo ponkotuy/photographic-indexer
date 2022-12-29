@@ -8,6 +8,7 @@
   import {host} from "$lib/global.js";
   import {thumbnail} from "$lib/image_type.js";
   import {CaretLeft, CaretRight} from "carbon-icons-svelte";
+  import LoadImage from "$lib/LoadImage.svelte";
 
   export let data: CalendarPageResult;
 
@@ -59,7 +60,7 @@
               <h4>{getDay(day.date)} ({day.imageCount})</h4>
             </Link>
             <figure>
-              <img
+              <LoadImage
                 src="{host()}/app/images/{day.favoriteImage.id}/thumbnail"
                 class="fixed"
                 style="width: 100%;"
