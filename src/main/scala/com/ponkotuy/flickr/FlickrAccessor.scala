@@ -33,7 +33,14 @@ class FlickrAccessor(apiKey: String, secret: String) {
 
 class NSID(val underlying: String) extends AnyVal
 
-case class FlickrPhoto(id: String, title: String, description: Option[String], tags: Seq[String], originalUrl: String)
+case class FlickrPhoto(
+    id: String,
+    title: String,
+    description: Option[String],
+    tags: Seq[String],
+    originalUrl: String,
+    isPublic: Boolean
+)
 
 object FlickrPhoto {
   def apply(photo: Photo): FlickrPhoto = {
@@ -42,7 +49,8 @@ object FlickrPhoto {
       photo.getTitle,
       Option(photo.getDescription),
       photo.getTags.asScala.toSeq.map(_.getValue),
-      photo.getOriginalUrl
+      photo.getOriginalUrl,
+      photo.isPublicFlag
     )
   }
 }

@@ -9,7 +9,7 @@
 		Content,
 		Form,
 		FormGroup,
-		Grid,
+		Grid, ImageLoader,
 		InlineNotification,
 		Link,
 		ListItem, Pagination,
@@ -22,7 +22,7 @@
 		StructuredListRow,
 		Tag, Toggle,
 		UnorderedList
-	} from 'carbon-components-svelte';
+	} from "carbon-components-svelte";
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import type { ImageData } from '$lib/image_type';
@@ -152,7 +152,7 @@
 					<StructuredListRow>
 						<StructuredListCell style="vertical-align: bottom">
 							<Link href="/image/{image.id}">
-								<img
+								<ImageLoader
 									src="{host()}/app/images/{image.id}/thumbnail"
 									width="320px"
 									alt={thumbnail(image).path}

@@ -49,7 +49,7 @@ object FlickrCrawler {
           temp.deleteOnExit()
 
           val note = photo.description.fold(photo.title)(description => s"${photo.title} - ${description}")
-          Image.save(image.id, isPublic = true, note = Some(note))
+          Image.save(image.id, isPublic = photo.isPublic, note = Some(note))
 
           val diffTags = photo.tags.toSet -- image.tags.view.map(_.name).toSet
           diffTags.foreach { tag =>

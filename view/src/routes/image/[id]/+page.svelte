@@ -3,7 +3,7 @@
 	import MyHeader from '$lib/MyHeader.svelte';
 	import {
 		Button,
-		Content,
+		Content, ImageLoader,
 		Link,
 		ListItem, Modal, StructuredList,
 		StructuredListBody,
@@ -123,7 +123,7 @@
 	{#each data.files.filter((file) => isValidImage(file.path)) as file}
 		<Tile style="margin: 16px 0;">
 			<figure style="text-align: center;">
-				<img
+				<ImageLoader
 					src="{host()}/static{file.path}"
 					style="max-width: 100%"
 					title={file.path}
