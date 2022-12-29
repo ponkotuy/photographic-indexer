@@ -115,6 +115,8 @@ object ImageWithAll {
     select(dateCol, count(distinct(i.id))).from(Image as i)
         .leftJoin(Geom as g).on(i.geoId, g.id)
         .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+        .leftJoin(ImageTag as it).on(i.id, it.imageId)
+        .leftJoin(Tag as t).on(it.tagId, t.id)
         .where(search.query)
         .groupBy(dateCol)
   }.map { rs =>
@@ -125,6 +127,8 @@ object ImageWithAll {
     select(count(distinct(i.id))).from(Image as i)
         .leftJoin(Geom as g).on(i.geoId, g.id)
         .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+        .leftJoin(ImageTag as it).on(i.id, it.imageId)
+        .leftJoin(Tag as t).on(it.tagId, t.id)
         .where(search.query)
   }.map(_.int(1)).single.apply().get
 

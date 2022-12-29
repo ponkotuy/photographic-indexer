@@ -115,8 +115,8 @@ class PrivateImage(appConfig: AppConfig)
   }
 
   get("/search") {
-    val params = getSearchParams
     DB.readOnly { implicit session =>
+      val params = getSearchParams()
       paging { page =>
         ImageWithAll.searchFulltext(params, page)
       }{
@@ -126,8 +126,8 @@ class PrivateImage(appConfig: AppConfig)
   }
 
   get("/search_date_count") {
-    val params = getSearchParams
     DB.readOnly { implicit session =>
+      val params = getSearchParams()
       val result = ImageWithAll.searchFulltextDateCount(params)
       result.toVector.map((date, count) => DateCount(date, count)).sortBy(- _.count).take(5).asJson.noSpaces
     }

@@ -37,8 +37,7 @@
 		count: number;
 	};
 
-	export let address = '';
-	export let path = '';
+	export let keyword = '';
 	export let images: ImageData[] = [];
 	export let allCount = -1;
 	export let dateCounts: DateCount[] = [];
@@ -47,9 +46,8 @@
 
 	onMount(() => {
 		const params = $pp.url.searchParams;
-		address = params.get('address') || '';
-		path = params.get('path') || '';
-		if (address != '' || path != '') search();
+		keyword = params.get('keyword') || '';
+		if (keyword != '') search();
 	});
 
 	function searchSubmit(e) {
@@ -59,14 +57,12 @@
 
 	function search() {
 		const allParams = new URLSearchParams({
-			address,
-			path,
+			keyword,
 			page: (page - 1).toString(),
 			perPage: pageSize.toString()
 		});
-		const coreParams = new URLSearchParams({ address, path });
-		if (coreParams.get('address') == '') coreParams.delete('address');
-		if (coreParams.get('path') == '') coreParams.delete('path');
+		const coreParams = new URLSearchParams({ keyword });
+		if (coreParams.get('keyword') == '') coreParams.delete('keyword');
 		fetch(host() + '/app/images/search?' + allParams)
 			.then(res => res.json())
 			.then(res => {
@@ -83,8 +79,8 @@
 		return DateTime.fromISO(at).toISODate();
 	}
 
-	function disableSubmit(address: string, path: string): boolean {
-		return address == '' && path == '';
+	function disableSubmit(keyword: string): boolean {
+		return keyword == '';
 	}
 
 	async function togglePublic(image: ImageData) {
@@ -107,16 +103,13 @@
 <Content>
 	<Form
 		on:submit={searchSubmit}
-		disabled={disableSubmit(address, path)}
+		disabled={disableSubmit(keyword)}
 		style="margin-bottom: 24px;"
 	>
-		<FormGroup legendText="Search Address Query">
-			<Search id="address" bind:value={address} />
+		<FormGroup legendText="Search Keyword(Tab/Address/Note/Path)">
+			<Search id="keyword" bind:value={keyword} />
 		</FormGroup>
-		<FormGroup legendText="Search Path(File) Query">
-			<Search id="path" bind:value={path} />
-		</FormGroup>
-		<Button type="submit" disabled={disableSubmit(address, path)}>Search</Button>
+		<Button type="submit" disabled={disableSubmit(keyword)}>Search</Button>
 	</Form>
 
 	{#if allCount === 0}
