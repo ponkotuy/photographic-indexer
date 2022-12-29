@@ -28,7 +28,7 @@ case class SearchParams(keyword: String, tags: Seq[Tag]) {
     sqls.toAndConditionOpt(wordGroups:_*).getOrElse(sqls"true")
   }
 
-  def orderColumns: Seq[SQLSyntax] = againstAddress(keyword).desc :: i.id :: Nil
+  def orderColumns: Seq[SQLSyntax] = againstNote(keyword).desc :: againstAddress(keyword).desc :: i.id :: Nil
 
   private def againstAddress(address: String) =
     sqls"match (${g.address}) against (${address} in natural language mode)"

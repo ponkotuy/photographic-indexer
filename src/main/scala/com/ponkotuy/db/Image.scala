@@ -72,6 +72,10 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
     }.updateAndReturnGeneratedKey.apply()
   }
 
+  def save(id: Long, isPublic: Boolean, note: Option[String])(implicit session: DBSession): Int = withSQL {
+    update(Image).set(column.isPublic -> isPublic, column.note -> note).where.eq(column.id, id)
+  }.update.apply()
+
   def updatePublic(id: Long, isPublic: Boolean)(implicit session: DBSession): Int = withSQL {
     update(Image).set(column.isPublic -> isPublic).where.eq(column.id, id)
   }.update.apply()

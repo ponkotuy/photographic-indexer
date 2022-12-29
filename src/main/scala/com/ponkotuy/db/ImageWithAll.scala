@@ -66,8 +66,12 @@ object ImageWithAll {
   }
 
   def find(id: Long)(implicit session: DBSession): Option[Image] = withSQL {
-      selectWithJoin(sqls.eq(i.id, id))
-    }.map(apply).single.apply()
+    selectWithJoin(sqls.eq(i.id, id))
+  }.map(apply).single.apply()
+
+  def find(cameraId: Int, shotId: Int)(implicit session: DBSession): Option[Image] = withSQL {
+    selectWithJoin(sqls.eq(i.cameraId, cameraId).and.eq(i.shotId, shotId))
+  }.map(apply).single.apply()
 
   def findAll(where: SQLSyntax, paging: Paging = Paging.NoLimit)(implicit session: DBSession): Seq[Image] = withSQL{
     selectWithJoin(where).limit(paging.limit).offset(paging.offset)

@@ -24,8 +24,8 @@ class FlickrAccessor(apiKey: String, secret: String) {
       null,
       null,
       null,
-      Set("description", "geo", "tags").asJava,
-      20,
+      Set("description", "geo", "tags", "url_o", "machine_tags").asJava,
+      500,
       page
     ).asScala.toVector.map(FlickrPhoto.apply)
   }
@@ -33,10 +33,16 @@ class FlickrAccessor(apiKey: String, secret: String) {
 
 class NSID(val underlying: String) extends AnyVal
 
-case class FlickrPhoto(title: String, description: String, tags: Seq[String])
+case class FlickrPhoto(id: String, title: String, description: Option[String], tags: Seq[String], originalUrl: String)
 
 object FlickrPhoto {
   def apply(photo: Photo): FlickrPhoto = {
-    new FlickrPhoto(photo.getTitle, photo.getDescription, photo.getTags.asScala.toSeq.map(_.getValue))
+    new FlickrPhoto(
+      photo.getId,
+      photo.getTitle,
+      Option(photo.getDescription),
+      photo.getTags.asScala.toSeq.map(_.getValue),
+      photo.getOriginalUrl
+    )
   }
 }

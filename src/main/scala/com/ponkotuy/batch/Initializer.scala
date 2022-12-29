@@ -10,7 +10,6 @@ import scala.concurrent.duration.*
 object Initializer {
   def run(conf: MyConfig): Unit = {
     Initializer.initDB(conf.db)
-//    conf.flickr.foreach(crawlFlickr)
     val indexer = new Indexer(conf)
     CronRunner.execute(indexer, 1.hour)
   }
@@ -26,11 +25,5 @@ object Initializer {
     ds.setValidationQuery("SELECT 1")
     ds.setMaxWaitMillis(5.seconds.toMillis)
     ConnectionPool.singleton(new DataSourceConnectionPool(ds))
-  }
-
-  def crawlFlickr(conf: FlickrConfig): Unit = {
-    val flickr = new FlickrAccessor(conf.key, conf.secret)
-    val photos = flickr.getPeoplePhotos(conf.me, 1)
-    photos.foreach(photo => println(s"${photo.title}, ${photo.description}, ${photo.tags}"))
   }
 }
