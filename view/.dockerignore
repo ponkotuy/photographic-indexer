@@ -1,0 +1,7 @@
+node_modules/
+build/
+.svelte-kit/
+.dockerignore
+docker-compose*.yml
+Dockerfile
+README.md

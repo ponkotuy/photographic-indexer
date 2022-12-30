@@ -1,0 +1,22 @@
+name: 'Publish view docker image'
+on:
+  release:
+    types: [published]
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: dockerhub
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        working-directory: ./view/
+        run: docker compose -f docker-compose.build.yml build
+      - name: publish
+        working-directory: ./view/
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker tag ponkotuy/photographic-indexer-view:latest ponkotuy/photographic-indexer:${GITHUB_REF##*/}
+          docker push ponkotuy/photographic-indexer-view:${GITHUB_REF##*/}
+          docker push ponkotuy/photographic-indexer-view:latest

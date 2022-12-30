@@ -11,21 +11,10 @@
   import MonthsMenu from "./MonthsMenu.svelte";
   import type { CalendarPageResult } from "./+page";
 
-  type AggregateDate = {
-    date: string;
-    imageCount: number;
-    favoriteImage: ImageData;
-  };
-
   export let data: CalendarPageResult;
-  export let agg: AggregateDate[] = [];
-
+  $: agg = data.agg;
   $: month = data.month;
   $: monthDate = DateTime.fromISO(month);
-  $: fetch(`${host()}/app/images/calendar/${month}`)
-      .then(res => res.json())
-      .then(res => agg = res)
-      .catch(response => console.error(response));
 
   const YMUser = "LLLL, yyyy";
   const YMMachine = "yyyyMM";

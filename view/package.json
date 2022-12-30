@@ -12,15 +12,14 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/adapter-static": "^1.0.0-next.43",
-		"@sveltejs/kit": "next",
-		"@types/lodash": "^4.14.185",
-		"@types/luxon": "^3.0.1",
+		"@sveltejs/adapter-node": "^1.0.0",
+		"@sveltejs/kit": "^1.0.1",
+		"@types/lodash": "^4.14.191",
+		"@types/luxon": "^3.0.3",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
-		"carbon-components-svelte": "^0.70.7",
-		"carbon-icons-svelte": "^11.3.0",
+		"carbon-components-svelte": "^0.70.13",
+		"carbon-icons-svelte": "^11.4.0",
 		"carbon-preprocess-svelte": "^0.9.1",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
@@ -28,12 +27,10 @@
 		"lodash": "^4.17.21",
 		"prettier": "^2.6.2",
 		"prettier-plugin-svelte": "^2.7.0",
-		"svelte": "^3.44.0",
-		"svelte-check": "^2.7.1",
-		"svelte-preprocess": "^4.10.6",
-		"tslib": "^2.3.1",
-		"typescript": "^4.7.4",
-		"vite": "^3.1.0"
+		"svelte": "^3.55.0",
+		"svelte-check": "^3.0.1",
+		"svelte-preprocess": "^5.0.0",
+		"typescript": "^4.9.4"
 	},
 	"type": "module",
 	"dependencies": {
