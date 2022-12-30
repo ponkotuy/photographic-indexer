@@ -3,15 +3,29 @@
   import '$lib/app.css'
   import MyHeader from "../../../lib/MyHeader.svelte";
   import {Button, Column, Content, Grid, Link, Row} from "carbon-components-svelte";
-  import type {CalendarPageResult} from "./+page";
   import {DateTime} from "luxon";
   import {host} from "$lib/global.js";
   import {thumbnail} from "$lib/image_type.js";
   import {CaretLeft, CaretRight} from "carbon-icons-svelte";
   import LoadImage from "$lib/LoadImage.svelte";
   import MonthsMenu from "./MonthsMenu.svelte";
+  import { onMount } from "svelte";
+  import type { CalendarPageResult } from "./+page";
+
+  type AggregateDate = {
+    date: string;
+    imageCount: number;
+    favoriteImage: ImageData;
+  };
 
   export let data: CalendarPageResult;
+  export let agg: AggregateDate[] = [];
+
+  $: month = data.month;
+  $: fetch(`${host()}/app/images/calendar/${month}`)
+      .then(res => res.json())
+      .then(res => agg = res)
+      .catch(response => console.error(response));
 
   const YMUser = "LLLL, yyyy";
   const YMMachine = "yyyyMM";
@@ -31,10 +45,10 @@
 
 <MyHeader />
 <Content>
-  {#if data.agg.length === 0}
+  {#if agg.length === 0}
     <h3>Not found images...</h3>
   {:else}
-    {@const datetime = parse(data.agg[0].date)}
+    {@const datetime = parse(agg[0].date)}
     <Grid narrow>
       <Row>
         <Column lg={4}>
@@ -49,7 +63,7 @@
           <MonthsMenu now={datetime.toFormat(YMMachine)} style="padding: 11px 16px;" />
         </Column>
         <Column lg={3}>
-          <Button href="/image/calendar/{datetime.plus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
+          <Button href="/calendar/{datetime.plus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
             {datetime.plus({ months: 1}).toFormat(YMUser)}<CaretRight size={24} />
           </Button>
         </Column>
@@ -57,7 +71,7 @@
     </Grid>
     <Grid>
       <Row padding>
-        {#each data.agg as day}
+        {#each agg as day}
           {@const path = thumbnail(day.favoriteImage).path}
           <Column lg={4}>
             <Link href="/image/date/{day.date}">

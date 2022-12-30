@@ -20,7 +20,6 @@
 
 	export let data: ImageData;
 	export let open: boolean = false;
-	export let tags: Tag[] = [];
 
 	const extensions = ['jpg', 'jpeg', 'png', 'webp'];
 	function isValidImage(path: String): Boolean {
