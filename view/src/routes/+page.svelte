@@ -83,10 +83,9 @@
 		return keyword == '';
 	}
 
-	async function togglePublic(image: ImageData) {
-		const method = image.isPublic ? 'DELETE' : 'PUT';
-		await fetch(host() + `/app/images/${image.id}/public`, {method});
-		image.isPublic = !image.isPublic;
+	function togglePublic(image: ImageData) {
+		const method = image.isPublic ? 'PUT' : 'DELETE';
+		fetch(host() + `/app/images/${image.id}/public`, {method});
 	}
 
 	function updateImage() {
@@ -182,7 +181,7 @@
 									labelA="Private"
 									labelB="Public"
 									hideLabel
-									toggled={image.isPublic}
+									bind:toggled={image.isPublic}
 									on:toggle={() => togglePublic(image)}
 								/>
 							</div>

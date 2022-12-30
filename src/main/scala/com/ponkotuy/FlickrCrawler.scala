@@ -8,7 +8,7 @@ import scalikejdbc.DB
 
 import java.io.{File, InputStream}
 import java.net.URL
-import java.nio.file.{Files, StandardCopyOption}
+import java.nio.file.{Files, Path, Paths, StandardCopyOption, StandardOpenOption}
 import scala.util.Using
 import scala.util.Using.{Releasable, resource}
 
@@ -19,16 +19,24 @@ object FlickrCrawler {
     conf.flickr.foreach(crawlFlickr)
   }
 
+  def oneFlickr(conf: FlickrConfig): Unit = {
+    val flickr = new FlickrAccessor(conf.key, conf.secret)
+    println("----- EXEC FLICKR TEST -----")
+    val photos = flickr.getPeoplePhotos(conf.me, 1, 20)
+    photos.foreach(println)
+    updateFromFlickr(photos.head)
+  }
+
   def crawlFlickr(conf: FlickrConfig): Unit = {
     val flickr = new FlickrAccessor(conf.key, conf.secret)
 
     Iterator.from(1).map { page =>
-      println(page)
-      flickr.getPeoplePhotos(conf.me, page)
+      println(s"Read page=${page}")
+      flickr.getPeoplePhotos(conf.me, page, 500)
     }.map { photos =>
       photos.foreach { photo =>
         println(s"${photo.id}: ${photo.title}")
-        updateFromFlickr(photos.head)
+        updateFromFlickr(photo)
       }
       Thread.sleep(2000)
       photos.last.id
@@ -36,36 +44,37 @@ object FlickrCrawler {
   }
 
   def updateFromFlickr(photo: FlickrPhoto): Unit = {
-    implicit val releaseFile: Releasable[File] = resource => resource.deleteOnExit()
+    implicit val releasePath: Releasable[Path] = resource => Files.delete(resource)
 
     DB.localTx { implicit session =>
       val tagMap: Map[String, Long] = Tag.findAll().view.map(t => t.name -> t.id).toMap
-      Using(createTemp(photo.originalUrl)) { temp =>
-        for {
-          exif <- ExifParser.parse(temp.toPath)
-          image <- ImageWithAll.find(exif.serialNo, exif.shotId)
-        } {
-          temp.deleteOnExit()
+      for {
+        exifResult <- Using(downloadTemp(photo.originalUrl))(ExifParser.parse)
+        exif <- exifResult
+        image <- ImageWithAll.find(exif.serialNo, exif.shotId)
+      } {
+        val note = photo.description.fold(photo.title)(description => s"${photo.title} - ${description}")
+        Image.save(image.id, isPublic = photo.isPublic, note = Some(note))
+        println(s"  Add note: '${note}' public: ${photo.isPublic}")
 
-          val note = photo.description.fold(photo.title)(description => s"${photo.title} - ${description}")
-          Image.save(image.id, isPublic = photo.isPublic, note = Some(note))
-
-          val flickrTags = photo.tags :+ "flickr"
-          val diffTags = flickrTags.toSet -- image.tags.view.map(_.name).toSet
-          diffTags.foreach { tag =>
-            val tagId = tagMap.getOrElse(tag, Tag.create(tag))
-            ImageTag.create(image.id, tagId)
-          }
+        val flickrTags = photo.tags :+ "flickr"
+        val diffTags = flickrTags.toSet -- image.tags.view.map(_.name).toSet
+        diffTags.foreach { tag =>
+          val tagId = tagMap.getOrElse(tag, Tag.create(tag))
+          ImageTag.create(image.id, tagId)
         }
+        if(diffTags.nonEmpty) println(s"  Add tags ${diffTags.mkString(",")}")
+        else println("  Not exists a additional tag")
       }
     }
   }
 
-  def createTemp(path: String): File = {
-    val file = File.createTempFile("p-indexer-", ".jpg")
+  def downloadTemp(path: String): Path = {
+    val file = Files.createTempFile("p-indexer-", ".jpg")
     val url = new URL(path)
-    val inputStream = url.openStream()
-    Files.copy(inputStream, file.toPath, StandardCopyOption.REPLACE_EXISTING)
+    Using(url.openStream()) { is =>
+      Files.copy(is, file, StandardCopyOption.REPLACE_EXISTING)
+    }
     file
   }
 }

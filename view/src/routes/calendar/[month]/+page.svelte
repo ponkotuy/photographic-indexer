@@ -9,7 +9,6 @@
   import {CaretLeft, CaretRight} from "carbon-icons-svelte";
   import LoadImage from "$lib/LoadImage.svelte";
   import MonthsMenu from "./MonthsMenu.svelte";
-  import { onMount } from "svelte";
   import type { CalendarPageResult } from "./+page";
 
   type AggregateDate = {

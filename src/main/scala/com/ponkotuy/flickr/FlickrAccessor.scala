@@ -14,7 +14,7 @@ class FlickrAccessor(apiKey: String, secret: String) {
    * @param userId: NSID like "191519170@N08"
    * @param page: 1-based
    */
-  def getPeoplePhotos(userId: NSID, page: Int): Seq[FlickrPhoto] = {
+  def getPeoplePhotos(userId: NSID, page: Int, perPage: Int = 100): Seq[FlickrPhoto] = {
     api.getPeopleInterface.getPhotos(
       userId.underlying,
       SAFETYLEVEL_RESTRICTED,
@@ -25,7 +25,7 @@ class FlickrAccessor(apiKey: String, secret: String) {
       null,
       null,
       Set("description", "geo", "tags", "url_o", "machine_tags").asJava,
-      500,
+      perPage,
       page
     ).asScala.toVector.map(FlickrPhoto.apply)
   }

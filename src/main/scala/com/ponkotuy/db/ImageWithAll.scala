@@ -52,7 +52,7 @@ object ImageWithAll {
     val files = (ids :: paths :: filesizes :: Nil).transpose.map { case List(id, path, filesize) =>
       ImageFile(id.toLong, raw.id, path, filesize.toLong)
     }
-    files
+    files.distinct.sortBy(_.path)
   }
 
   private def extractTags(rs: WrappedResultSet, raw: ImageRaw): Seq[Tag] = {
@@ -62,7 +62,7 @@ object ImageWithAll {
     val tags = (ids :: names :: Nil).transpose.map { case List(id, name) =>
       Tag(id.toLong, name)
     }
-    tags
+    tags.distinct.sortBy(_.name)
   }
 
   def find(id: Long)(implicit session: DBSession): Option[Image] = withSQL {
