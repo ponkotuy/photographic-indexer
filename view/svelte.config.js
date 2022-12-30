@@ -9,7 +9,7 @@ const config = {
 	preprocess: [preprocess(), optimizeImports(), elements()],
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter({ out: 'build' })
 	}
 };
 

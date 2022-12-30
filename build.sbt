@@ -45,10 +45,11 @@ lazy val hello = (project in file("."))
       f -> rebase(file("build"), "view")(file(to)).get
     },
     dockerCommands ++= Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view") ::
-      ExecCmd("CMD", "-J" + defaultJOption) :: Nil
+      ExecCmd("CMD", "-J" + defaultJOption) :: Nil,
+    dockerEntrypoint := "bin/jetty-launcher" :: Nil
   )
 
-val jettyRunner = "org.eclipse.jetty" %  "jetty-runner" % "11.0.12"
+val jettyRunner = "org.eclipse.jetty" %  "jetty-runner" % "11.0.13"
 
 Container / containerLibs := Seq(
   jettyRunner.intransitive()
