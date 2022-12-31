@@ -51,6 +51,7 @@ services:
       - view
   flickr:
     image: ponkotuy/photographic-indexer:latest
+    entrypoint: bin/flickr-crawler
     volumes:
       - ${ENV_APP_PHOTOS_DIR}:/docker/photographic-indexer/photos
     environment:

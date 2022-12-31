@@ -17,6 +17,6 @@ jobs:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         run: |
-          docker tag ponkotuy/photographic-indexer-view:latest ponkotuy/photographic-indexer:${GITHUB_REF##*/}
+          docker tag ponkotuy/photographic-indexer-view:latest ponkotuy/photographic-indexer-view:${GITHUB_REF##*/}
           docker push ponkotuy/photographic-indexer-view:${GITHUB_REF##*/}
           docker push ponkotuy/photographic-indexer-view:latest
