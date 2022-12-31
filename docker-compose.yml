@@ -3,7 +3,7 @@ services:
   db:
     image: mysql:8.0.31
     ports:
-      - "3306:3306"
+      - "3306"
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --ngram_token_size=2
     healthcheck:
       test: MYSQL_PWD=${ENV_MYSQL_PASSWORD} mysql -h127.0.0.1 -P3306 -upindexer -e "quit"
@@ -16,7 +16,7 @@ services:
       - MYSQL_DATABASE=pindexer
       - MYSQL_USER=pindexer
   flyway:
-    image: flyway/flyway:9.10.0
+    image: flyway/flyway:9.10.2
     command: -url=jdbc:mysql://db -schemas=pindexer -user=root -password=${ENV_MYSQL_ROOT_PASSWORD} migrate
     volumes:
       - ./docker/flyway/sql:/flyway/sql
@@ -27,7 +27,7 @@ services:
   web:
     image: ponkotuy/photographic-indexer:latest
     ports:
-      - "8080:8080"
+      - "8080"
     volumes:
       - ${ENV_APP_PHOTOS_DIR}:/docker/photographic-indexer/photos
     environment:
@@ -35,12 +35,31 @@ services:
       - ENV_DB_URL=jdbc:mysql://db:3306/pindexer
       - ENV_APP_EMAIL
     depends_on:
-      db:
-        condition: service_healthy
-      flyway:
-        condition: service_completed_successfully
+      - db
   view:
     image: ponkotuy/photographic-indexer-view:latest
     ports:
-      - "3000:3000"
-    depends_on: web
+      - "3000"
+  lb:
+    image: nginx:1.23
+    ports:
+      - "8081:80"
+    volumes:
+      - ./lb/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - web
+      - view
+  flickr:
+    image: ponkotuy/photographic-indexer:latest
+    volumes:
+      - ${ENV_APP_PHOTOS_DIR}:/docker/photographic-indexer/photos
+    environment:
+      - ENV_MYSQL_PASSWORD
+      - ENV_DB_URL=jdbc:mysql://db:3306/pindexer
+      - ENV_APP_EMAIL
+      - ENV_FLICKR_KEY
+      - ENV_FLICKR_SECRET
+    depends_on:
+      - db
+    profiles:
+      - flickr
