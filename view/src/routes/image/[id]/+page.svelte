@@ -17,6 +17,7 @@
 	import { TrashCan } from "carbon-icons-svelte";
 	import ImageTag from "$lib/ImageTag.svelte";
 	import LoadImage from "$lib/LoadImage.svelte";
+	import { DateTime } from "luxon";
 
 	export let data: ImageData;
 	export let open: boolean = false;
@@ -32,6 +33,10 @@
 		fetch(`${host()}/app/images/${data.id}`, {method: 'DELETE'})
 				.then(() => history.back());
 	}
+
+	function isoDate(at: string): string {
+		return DateTime.fromISO(at).toISODate();
+	}
 </script>
 
 <MyHeader />
@@ -46,7 +51,9 @@
 		<StructuredListBody>
 			<StructuredListRow>
 				<StructuredListCell head>Shooting At</StructuredListCell>
-				<StructuredListCell>{data.shootingAt}</StructuredListCell>
+				<StructuredListCell>
+					<Link href="/image/date/{isoDate(data.shootingAt)}">{data.shootingAt}</Link>
+				</StructuredListCell>
 			</StructuredListRow>
 			{#if data.geo}
 				<StructuredListRow>
@@ -60,7 +67,7 @@
 					<UnorderedList>
 						{#each data.files as file}
 							<ListItem>
-								<Link href="{host()}/static{file.path}">{file.path}</Link>
+								<Link href="{host()}/app/static{file.path}">{file.path}</Link>
 							</ListItem>
 						{/each}
 					</UnorderedList>
@@ -123,7 +130,7 @@
 		<Tile style="margin: 16px 0;">
 			<figure style="text-align: center;">
 				<LoadImage
-					src="{host()}/static{file.path}"
+					src="{host()}/app/static{file.path}"
 					style="max-width: 100%"
 					title={file.path}
 					alt={file.path}

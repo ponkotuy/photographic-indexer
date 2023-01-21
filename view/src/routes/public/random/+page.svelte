@@ -3,10 +3,10 @@
   import { onMount } from "svelte";
 
   onMount(() => {
-    fetch(`${host()}/public/images/random`)
+    fetch(`${host()}/app/public/images/random`)
       .then(res => res.json())
       .then(res => {
-        const url = `${host()}/public/static/images/${res.id}`
+        const url = `${host()}/app/public/static/images/${res.id}`
         const html = document.getElementsByTagName("html").item(0)
         html.style.background = `url(${url}) no-repeat center fixed`;
         html.style.backgroundSize = "contain";

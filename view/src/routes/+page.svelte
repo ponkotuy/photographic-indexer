@@ -169,7 +169,7 @@
 								{/if}
 								<UnorderedList nested>
 									{#each image.files as file}
-										<ListItem><Link href="{host()}/static{file.path}">{file.path}</Link></ListItem>
+										<ListItem><Link href="{host()}/app/static{file.path}">{file.path}</Link></ListItem>
 									{/each}
 								</UnorderedList>
 							</UnorderedList>
