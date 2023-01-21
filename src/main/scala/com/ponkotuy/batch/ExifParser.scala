@@ -25,7 +25,7 @@ object ExifParser {
 
   private val NumberPattern = "([\\d.-]+)".r
   private def parseLength(str: String): Int = {
-    NumberPattern.findFirstIn(str).get.toInt
+    NumberPattern.findFirstIn(str).map(_.toInt).getOrElse(0)
   }
 
   private def parseExposure(str: String): Fraction = {
@@ -72,6 +72,7 @@ object ExifParser {
       lens = find(tags, "Lens")
           .orElse(find(tags, "LensModel"))
           .map(_.getDescription)
+          .filterNot(_ == null)
           .filterNot(_ == "Unknown")
       aperture = for {
         tag <- find(tags, "F-Number")

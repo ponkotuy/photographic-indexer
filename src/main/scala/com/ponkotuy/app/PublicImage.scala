@@ -23,7 +23,7 @@ class PublicImage()
   get("/") {
     DB.readOnly { implicit session =>
       paging { page =>
-        ImageWithAll.findAll(ImageWithAll.isPublic, page)
+        ImageWithAll.findAll(ImageWithAll.isPublic, limit = page.limit, offset = page.offset)
       } {
         ImageWithAll.findAllCount(ImageWithAll.isPublic)
       }
