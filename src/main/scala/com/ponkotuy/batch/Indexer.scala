@@ -1,6 +1,6 @@
 package com.ponkotuy.batch
 
-import com.ponkotuy.config.{DBConfig, MyConfig}
+import com.ponkotuy.config.{AppConfig, DBConfig}
 import com.ponkotuy.db.{CreateImage, Image, ImageFile}
 import com.ponkotuy.geo.Nominatim
 import com.ponkotuy.util.Extensions
@@ -13,15 +13,15 @@ import scala.concurrent.duration.Duration
 import scala.jdk.StreamConverters.*
 import scala.util.control.NonFatal
 
-class Indexer(conf: MyConfig) extends Runnable {
+class Indexer(conf: AppConfig) extends Runnable {
   val nominatim = new Nominatim()
 
   override def run(): Unit = {
-    val files = Files.walk(conf.app.photosDir).toScala(LazyList)
+    val files = Files.walk(conf.photosDir).toScala(LazyList)
         .filter(Files.isRegularFile(_))
         .filter { file => Extensions.isTarget(file.toString) }
     files.foreach { file =>
-      val path = ImagePath(file, conf.app.photosDir.relativize(file))
+      val path = ImagePath(file, conf.photosDir.relativize(file))
       if(!DB.readOnly(ImageFile.exists(path.name))) {
         if(Extensions.isRetouchFile(path.lastname)) createRetouchFile(path)
         else {

@@ -27,12 +27,16 @@ object ImageFile extends SQLSyntaxSupport[ImageFile] {
   def findFromPath(path: String)(implicit session: DBSession): Option[ImageFile] = withSQL {
       select.from(ImageFile as imf).where.eq(imf.path, path)
     }.map(ImageFile(imf.resultName)).single.apply()
-
-  def findAllInImageIds(imageIds: Seq[Long])(implicit session: DBSession): List[ImageFile] = withSQL {
-    select.from(ImageFile as imf).where.in(imf.imageId, imageIds)
+  
+  def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession): Seq[ImageFile] = withSQL {
+    select.from(ImageFile as imf).where(where).limit(limit).offset(offset)
   }.map(ImageFile(imf.resultName)).list.apply()
 
-  def remove(id: Long)(implicit session: DBSession) = applyUpdate {
+  def findAllInImageIds(imageIds: Seq[Long])(implicit session: DBSession): Seq[ImageFile] = {
+    findAll(sqls.in(imf.imageId, imageIds))
+  }
+
+  def remove(id: Long)(implicit session: DBSession): Int = applyUpdate {
     delete.from(ImageFile).where.eq(column.id, id)
   }
 }

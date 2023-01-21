@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  db:
+    image: mysql:8.0.31
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --ngram_token_size=2
+    healthcheck:
+      test: MYSQL_PWD=${ENV_MYSQL_PASSWORD} mysql -h127.0.0.1 -P3306 -upindexer -e "quit"
+    volumes:
+      - /var/lib/mysql
+      - ./docker/db/conf:/etc/mysql/conf.d:ro
+    environment:
+      - MYSQL_ROOT_PASSWORD=${ENV_MYSQL_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${ENV_MYSQL_PASSWORD}
+      - MYSQL_DATABASE=pindexer
+      - MYSQL_USER=pindexer
+  flyway:
+    image: flyway/flyway:9.10.2
+    command: -url=jdbc:mysql://db -schemas=pindexer -user=root -password=${ENV_MYSQL_ROOT_PASSWORD} migrate
+    volumes:
+      - ./docker/flyway/sql:/flyway/sql
+      - ./docker/flyway/drivers:/flyway/drivers
+    depends_on:
+      db:
+        condition: service_healthy

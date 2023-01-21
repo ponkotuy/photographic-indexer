@@ -10,7 +10,8 @@ import scala.concurrent.duration.*
 object Initializer {
   def run(conf: MyConfig): Unit = {
     Initializer.initDB(conf.db)
-    val indexer = new Indexer(conf)
+    new ImageFileChecker(conf.app).run()
+    val indexer = new Indexer(conf.app)
     CronRunner.execute(indexer, 1.hour)
   }
 
