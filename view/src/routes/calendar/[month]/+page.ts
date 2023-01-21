@@ -1,4 +1,5 @@
 import { host } from '$lib/global';
+import type { PageLoad } from './$types';
 
 export type AggregateDate = {
 	date: string;
@@ -11,11 +12,11 @@ export type CalendarPageResult = {
 	agg: AggregateDate;
 };
 
-export async function load({ params, fetch }): Promise<CalendarPageResult> {
+export const load = (async ({ params, fetch }) => {
 	const month = params.month;
 	const res = await fetch(`${host()}/app/images/calendar/${month}`);
 	const json = await res.json();
 	return { month, agg: json };
-}
+}) satisfies PageLoad;
 
 export const prerender = false;

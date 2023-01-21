@@ -40,6 +40,8 @@ services:
     image: ponkotuy/photographic-indexer-view:latest
     ports:
       - "3000"
+    depends_on:
+      - web
   lb:
     image: nginx:1.23
     ports:
