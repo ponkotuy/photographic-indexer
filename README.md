@@ -7,6 +7,19 @@ $ cd photographic-indexer/docker/flyway/drivers
 $ ./download_mysql.sh
 ```
 
+## Configuration
+Configure settings using environment variables. The following are supported.
+
+- ENV_MYSQL_ROOT_PASSWORD (required)
+- ENV_MYSQL_PASSWORD (required)
+- ENV_DB_URL
+- ENV_APP_PHOTOS_DIR (required)
+- ENV_APP_EMAIL
+- ENV_FLICKR_KEY
+- ENV_FLICKR_SECRET
+
+Describing them in the .env file makes them easier to handle.
+
 ## Local Run
 ```shell
 $ cd path/to/photographic-indexer
@@ -16,20 +29,20 @@ $ docker compose up -d
 ## Local Run FlickrCrawl
 After running local and setting config values, execute a following command.
 ```shell
-$ docker compose exec sbt "runMain com.ponkotuy.FlickrCrawler"
+$ docker compose --profile flickr up
 ```
 
 ## Development
 ### Backend(Scala+Scalatra)
 ```shell
-$ docker compose up db # DB
+$ docker compose -f docker-compose.dev.yml up # up DB
 $ sbt ~container:start
 ```
 
 If you need migration,
 
 ```shell
-$ docker compose up flyway db
+$ docker compose -f docker-compose.dev.yml --profile migration up
 ```
 
 ### Frontend(SvelteKit)
