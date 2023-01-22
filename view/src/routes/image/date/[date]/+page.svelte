@@ -9,10 +9,11 @@
 	import { DateTime } from 'luxon';
 	import type { DatePageResult } from './+page';
 	import LoadImage from "$lib/LoadImage.svelte";
+	import PagingGrid from "./PagingGrid.svelte";
 
 	export let data: DatePageResult;
-	export let page = 1;
-	export let pageSize = 20;
+	export let page = data.page;
+	export let count = data.count;
 
 	function yesterday(date: string) {
 		return DateTime.fromISO(date).minus({ days: 1 }).toISODate();
@@ -46,21 +47,12 @@
 	</Grid>
 
 	{#if data.images.length > 20}
-		<Grid narrow>
-			<Row padding>
-				<Pagination
-					totalItems={data.images.length}
-					pageSizes={[20, 50]}
-					bind:page
-					bind:pageSize
-				/>
-			</Row>
-		</Grid>
+		<PagingGrid totalItems={data.images.length} bind:page bind:pageSize={count}></PagingGrid>
 	{/if}
 
 	<Grid>
 		<Row padding>
-			{#each data.images.slice((page - 1) * pageSize, page * pageSize) as image}
+			{#each data.images.slice((page - 1) * count, page * count) as image}
 				{@const path = thumbnail(image).path}
 				<Column lg={4}>
 					<Link href="/image/{image.id}">
@@ -81,15 +73,6 @@
 	</Grid>
 
 	{#if data.images.length > 20}
-		<Grid narrow>
-			<Row padding>
-				<Pagination
-					totalItems={data.images.length}
-					pageSizes={[20, 50]}
-					bind:page
-					bind:pageSize
-				/>
-			</Row>
-		</Grid>
+		<PagingGrid totalItems={data.images.length} bind:page bind:pageSize={count}></PagingGrid>
 	{/if}
 </Content>
