@@ -1,7 +1,7 @@
 package com.ponkotuy.batch
 
 import com.ponkotuy.config.{AppConfig, DBConfig}
-import com.ponkotuy.db.{CreateImage, Image, ImageFile}
+import com.ponkotuy.db.{CreateImage, Image, ImageFile, ImageRaw}
 import com.ponkotuy.geo.Nominatim
 import com.ponkotuy.util.Extensions
 import scalikejdbc.*
@@ -47,7 +47,10 @@ class Indexer(conf: AppConfig) extends Runnable {
           exif.latLon.map(_.getLat),
           exif.latLon.map(_.getLng)
         ).create()
-      }{ image => image.id }
+      }{ image =>
+        if(exif.shootingAt.isBefore(image.shootingAt)) Image.updateShootingAt(image.id, exif.shootingAt)
+        image.id
+      }
       ImageFile.create(imageId, path.name, Files.size(path.absolute))
     } catch {
       case NonFatal(e) =>
