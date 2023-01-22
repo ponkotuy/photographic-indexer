@@ -93,7 +93,7 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
     update(Image).set(column.shootingAt -> shootingAt).where.eq(column.id, id)
   }.update.apply()
 
-  def remove(id: Long)(implicit session: DBSession) = applyUpdate {
+  def remove(id: Long)(implicit session: DBSession): Int = applyUpdate {
     delete.from(Image).where.eq(column.id, id)
   }
 }
