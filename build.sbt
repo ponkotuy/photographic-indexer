@@ -16,7 +16,7 @@ lazy val hello = (project in file("."))
   .enablePlugins(DockerPlugin)
   .settings(
     name := "Photographic Indexer",
-    version := "0.3.1",
+    version := "0.3.2",
     resolvers += "GBIF Repository" at "https://repository.gbif.org/repository/releases/",
     libraryDependencies ++= Seq(
       "org.scalatra" %% "scalatra" % ScalatraVersion,
