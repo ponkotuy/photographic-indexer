@@ -1,5 +1,12 @@
 # Photographic Indexer
 
+## What this
+The web application to search for photos in your storage.
+- Search address conversion between lat and lng
+- Search shooting Date
+- Search from Flickr
+- Set tags or notes to search
+
 ## Setup
 ```shell
 $ git clone git@github.com:ponkotuy/photographic-indexer.git
