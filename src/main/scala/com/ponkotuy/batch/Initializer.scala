@@ -27,4 +27,12 @@ object Initializer {
     ds.setMaxWaitMillis(5.seconds.toMillis)
     ConnectionPool.singleton(new DataSourceConnectionPool(ds))
   }
+
+  def test(conf: MyConfig): Unit = {
+    val dir = conf.app.photosDir.resolve("20210220-GX7MK3/raw")
+    val file = dir.resolve("P1012508.RW2")
+    println(ExifParser.parseDebug(file))
+    println(ExifParser.parse(file))
+    println(ExifParser.parseDetail(file))
+  }
 }

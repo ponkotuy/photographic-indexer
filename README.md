@@ -3,9 +3,9 @@
 ## What this
 The web application to search for photos in your storage.
 - Search address conversion between lat and lng
-- Search shooting Date
+- Search shooting date
 - Search from Flickr
-- Set tags or notes to search
+- Set tags and notes to search
 
 ## Setup
 ```shell

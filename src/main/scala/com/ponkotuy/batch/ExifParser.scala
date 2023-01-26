@@ -2,6 +2,7 @@ package com.ponkotuy.batch
 
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.Tag
+import com.drew.metadata.xmp.XmpDirectory
 import org.gbif.common.parsers.geospatial.{CoordinateParseUtils, LatLng}
 import org.apache.commons.math3.fraction.Fraction
 
@@ -12,8 +13,6 @@ import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
 object ExifParser {
-  import ExifParser._
-
   private def getTags(file: Path) = {
     Try(ImageMetadataReader.readMetadata(file.toFile)).map {
       _.getDirectories.asScala.flatMap(_.getTags.asScala)
@@ -83,6 +82,30 @@ object ExifParser {
     } yield ExifDetail(camera, lens, focal, aperture, exposure, iso)
   }
 
+  def parseDebug(file: Path): Unit = {
+    val tags = getTags(file)
+    require(tags.isDefined, "tags not found")
+    tags.get.foreach(tag => println(s"${tag.getDirectoryName}:${tag.getTagName}=${tag.getDescription}"))
+    val debug = debugElem(tags.get)
+    println("--- Basic ---")
+    debug("Body Serial Number")
+    debug("Exposure Sequence Number")
+    debug("Date/Time")
+    debug("GPS Latitude")
+    debug("GPS Longitude")
+    println("--- Detail ---")
+    debug("Model")
+    debug("Focal Length 35")
+    debug("Lens")
+    debug("LensModel")
+    debug("F-Number")
+    debug("Exposure Time")
+    debug("ISO Speed Ratings")
+  }
+
+  private def debugElem(tags: Iterable[Tag])(name: String): Unit = {
+    println(s"${name}: ${find(tags, name)}")
+  }
 }
 
 case class Exif(serialNo: Int, shotId: Int, shootingAt: LocalDateTime, latLon: Option[LatLng])
