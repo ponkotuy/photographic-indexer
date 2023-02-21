@@ -51,7 +51,7 @@ object FlickrCrawler {
       for {
         exifResult <- Using(downloadTemp(photo.originalUrl))(ExifParser.parse)
         exif <- exifResult
-        image <- ImageWithAll.find(exif.serialNo, exif.shotId)
+        image <- ImageWithAll.find(exif.cameraId, exif.calcShotId)
       } {
         val note = photo.description.fold(photo.title)(description => s"${photo.title} - ${description}")
         Image.save(image.id, isPublic = photo.isPublic, note = Some(note))

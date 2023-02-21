@@ -69,7 +69,7 @@ object ImageWithAll {
     selectWithJoin(sqls.eq(i.id, id))
   }.map(apply).single.apply()
 
-  def find(cameraId: Int, shotId: Int)(implicit session: DBSession): Option[Image] = withSQL {
+  def find(cameraId: Int, shotId: Long)(implicit session: DBSession): Option[Image] = withSQL {
     selectWithJoin(sqls.eq(i.cameraId, cameraId).and.eq(i.shotId, shotId))
   }.map(apply).single.apply()
 

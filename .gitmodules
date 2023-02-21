@@ -1,0 +1,3 @@
+[submodule "metadata-extractor"]
+	path = metadata-extractor
+	url = git@github.com:drewnoakes/metadata-extractor.git

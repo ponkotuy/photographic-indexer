@@ -31,7 +31,6 @@ lazy val hello = (project in file("."))
       "io.circe" %% "circe-generic" % CirceVersion,
       "io.circe" %% "circe-parser" % CirceVersion,
       "com.typesafe" % "config" % "1.4.2",
-      "com.drewnoakes" % "metadata-extractor" % "2.18.0",
       "org.gbif" % "gbif-parsers" % "0.59",
       "org.apache.commons" % "commons-math3" % "3.6.1",
       "com.flickr4java" % "flickr4java" % "3.0.6"

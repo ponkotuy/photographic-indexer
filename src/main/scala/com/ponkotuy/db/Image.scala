@@ -12,7 +12,7 @@ import scala.util.control.NonFatal
 case class Image(
     id: Long,
     cameraId: Int,
-    shotId: Int,
+    shotId: Long,
     shootingAt: LocalDateTime,
     isPublic: Boolean = false,
     note: Option[String] = None,
@@ -25,7 +25,7 @@ case class Image(
 case class ImageRaw(
     id: Long,
     cameraId: Int,
-    shotId: Int,
+    shotId: Long,
     shootingAt: LocalDateTime,
     geoId: Option[Long] = None,
     isPublic: Boolean = false,
@@ -48,7 +48,7 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
     imResult.toImage(gResult)
   }
 
-  def find(cameraId: Int, shotId: Int)(implicit session: DBSession): Option[ImageRaw] = withSQL {
+  def find(cameraId: Int, shotId: Long)(implicit session: DBSession): Option[ImageRaw] = withSQL {
     select.from(Image as i).where.eq(i.cameraId, cameraId).and.eq(i.shotId, shotId)
   }.map(Image(i.resultName)).single.apply()
 
@@ -59,7 +59,7 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
 
   def create(
       cameraId: Int,
-      shotId: Int,
+      shotId: Long,
       shootingAt: LocalDateTime,
       geoId: Option[Long] = None,
       isPublic: Boolean = false,
@@ -100,7 +100,7 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
 
 case class CreateImage(
     cameraId: Int,
-    shotId: Int,
+    shotId: Long,
     shootingAt: LocalDateTime,
     address: Option[String],
     lat: Option[Double],

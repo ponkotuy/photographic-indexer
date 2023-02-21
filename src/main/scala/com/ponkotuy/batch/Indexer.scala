@@ -23,10 +23,10 @@ class Indexer(conf: AppConfig) extends Runnable {
     files.foreach { file =>
       val path = ImagePath(file, conf.photosDir.relativize(file))
       if(!DB.readOnly(ImageFile.exists(path.name))) {
+        println(file)
         if(Extensions.isRetouchFile(path.lastname)) createRetouchFile(path)
         else {
           ExifParser.parse(file).foreach{ exif =>
-            println(file)
             createImageFile(exif, path)
           }
         }
@@ -36,12 +36,12 @@ class Indexer(conf: AppConfig) extends Runnable {
 
   private def createImageFile(exif: Exif, path: ImagePath): Unit = DB localTx { implicit session =>
     try {
-      val imageId = Image.find(exif.serialNo, exif.shotId).fold{
+      val imageId = Image.find(exif.cameraId, exif.calcShotId).fold{
         val reverse = exif.latLon.flatMap { p => nominatim.reverse(p.getLat, p.getLng) }
         reverse.map(_.displayName.reverse.mkString).foreach(println)
         CreateImage(
-          exif.serialNo,
-          exif.shotId,
+          exif.cameraId,
+          exif.calcShotId,
           exif.shootingAt,
           reverse.map(_.displayName.reverse.mkString),
           exif.latLon.map(_.getLat),
