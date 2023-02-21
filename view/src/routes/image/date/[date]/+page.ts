@@ -18,7 +18,7 @@ export const load = (async ({ params, url }) => {
 	let images: ImageData[] = await fetch(`${host()}/app/images/date/${date}`).then((res) =>
 		res.json()
 	);
-	let tags: Tag[] = await fetch(`${host()}/app/images/tags`).then((res) => res.json());
+	let tags: Tag[] = images.flatMap((img) => img.tags);
 	images = _.sortBy(images, (image) => image.shootingAt);
 	return { date, images, tags, page, count };
 }) satisfies PageLoad;
