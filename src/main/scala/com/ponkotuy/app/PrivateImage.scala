@@ -134,9 +134,13 @@ class PrivateImage(appConfig: AppConfig)
   }
 
   get("/date/:date") {
+    import com.ponkotuy.db.Image.i
+    val isPublic = params.get("isPublic").flatMap(_.toBooleanOption).getOrElse(false)
     val date = LocalDate.parse(params("date"), DateTimeFormatter.ISO_LOCAL_DATE)
+    val cond = ImageWithAll.aDay(date)
+        .and(if(isPublic) Some(sqls.eq(i.isPublic, true)) else None)
     DB.readOnly { implicit session =>
-      ImageWithAll.findFromDate(date).asJson.noSpaces
+      ImageWithAll.findAll(cond).asJson.noSpaces
     }
   }
 

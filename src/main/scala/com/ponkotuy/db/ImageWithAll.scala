@@ -73,20 +73,18 @@ object ImageWithAll {
     selectWithJoin(sqls.eq(i.cameraId, cameraId).and.eq(i.shotId, shotId))
   }.map(apply).single.apply()
 
-  def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession): Seq[Image] = withSQL{
-    selectWithJoin(where).limit(limit).offset(offset)
+  def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0, orderBy: SQLSyntax = i.shootingAt)(implicit session: DBSession): Seq[Image] = withSQL{
+    selectWithJoin(where).orderBy(orderBy).limit(limit).offset(offset)
   }.map(apply).list.apply()
 
   def findAllInIds(ids: Seq[Long])(implicit session: DBSession): Seq[Image] = withSQL {
     selectWithJoin(sqls.in(i.id, ids))
   }.map(apply).list.apply()
 
-  def findFromDate(date: LocalDate)(implicit session: DBSession): Seq[Image] = {
+  def aDay(date: LocalDate): SQLSyntax = {
     val start = date.atStartOfDay()
     val end = start.plusDays(1)
-    withSQL {
-      selectWithJoin(sqls.between(i.shootingAt, start, end)).orderBy(i.shootingAt)
-    }.map(apply).list.apply()
+    sqls.between(i.shootingAt, start, end)
   }
 
   def findRandom(where: SQLSyntax)(implicit session: DBSession): Option[Image] = withSQL {

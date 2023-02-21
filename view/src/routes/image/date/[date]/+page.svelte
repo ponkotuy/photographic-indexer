@@ -2,7 +2,7 @@
 	import 'carbon-components-svelte/css/g80.css';
 	import '$lib/app.css'
 	import MyHeader from '$lib/MyHeader.svelte';
-	import { Button, Column, Content, Grid, Link, Pagination, Row } from "carbon-components-svelte";
+	import { Button, Column, Content, Dropdown, Grid, Link, Row } from "carbon-components-svelte";
 	import { CaretLeft, CaretRight } from 'carbon-icons-svelte';
 	import { host } from '$lib/global';
 	import { thumbnail } from '$lib/image_type';
@@ -14,6 +14,21 @@
 	export let data: DatePageResult;
 	export let page = data.page;
 	export let count = data.count;
+	let tags = [
+		{id: "-1", text: "All"},
+		...data.tags.map((tag) => {return {id: tag.id.toString(), text: tag.name};}),
+	];
+	let isPublic = "0";
+	let selectTag = "-1";
+
+	$: images = data.images.filter(imageFilter).slice((page - 1) * count, page * count);
+
+	$: imageValidCount = data.images.filter(imageFilter).length;
+
+	$: imageFilter = img => {
+		return (isPublic == "0" || img.isPublic) &&
+			(selectTag == "-1" || img.tags.map(t => t.id.toString()).includes(selectTag));
+	}
 
 	function yesterday(date: string) {
 		return DateTime.fromISO(date).minus({ days: 1 }).toISODate();
@@ -46,14 +61,28 @@
 		</Row>
 	</Grid>
 
-	{#if data.images.length > 20}
-		<PagingGrid totalItems={data.images.length} bind:page bind:pageSize={count}></PagingGrid>
+	<Grid>
+		<Dropdown
+			type="inline"
+			titleText="public"
+			bind:selectedId={isPublic}
+			items={[{id: "0", text: "All"}, {id: "1", text: "Public Only"}]}
+		/>
+		<Dropdown
+			type="inline"
+			titleText="tag"
+			bind:selectedId={selectTag}
+			items={tags}
+		/>
+	</Grid>
+
+	{#if imageValidCount > 20}
+		<PagingGrid totalItems={imageValidCount} bind:page bind:pageSize={count}></PagingGrid>
 	{/if}
 
 	<Grid>
 		<Row padding>
-			{#each data.images.slice((page - 1) * count, page * count) as image}
-				{@const path = thumbnail(image).path}
+			{#each images as image}
 				<Column lg={4}>
 					<Link href="/image/{image.id}">
 						<figure>
@@ -61,8 +90,8 @@
 								src="{host()}/app/images/{image.id}/thumbnail"
 								class="fixed"
 								style="width: 100%;"
-								title={path}
-								alt={path}
+								title={thumbnail(image).path}
+								alt={thumbnail(image).path}
 							/>
 							<figcaption>{hm(image.shootingAt)}</figcaption>
 						</figure>
@@ -72,7 +101,7 @@
 		</Row>
 	</Grid>
 
-	{#if data.images.length > 20}
-		<PagingGrid totalItems={data.images.length} bind:page bind:pageSize={count}></PagingGrid>
+	{#if imageValidCount > 20}
+		<PagingGrid totalItems={imageValidCount} bind:page bind:pageSize={count}></PagingGrid>
 	{/if}
 </Content>
