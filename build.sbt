@@ -5,7 +5,7 @@ val ScalatraVersion = "3.0.0-M2"
 val CirceVersion = "0.14.3"
 val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
-ThisBuild / scalaVersion := "3.2.1"
+ThisBuild / scalaVersion := "3.2.2"
 ThisBuild / organization := "com.ponkotuy"
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javaOptions += defaultJOption
@@ -20,7 +20,7 @@ lazy val hello = (project in file("."))
   .enablePlugins(DockerPlugin)
   .settings(
     name := "Photographic Indexer",
-    version := "0.3.2",
+    version := "0.3.3",
     resolvers += "GBIF Repository" at "https://repository.gbif.org/repository/releases/",
     libraryDependencies ++= Seq(
       "org.scalatra" %% "scalatra" % ScalatraVersion,

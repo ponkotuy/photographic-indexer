@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   build:
-    image: sbtscala/scala-sbt:eclipse-temurin-19.0.1_10_1.8.0_3.2.1
+    image: sbtscala/scala-sbt:eclipse-temurin-jammy-19.0.1_10_1.8.2_3.2.2
     volumes:
       - .:/app
       - /var/run/docker.sock:/var/run/docker.sock
