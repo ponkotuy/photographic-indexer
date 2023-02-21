@@ -10,6 +10,10 @@ ThisBuild / organization := "com.ponkotuy"
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javaOptions += defaultJOption
 
+val installExiftool = "apt-get update && " +
+    "apt-get install exiftool -y --no-install-recommends && " +
+    "apt-get -y clean && rm -rf /var/lib/apt/lists/*"
+
 lazy val hello = (project in file("."))
   .enablePlugins(ContainerPlugin)
   .enablePlugins(JavaAppPackaging)
@@ -43,8 +47,11 @@ lazy val hello = (project in file("."))
     Universal / mappings ++= directory("view/build").map { case (f, to) =>
       f -> rebase(file("build"), "view")(file(to)).get
     },
-    dockerCommands ++= Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view") ::
-      ExecCmd("CMD", "-J" + defaultJOption) :: Nil,
+    dockerCommands ++= Cmd("USER", "root") ::
+        Cmd("RUN",installExiftool) ::
+        Cmd("USER", "1000:0") ::
+        Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view") ::
+        ExecCmd("CMD", "-J" + defaultJOption) :: Nil,
     dockerEntrypoint := "bin/jetty-launcher" :: Nil
   )
 
