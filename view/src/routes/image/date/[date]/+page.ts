@@ -1,5 +1,4 @@
 import { host } from '$lib/global';
-import _ from 'lodash';
 import type { ImageData, Tag } from '$lib/image_type';
 import type { PageLoad } from './$types';
 
@@ -19,6 +18,5 @@ export const load = (async ({ params, url }) => {
 		res.json()
 	);
 	let tags: Tag[] = images.flatMap((img) => img.tags);
-	images = _.sortBy(images, (image) => image.shootingAt);
 	return { date, images, tags, page, count };
 }) satisfies PageLoad;
