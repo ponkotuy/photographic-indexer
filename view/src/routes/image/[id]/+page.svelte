@@ -2,25 +2,23 @@
 	import 'carbon-components-svelte/css/g80.css';
 	import MyHeader from '$lib/MyHeader.svelte';
 	import {
-		Button,
 		Content, Link,
-		ListItem, Modal, StructuredList,
+		ListItem, StructuredList,
 		StructuredListBody,
 		StructuredListCell,
 		StructuredListHead,
-		StructuredListRow, Tag,
-		Tile,
+		StructuredListRow, Tile,
 		UnorderedList
 	} from "carbon-components-svelte";
 	import { host } from '$lib/global';
 	import type { ImageData } from '$lib/image_type';
-	import { TrashCan } from "carbon-icons-svelte";
 	import ImageTag from "$lib/ImageTag.svelte";
 	import LoadImage from "$lib/LoadImage.svelte";
 	import { DateTime } from "luxon";
+	import Exif from "./Exif.svelte";
+	import DeleteImage from "./DeleteImage.svelte";
 
 	export let data: ImageData;
-	export let open: boolean = false;
 
 	const extensions = ['jpg', 'jpeg', 'png', 'webp'];
 	function isValidImage(path: String): Boolean {
@@ -29,13 +27,12 @@
 		return extensions.includes(ext);
 	}
 
-	function remove() {
-		fetch(`${host()}/app/images/${data.id}`, {method: 'DELETE'})
-				.then(() => history.back());
-	}
-
 	function isoDate(at: string): string {
 		return DateTime.fromISO(at).toISODate();
+	}
+
+	function refreshImage() {
+		data = data;
 	}
 </script>
 
@@ -76,52 +73,14 @@
 			<StructuredListRow>
 				<StructuredListCell head>Tags</StructuredListCell>
 				<StructuredListCell>
-					<ImageTag image={data} />
+					<ImageTag image={data} refresh={refreshImage}/>
 				</StructuredListCell>
 			</StructuredListRow>
-			{#if data.exif}
-				<StructuredListRow>
-					<StructuredListCell head>
-						<div>Camera</div>
-						{#if data.exif.lens}<div>Lens</div>{/if}
-						{#if data.exif.focal}<div>Focal length</div>{/if}
-						<div>Exposure</div>
-					</StructuredListCell>
-					<StructuredListCell>
-						<div>{data.exif.camera}</div>
-						{#if data.exif.lens}<div>{data.exif.lens}</div>{/if}
-						{#if data.exif.focal}<div>{data.exif.focal} mm (35mm equivalent)</div>{/if}
-						<div>
-							{#if data.exif.aperture}<span class="exposure">f/{data.exif.aperture}</span>{/if}
-							<span class="exposure">{data.exif.exposureTime} sec</span>
-							<span class="exposure">ISO {data.exif.iso}</span>
-						</div>
-					</StructuredListCell>
-				</StructuredListRow>
-			{/if}
+			<Exif exif={data.exif}/>
 			<StructuredListRow>
 				<StructuredListCell head>Operation</StructuredListCell>
 				<StructuredListCell>
-					<Button
-							kind="danger"
-							size="small"
-							icon={TrashCan}
-							iconDescription="Delete"
-							on:click={() => open = true}>
-					</Button>
-					<Modal
-							danger
-							bind:open
-							modalHeading="Delete a image"
-							primaryButtonText="Delete"
-							secondaryButtonText="cancel"
-							on:click:button--primary={remove}
-							on:click:button--secondary={() => { open = false }}
-							on:open
-							on:close
-							on:submit>
-						<p>Delete all bound record and files.</p>
-					</Modal>
+					<DeleteImage imageId=${data.id} />
 				</StructuredListCell>
 			</StructuredListRow>
 		</StructuredListBody>

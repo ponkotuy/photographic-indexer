@@ -12,7 +12,7 @@
   import { onMount } from "svelte";
 
   export let image: ImageData;
-  export let refresh: () => void = function(){};
+  export let refresh;
   export let open = false;
   export let tagName = '';
 
@@ -23,12 +23,11 @@
     }
   })
 
-  function addTag(name: string) {
+  async function addTag(name: string) {
     const body = JSON.stringify({name});
-    fetch(host() + '/app/images/tags', {method: 'PUT', body})
-      .then(data => data.json())
-      .then(json => {tags = json; open = false;})
-      .then(() => refresh());
+    open = false;
+    await fetch(host() + '/app/images/tags', {method: 'PUT', body})
+    tags = await refreshTags();
   }
 
   async function setTag(image: ImageData, tag: TagType, finalize: () => void = function () {}) {
