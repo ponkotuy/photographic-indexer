@@ -40,6 +40,8 @@ $ docker compose --profile flickr up
 ```
 
 ## Development
+The use of asdf is recommended. (Enable JDK/nodejs)
+
 ### Backend(Scala+Scalatra)
 ```shell
 $ docker compose -f docker-compose.dev.yml up # up DB
