@@ -1,6 +1,7 @@
 import { host } from '$lib/global';
 import type { ImageData, Tag } from '$lib/image_type';
 import type { PageLoad } from './$types';
+import _ from 'lodash';
 
 export type DatePageResult = {
 	date: string;
@@ -17,6 +18,9 @@ export const load = (async ({ params, url }) => {
 	let images: ImageData[] = await fetch(`${host()}/app/images/date/${date}`).then((res) =>
 		res.json()
 	);
-	let tags: Tag[] = images.flatMap((img) => img.tags);
+	let tags: Tag[] = _.uniqBy(
+		images.flatMap((img) => img.tags),
+		(tag) => tag.id
+	);
 	return { date, images, tags, page, count };
 }) satisfies PageLoad;
