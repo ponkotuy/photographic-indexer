@@ -17,8 +17,8 @@ object ExifParser {
 
   def find[T](tags: Exiftool, names: String*)(implicit decoder: Decoder[T]): Option[T] = {
     names.collectFirst {
-      case name if tags.contains(name) => tags[T](name)
-    }
+      case name if tags.contains(name) => tags.get[T](name)
+    }.flatten
   }
 
   private def parseModel(tags: Exiftool): String =
@@ -103,7 +103,8 @@ object ExifParser {
           .filter(_.nonEmpty)
           .filterNot(_ == "Unknown")
       aperture = find[BigDecimal](tags, "FNumber").filterNot(_ < 0.1)
-      exposure <- find[String](tags, "ExposureTime").map(tag => parseExposure(tag))
+      exposure <- find[Double](tags, "ExposureTime").map(Fraction(_))
+          .orElse(find[String](tags, "ExposureTime").map(tag => parseExposure(tag)))
       iso <- find[Int](tags, "ISO")
     } yield ExifDetail(camera, lens, focal, aperture, exposure, iso)
   }
