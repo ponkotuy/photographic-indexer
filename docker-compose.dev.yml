@@ -26,3 +26,8 @@ services:
         condition: service_healthy
     profiles:
       - migration
+  clip-server:
+    build: clip-server/
+    ports:
+      - 8000:8000
+    tty: true
