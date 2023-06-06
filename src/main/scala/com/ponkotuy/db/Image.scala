@@ -19,7 +19,8 @@ case class Image(
     files: Seq[ImageFile] = Nil,
     tags: Seq[Tag] = Nil,
     geo: Option[Geom] = None,
-    exif: Option[ExifDetail] = None
+    exif: Option[ExifDetail] = None,
+    clipIndex: Option[ImageClipIndex] = None
 )
 
 case class ImageRaw(

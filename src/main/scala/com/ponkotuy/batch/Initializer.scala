@@ -12,7 +12,9 @@ object Initializer {
     Initializer.initDB(conf.db)
     new ImageFileChecker(conf.app).run()
     val indexer = new Indexer(conf.app)
+    val clip = conf.clip.map(new CLIPIndexer(_, conf.app))
     CronRunner.execute(indexer, 1.hour)
+    clip.foreach(CronRunner.execute(_, 1.day))
   }
 
   def initDB(conf: DBConfig): Unit = {

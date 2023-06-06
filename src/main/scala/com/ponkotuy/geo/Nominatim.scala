@@ -1,5 +1,6 @@
 package com.ponkotuy.geo
 
+import com.ponkotuy.http.{HttpClientHolder, HttpUtil, JsonHandler}
 import io.circe.*
 import io.circe.Decoder.Result
 import io.circe.parser.*
@@ -34,23 +35,6 @@ class Nominatim {
       json <- res.body()
       result <- json.as[ReverseResult].toOption
     } yield result
-  }
-}
-
-class HttpClientHolder {
-  private[this] var httpClient = HttpClient.newHttpClient()
-
-  def send[T](req: HttpRequest, res: BodyHandler[T]): HttpResponse[T] = try {
-    httpClient.send(req, res)
-  } catch {
-    case e: IOException =>
-      println(s"error: ${e.getMessage}\nReconnection...")
-      reconnect()
-      send(req, res)
-  }
-
-  def reconnect(): Unit = {
-    httpClient = HttpClient.newHttpClient()
   }
 }
 

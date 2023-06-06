@@ -37,7 +37,8 @@ lazy val hello = (project in file("."))
       "com.typesafe" % "config" % "1.4.2",
       "org.gbif" % "gbif-parsers" % "0.59",
       "org.apache.commons" % "commons-math3" % "3.6.1",
-      "com.flickr4java" % "flickr4java" % "3.0.6"
+      "com.flickr4java" % "flickr4java" % "3.0.6",
+      "io.github.yskszk63" % "jnhttp-multipartformdata-bodypublisher" % "0.0.1",
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
     dockerBaseImage := "amd64/eclipse-temurin:19-jre-jammy",
