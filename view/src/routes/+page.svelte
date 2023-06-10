@@ -75,6 +75,21 @@
 			.then((res) => (dateCounts = res));
 	}
 
+	function searchClip() {
+		const params = new URLSearchParams({
+			keyword,
+			page: (page - 1).toString(),
+			perPage: pageSize.toString()
+		});
+		fetch(host() + '/app/images/search_clip?' + params)
+			.then(res => res.json())
+			.then(res => {
+				images = res.data;
+				allCount = res.allCount;
+				dateCounts = res.dateCounts;
+			});
+	}
+
 	function isoDate(at: string): string {
 		return DateTime.fromISO(at).toISODate();
 	}
@@ -109,6 +124,7 @@
 			<Search id="keyword" bind:value={keyword} />
 		</FormGroup>
 		<Button type="submit" disabled={disableSubmit(keyword)}>Search</Button>
+		<Button type="button" kind="tertiary" disabled={disableSubmit(keyword)} on:click={searchClip}>SearchCLIP</Button>
 	</Form>
 
 	{#if allCount === 0}

@@ -5,7 +5,7 @@ import com.ponkotuy.clip.ClipCache
 import com.ponkotuy.config.{AppConfig, MyConfig}
 import com.ponkotuy.db.{Image, ImageFile, ImageTag, ImageWithAll, Tag, Thumbnail}
 import com.ponkotuy.req.{PutImageTag, PutNote, PutTag, SearchParams, SearchParamsGenerator}
-import com.ponkotuy.res.{AggregateDate, DateCount, Pagination, PagingResponse}
+import com.ponkotuy.res.{AggregateDate, DateCount, Pagination}
 import com.ponkotuy.util.Extensions.{isImageFile, isRawFile}
 import com.ponkotuy.util.CustomFormatter.monthFormatter
 import org.scalatra.*
@@ -118,11 +118,12 @@ class PrivateImage(config: MyConfig)
   get("/search") {
     DB.readOnly { implicit session =>
       val params = getSearchParams()
-      paging { page =>
+      val result = paging { page =>
         ImageWithAll.searchFulltext(params, page)
       }{
         ImageWithAll.searchFulltextCount(params)
       }
+      result.asJson.noSpaces
     }
   }
 
@@ -139,12 +140,20 @@ class PrivateImage(config: MyConfig)
   get("/search_clip") {
     val result = for {
       clip <- clipOpt.toRight(InternalServerError("Not found clip settings"))
-      text <- params.get("q").toRight(BadRequest("Required query parameter 'q'"))
-      limit = params.get("limit").flatMap(_.toIntOption).getOrElse(20)
-      result <- clip.search(text).toRight(InternalServerError("Unknown Error(ClipCache#search return None)"))
-      ids = result.sortBy(-_.score).take(limit).map(_.imageId)
-      images = ImageWithAll.findAllInIds(ids)(AutoSession)
-    } yield Ok(images.asJson)
+      text <- params.get("keyword").toRight(BadRequest("Required query parameter 'q'"))
+      clipResult <- clip.search(text).map(_.filter(0 < _.score)).toRight(InternalServerError("Unknown Error(ClipCache#search return None)"))
+    } yield {
+      val pagingResult = paging { page =>
+        val ids = clipResult.sortBy(-_.score).slice(page.perPage, page.perPage + page.limit).map(_.imageId)
+        ImageWithAll.findAllInIds(ids)(AutoSession)
+      } {
+        clipResult.length.toLong
+      }
+      val dateCounts = pagingResult.data.groupBy(_.shootingAt.toLocalDate)
+          .toVector
+          .map((date, images) => DateCount(date, images.length)).sortBy(-_.count).take(5)
+      pagingResult.withDateCounts(dateCounts).asJson.noSpaces
+    }
     result.merge
   }
 

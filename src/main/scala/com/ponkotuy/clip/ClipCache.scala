@@ -6,7 +6,7 @@ import scalikejdbc.AutoSession
 
 class ClipCache(conf: ClipConfig) {
   lazy val accessor = new ClipAccessor(conf)
-  private[this] var cache: Seq[ImageClipIndex] = ImageClipIndex.findAll()(AutoSession)
+  private[this] var cache: Seq[ImageClipIndex] = Nil
 
   private def cacheCheck(): Unit = {
     if(cache.length < ImageClipIndex.count()(AutoSession).get) cache = ImageClipIndex.findAll()(AutoSession)
