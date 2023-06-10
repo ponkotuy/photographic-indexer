@@ -81,3 +81,10 @@ metals.sbt
 
 # ignore drivers
 docker/flyway/drivers/*.jar
+
+# ignore python
+venv
+__pycache__
+
+# ignore clip-server
+clip-server/japanese-cloob-vit-b-16

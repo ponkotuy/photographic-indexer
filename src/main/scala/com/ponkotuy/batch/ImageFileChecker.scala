@@ -3,7 +3,7 @@ package com.ponkotuy.batch
 import com.ponkotuy.config.{AppConfig, MyConfig}
 import com.ponkotuy.db.{Image, ImageFile, ImageWithAll}
 import com.ponkotuy.res.Paging
-import scalikejdbc.{DB, sqls}
+import scalikejdbc._
 
 import java.nio.file.{Files, Paths}
 
@@ -36,18 +36,14 @@ class ImageFileChecker(conf: AppConfig) extends Runnable {
   private def removeNotExistsFileImages(): Unit = {
     import Image.i
     DB.autoCommit { implicit session =>
-      var lastId = 0L
-      while {
-        val records = ImageWithAll.findAll(sqls.gt(i.id, lastId), limit = 200)
+      ImageWithAll.findAllIterator().foreach { records =>
         records.foreach { record =>
           if(record.files.isEmpty) {
             println(s"Delete no image file record: id=${record.id}")
             Image.remove(record.id)
           }
         }
-        records.lastOption.foreach(r => lastId = r.id)
-        records.nonEmpty
-      } do ()
+      }
     }
   }
 }

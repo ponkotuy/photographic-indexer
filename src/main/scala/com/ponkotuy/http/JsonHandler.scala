@@ -1,4 +1,4 @@
-package com.ponkotuy.geo
+package com.ponkotuy.http
 
 import io.circe.*
 import io.circe.parser.*
@@ -8,8 +8,8 @@ import java.net.http.HttpResponse.{BodyHandler, BodySubscriber, BodySubscribers,
 import java.nio.charset.Charset
 import java.util.Optional
 import scala.annotation.unused
-import scala.jdk.OptionConverters.*
 import scala.jdk.FunctionConverters.*
+import scala.jdk.OptionConverters.*
 
 object JsonHandler extends BodyHandler[Option[Json]] {
   override def apply(res: ResponseInfo): BodySubscriber[Option[Json]] = {

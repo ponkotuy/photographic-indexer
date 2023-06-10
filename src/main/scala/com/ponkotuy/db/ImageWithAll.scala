@@ -16,6 +16,7 @@ object ImageWithAll {
   import ImageFile.imf
   import ImageTag.it
   import Tag.t
+  import ImageClipIndex.ici
 
   private def groupConcat(sql: SQLSyntax, name: SQLSyntax) = sqls"group_concat(${sql}) as ${name}"
   private[this] val imfSelect = groupConcat(imf.id, sqls"imf_ids") ::
@@ -29,6 +30,7 @@ object ImageWithAll {
       .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
       .leftJoin(ImageTag as it).on(i.id, it.imageId)
       .leftJoin(Tag as t).on(it.tagId, t.id)
+      .leftJoin(ImageClipIndex as ici).on(i.id, ici.imageId)
       .where(where)
       .groupBy(i.id)
 
@@ -40,8 +42,9 @@ object ImageWithAll {
       Geom.apply(g.resultName)(rs)
     }.toOption
     val files = extractFiles(rs, imResult)
-    val tags = extractTags(rs, imResult)
-    imResult.toImage(gResult).copy(files = files, tags = tags)
+    val tags = extractTags(rs)
+    val clip = Try(ImageClipIndex.apply(ici.resultName)(rs)).toOption
+    imResult.toImage(gResult).copy(files = files, tags = tags, clipIndex = clip)
   }
 
   private def extractFiles(rs: WrappedResultSet, raw: ImageRaw): Seq[ImageFile] = {
@@ -55,7 +58,7 @@ object ImageWithAll {
     files.distinct.sortBy(_.path)
   }
 
-  private def extractTags(rs: WrappedResultSet, raw: ImageRaw): Seq[Tag] = {
+  private def extractTags(rs: WrappedResultSet): Seq[Tag] = {
     val ids = rs.stringOpt("t_ids").map(_.split(',')).getOrElse(Array.empty[String]).distinct
     val names = rs.stringOpt("t_names").map(_.split(',')).getOrElse(Array.empty[String]).distinct
     @nowarn
@@ -76,6 +79,15 @@ object ImageWithAll {
   def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0, orderBy: SQLSyntax = i.shootingAt)(implicit session: DBSession): Seq[Image] = withSQL{
     selectWithJoin(where).orderBy(orderBy).limit(limit).offset(offset)
   }.map(apply).list.apply()
+
+  def findAllIterator(where: SQLSyntax = sqls"true", grouping: Int = 500)(implicit session: DBSession): Iterator[Seq[Image]] = {
+    Iterator.unfold(Long.MinValue) { minId =>
+      val list = withSQL {
+        selectWithJoin(where.and(sqls.gt(i.id, minId))).orderBy(i.id).limit(grouping)
+      }.map(apply).list.apply()
+      if(list.isEmpty) None else Some(list -> list.last.id)
+    }
+  }
 
   def findAllInIds(ids: Seq[Long])(implicit session: DBSession): Seq[Image] = withSQL {
     selectWithJoin(sqls.in(i.id, ids))

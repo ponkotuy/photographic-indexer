@@ -1,7 +1,8 @@
 package com.ponkotuy.app
 
 import com.ponkotuy.batch.{ExifParser, ThumbnailGenerator}
-import com.ponkotuy.config.AppConfig
+import com.ponkotuy.clip.ClipCache
+import com.ponkotuy.config.{AppConfig, MyConfig}
 import com.ponkotuy.db.{Image, ImageFile, ImageTag, ImageWithAll, Tag, Thumbnail}
 import com.ponkotuy.req.{PutImageTag, PutNote, PutTag, SearchParams, SearchParamsGenerator}
 import com.ponkotuy.res.{AggregateDate, DateCount, Pagination, PagingResponse}
@@ -18,7 +19,7 @@ import java.nio.file.{Files, Path}
 import java.time.{LocalDate, YearMonth}
 import java.time.format.DateTimeFormatter
 
-class PrivateImage(appConfig: AppConfig)
+class PrivateImage(config: MyConfig)
     extends ScalatraServlet
         with CORSSetting
         with Pagination
@@ -133,6 +134,20 @@ class PrivateImage(appConfig: AppConfig)
     }
   }
 
+  private[this] val clipOpt = config.clip.map(new ClipCache(_))
+
+  get("/search_clip") {
+    val result = for {
+      clip <- clipOpt.toRight(InternalServerError("Not found clip settings"))
+      text <- params.get("q").toRight(BadRequest("Required query parameter 'q'"))
+      limit = params.get("limit").flatMap(_.toIntOption).getOrElse(20)
+      result <- clip.search(text).toRight(InternalServerError("Unknown Error(ClipCache#search return None)"))
+      ids = result.sortBy(-_.score).take(limit).map(_.imageId)
+      images = ImageWithAll.findAllInIds(ids)(AutoSession)
+    } yield Ok(images.asJson)
+    result.merge
+  }
+
   get("/date/:date") {
     import com.ponkotuy.db.Image.i
     val isPublic = params.get("isPublic").flatMap(_.toBooleanOption).getOrElse(false)
@@ -176,5 +191,5 @@ class PrivateImage(appConfig: AppConfig)
     }
   }
 
-  def imagePath(file: ImageFile): Path = appConfig.photosDir.resolve(file.path.tail)
+  def imagePath(file: ImageFile): Path = config.app.photosDir.resolve(file.path.tail)
 }

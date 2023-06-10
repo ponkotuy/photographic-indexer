@@ -12,6 +12,8 @@ The web application to search for photos in your storage.
 $ git clone git@github.com:ponkotuy/photographic-indexer.git
 $ cd photographic-indexer/docker/flyway/drivers
 $ ./download_mysql.sh
+$ cd photographic-indexer/clip-server
+$ ./download_model.sh
 ```
 
 ## Configuration

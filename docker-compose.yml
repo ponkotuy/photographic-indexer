@@ -36,6 +36,7 @@ services:
       - ENV_APP_EMAIL
     depends_on:
       - db
+      - clip-server
   view:
     image: ponkotuy/photographic-indexer-view:latest
     ports:
@@ -66,3 +67,7 @@ services:
       - db
     profiles:
       - flickr
+  clip-server:
+    image: ponkotuy/clip-server:latest
+    ports:
+      - "8000"

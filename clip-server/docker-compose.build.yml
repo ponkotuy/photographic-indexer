@@ -1,0 +1,7 @@
+version: '3'
+services:
+  view:
+    image: ponkotuy/clip-server:latest
+    build: .
+    ports:
+      - "8000:8000"

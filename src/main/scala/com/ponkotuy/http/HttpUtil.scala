@@ -1,4 +1,4 @@
-package com.ponkotuy.geo
+package com.ponkotuy.http
 
 object HttpUtil {
   def params(base: String, kvs: (String, String)*): String = {
