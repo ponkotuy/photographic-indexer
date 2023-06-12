@@ -4,6 +4,9 @@ import java.io.IOException
 import java.net.http.HttpResponse.BodyHandler
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
 
+import scala.concurrent.duration._
+import scala.jdk.DurationConverters._
+
 class HttpClientHolder {
   private[this] var httpClient = HttpClient.newHttpClient()
 
@@ -12,6 +15,7 @@ class HttpClientHolder {
   } catch {
     case e: IOException =>
       println(s"error: ${e.getMessage}\nReconnection...")
+      Thread.sleep(1.second.toJava)
       reconnect()
       send(req, res)
   }
