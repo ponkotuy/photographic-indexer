@@ -34,6 +34,7 @@ services:
       - ENV_MYSQL_PASSWORD
       - ENV_DB_URL=jdbc:mysql://db:3306/pindexer
       - ENV_APP_EMAIL
+      - ENV_CLIP_SERVER_URL=http://clip-server:8000
     depends_on:
       - db
       - clip-server
