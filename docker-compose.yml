@@ -36,8 +36,10 @@ services:
       - ENV_APP_EMAIL
       - ENV_CLIP_SERVER_URL=http://clip-server:8000
     depends_on:
-      - db
-      - clip-server
+      db:
+        condition: service_healthy
+      clip-server:
+        condition: service_started
   view:
     image: ponkotuy/photographic-indexer-view:latest
     ports:
