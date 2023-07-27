@@ -38,7 +38,7 @@ $ docker compose up -d
 ## Local Run FlickrCrawl
 After running local and setting config values, execute a following command.
 ```shell
-$ docker compose --profile flickr up
+$ docker compose run flickr
 ```
 
 ## Development

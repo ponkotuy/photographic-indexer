@@ -11,7 +11,7 @@ export type DatePageResult = {
 	count: number;
 };
 
-export const load = (async ({ params, url }) => {
+export const load = (async ({ params, url, fetch }) => {
 	const date = params.date;
 	const page = url.searchParams.get('page') || 1;
 	const count = url.searchParams.get('count') || 20;
