@@ -25,3 +25,9 @@
     </StructuredListCell>
   </StructuredListRow>
 {/if}
+
+<style>
+    span.exposure {
+        margin-right: 10px;
+    }
+</style>

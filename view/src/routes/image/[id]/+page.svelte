@@ -99,9 +99,3 @@
 		</Tile>
 	{/each}
 </Content>
-
-<style>
-	span.exposure {
-		margin-right: 10px;
-	}
-</style>
