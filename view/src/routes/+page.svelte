@@ -19,8 +19,7 @@
 		StructuredListCell,
 		StructuredListHead,
 		StructuredListRow,
-		Tag, Toggle,
-		UnorderedList
+		Tag, UnorderedList
 	} from "carbon-components-svelte";
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -31,6 +30,7 @@
 	import ImageTag from "$lib/ImageTag.svelte";
 	import ImageNote from "$lib/ImageNote.svelte";
 	import LoadImage from "$lib/LoadImage.svelte";
+  import TogglePublic from "$lib/TogglePublic.svelte";
 
 	type DateCount = {
 		date: string;
@@ -96,11 +96,6 @@
 
 	function disableSubmit(keyword: string): boolean {
 		return keyword == '';
-	}
-
-	function togglePublic(image: ImageData) {
-		const method = image.isPublic ? 'PUT' : 'DELETE';
-		fetch(host() + `/app/images/${image.id}/public`, {method});
 	}
 
 	function updateImage() {
@@ -190,16 +185,7 @@
 								</UnorderedList>
 							</UnorderedList>
 							<div class="space-form">
-								<Toggle
-									size="sm"
-									style="margin-top: 5px"
-									labelText="Public"
-									labelA="Private"
-									labelB="Public"
-									hideLabel
-									bind:toggled={image.isPublic}
-									on:toggle={() => togglePublic(image)}
-								/>
+                <TogglePublic imageId={image.id} state={image.isPublic} />
 							</div>
 							<div class="space-form"><ImageTag image={image} refresh={updateImage} /></div>
 							<div class="space-form"><ImageNote imageId={image.id} note={image.note} /></div>

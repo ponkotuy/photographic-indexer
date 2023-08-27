@@ -3,8 +3,10 @@
 	import { host } from "$lib/global";
 	import { TrashCan } from "carbon-icons-svelte";
 
-	let imageId: number;
-	let open: boolean = false;
+	export let imageId: number;
+  export let withText: boolean;
+
+  let open: boolean = false;
 
 	function remove() {
 		fetch(`${host()}/app/images/${imageId}`, {method: 'DELETE'})
@@ -13,13 +15,24 @@
 	}
 </script>
 
-<Button
-	kind="danger"
-	size="small"
-	icon={TrashCan}
-	iconDescription="Delete"
-	on:click={() => open = true}>
-</Button>
+{#if withText}
+  <Button
+    kind="danger"
+    size="small"
+    icon={TrashCan}
+    on:click={() => open = true}
+  >
+    Delete
+  </Button>
+{:else}
+  <Button
+    kind="danger"
+    size="small"
+    icon={TrashCan}
+    iconDescription="Delete"
+    on:click={() => open = true}
+  />
+{/if}
 
 <Modal
 	danger

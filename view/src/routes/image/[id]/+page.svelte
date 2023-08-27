@@ -17,6 +17,7 @@
 	import { DateTime } from "luxon";
 	import Exif from "./Exif.svelte";
 	import DeleteImage from "./DeleteImage.svelte";
+  import TogglePublic from "$lib/TogglePublic.svelte";
 
 	export let data: ImageData;
 
@@ -80,7 +81,10 @@
 			<StructuredListRow>
 				<StructuredListCell head>Operation</StructuredListCell>
 				<StructuredListCell>
-					<DeleteImage imageId=${data.id} />
+          <DeleteImage imageId=${data.id} withText={true} />
+          <div style="padding-top: 6px;">
+            <TogglePublic imageId={data.id} />
+          </div>
 				</StructuredListCell>
 			</StructuredListRow>
 		</StructuredListBody>
