@@ -6,8 +6,8 @@
     fetch(`${host()}/app/public/images/random`)
       .then(res => res.json())
       .then(res => {
-        const url = `${host()}/app/public/static/images/${res.id}`
-        const html = document.getElementsByTagName("html").item(0)
+        const url = `${host()}/app/public/static/images/${res.id}`;
+        const html = document.getElementsByTagName("html").item(0);
         html.style.background = `url(${url}) no-repeat center fixed`;
         html.style.backgroundSize = "contain";
         html.style.backgroundColor = "#1b1b1b";

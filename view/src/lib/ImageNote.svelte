@@ -3,11 +3,11 @@
   import { host } from "$lib/global";
 
   export let imageId;
-  export let note: string ="";
+  export let note: string = "";
 
   function updateNote(id: number, note: string) {
-    const body = JSON.stringify({note});
-    fetch(`${host()}/app/images/${id}/note`, {method: 'PUT', body})
+    const body = JSON.stringify({ note });
+    fetch(`${host()}/app/images/${id}/note`, { method: "PUT", body });
   }
 </script>
 

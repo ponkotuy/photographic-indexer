@@ -8,9 +8,9 @@
 
   function updatePage() {
     const query = new URLSearchParams();
-    query.set('page', page.toString());
-    query.set('count', pageSize.toString());
-    goto(`?${query.toString()}`)
+    query.set("page", page.toString());
+    query.set("count", pageSize.toString());
+    goto(`?${query.toString()}`);
   }
 </script>
 

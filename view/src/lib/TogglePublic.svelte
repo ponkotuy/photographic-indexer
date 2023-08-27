@@ -6,8 +6,8 @@
   export let state: Boolean;
 
   function togglePublic() {
-    const method = state ? 'PUT' : 'DELETE';
-    fetch(host() + `/app/images/${imageId}/public`, {method});
+    const method = state ? "PUT" : "DELETE";
+    fetch(host() + `/app/images/${imageId}/public`, { method });
   }
 </script>
 

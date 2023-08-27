@@ -14,33 +14,35 @@
   export let image: ImageData;
   export let refresh;
   export let open = false;
-  export let tagName = '';
+  export let tagName = "";
 
   onMount(() => {
     if (loading === false) {
       loading = true;
       refreshTags().then(xs => tags = xs);
     }
-  })
+  });
 
   async function addTag(name: string) {
-    const body = JSON.stringify({name});
+    const body = JSON.stringify({ name });
     open = false;
-    await fetch(host() + '/app/images/tags', {method: 'PUT', body})
+    await fetch(host() + "/app/images/tags", { method: "PUT", body });
     tags = await refreshTags();
   }
 
-  async function setTag(image: ImageData, tag: TagType, finalize: () => void = function () {}) {
-    const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, { method: 'PUT' });
+  async function setTag(image: ImageData, tag: TagType, finalize: () => void = function() {
+  }) {
+    const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, { method: "PUT" });
     if (result.ok) {
       image.tags.push(tag);
       finalize();
     }
   }
 
-  async function removeTag(image: ImageData, tag: TagType, finalize: () => void = function () {}) {
+  async function removeTag(image: ImageData, tag: TagType, finalize: () => void = function() {
+  }) {
     const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, {
-      method: 'DELETE'
+      method: "DELETE"
     });
     if (result.ok) {
       image.tags = image.tags.filter((t) => t.id !== tag.id);
@@ -49,7 +51,7 @@
   }
 
   async function refreshTags(): Promise<TagType[]> {
-    return fetch(host() + '/app/images/tags').then((res) => res.json());
+    return fetch(host() + "/app/images/tags").then((res) => res.json());
   }
 </script>
 
