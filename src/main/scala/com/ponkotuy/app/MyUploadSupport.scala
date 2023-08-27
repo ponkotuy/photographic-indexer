@@ -3,12 +3,14 @@ package com.ponkotuy.app
 import jakarta.servlet.http.{HttpServletRequest, Part}
 import org.scalatra.ScalatraServlet
 import org.scalatra.servlet.FileUploadSupport.BodyParams
-import org.scalatra.servlet.{FileItem, FileMultiParams, FileSingleParams, SizeConstraintExceededException}
+import org.scalatra.servlet.{FileItem, FileMultiParams, FileSingleParams, HasMultipartConfig, MultipartConfig, SizeConstraintExceededException}
 
 import scala.jdk.CollectionConverters.*
 
-trait MyUploadSupport { self: ScalatraServlet =>
+trait MyUploadSupport extends HasMultipartConfig { self: ScalatraServlet =>
   import MyUploadSupport._
+
+  configureMultipartHandling(MultipartConfig(maxFileSize = Some(100 * 1024 * 1024)))
 
   protected def isSizeConstraintException(e: Exception): Boolean = e match {
     case _: IllegalStateException => true

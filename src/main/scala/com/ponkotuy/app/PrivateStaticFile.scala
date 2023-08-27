@@ -26,8 +26,8 @@ class PrivateStaticFile(appConf: AppConfig) extends ScalatraServlet with MyUploa
     val content = fileParams("file").get()
     Files.write(appConf.photosDir.resolve(path), content, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
   }
-  
-  error{
+
+  error {
     case _: SizeConstraintExceededException => RequestEntityTooLarge("too much!")
   }
 }

@@ -18,6 +18,7 @@
   import Exif from "./Exif.svelte";
   import DeleteImage from "./DeleteImage.svelte";
   import TogglePublic from "$lib/TogglePublic.svelte";
+  import ReplaceButton from "$lib/ReplaceButton.svelte";
 
   export let data: ImageData;
 
@@ -67,6 +68,7 @@
             {#each data.files as file}
               <ListItem>
                 <Link href="{host()}/app/static{file.path}">{file.path}</Link>
+                <ReplaceButton path={file.path}/>
               </ListItem>
             {/each}
           </UnorderedList>
