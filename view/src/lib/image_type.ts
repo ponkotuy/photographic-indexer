@@ -32,6 +32,7 @@ export type ImageData = {
 	exif: Exif | null;
 	tags: Tag[];
 	isPublic: boolean;
+  note: string | null;
 };
 
 export type Tag = {

@@ -7,5 +7,6 @@
   <HeaderNav>
     <HeaderNavItem text="Search" href="/" />
     <HeaderNavItem text="Calendar" href="/calendar/{DateTime.now().toFormat('yyyyMM')}" />
+    <HeaderNavItem text="Directory" href="/directory/" />
   </HeaderNav>
 </Header>

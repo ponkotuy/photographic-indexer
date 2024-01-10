@@ -84,9 +84,9 @@
       <StructuredListRow>
         <StructuredListCell head>Operation</StructuredListCell>
         <StructuredListCell>
-          <DeleteImage imageId=${data.id} withText={true} />
+          <DeleteImage imageId={data.id} withText={true} />
           <div style="padding-top: 6px;">
-            <TogglePublic imageId={data.id} />
+            <TogglePublic imageId={data.id} state={data.isPublic} />
           </div>
         </StructuredListCell>
       </StructuredListRow>

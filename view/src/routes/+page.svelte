@@ -50,7 +50,7 @@
     if (keyword != "") search();
   });
 
-  function searchSubmit(e) {
+  function searchSubmit(e: SubmitEvent) {
     e.preventDefault();
     search();
   }
@@ -193,7 +193,7 @@
                 <ImageTag image={image} refresh={updateImage} />
               </div>
               <div class="space-form">
-                <ImageNote imageId={image.id} note={image.note} />
+                <ImageNote imageId={image.id} note={image.note || ''} />
               </div>
             </StructuredListCell>
           </StructuredListRow>

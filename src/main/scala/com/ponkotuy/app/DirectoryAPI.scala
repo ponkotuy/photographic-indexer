@@ -18,6 +18,7 @@ class DirectoryAPI(appConf: AppConfig) extends ScalatraServlet with CORSSetting 
     contentType = "application/json; charset=utf-8"
   }
 
+  // return file list 'ordered'
   get("/*") {
     val path = multiParams("splat").head
     val abs = appConf.photosDir.resolve(path)
@@ -26,12 +27,10 @@ class DirectoryAPI(appConf: AppConfig) extends ScalatraServlet with CORSSetting 
         Some(FileElement(FileType.Directory, elem.getFileName.toString))
       } else {
         val rel = "/" + appConf.photosDir.relativize(elem)
-
         val imgFile = ImageFile.findFromPath(rel)(AutoSession)
-        println(imgFile)
         imgFile.map(img => FileElement(FileType.File, elem.getFileName.toString, Some(img.imageId)))
       }
-    }.asJson
+    }.sortBy(f => (f.fileType, f.name)).asJson
   }
 }
 

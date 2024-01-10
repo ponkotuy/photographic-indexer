@@ -9,7 +9,7 @@ export type AggregateDate = {
 
 export type CalendarPageResult = {
 	month: string;
-	agg: AggregateDate;
+	agg: AggregateDate[];
 };
 
 export const load = (async ({ params, fetch }) => {

@@ -1,8 +1,7 @@
 import { host } from '$lib/global';
-import type { ImageData } from '$lib/image_type';
+import type { PageLoad } from './$types';
 
-/** @type {import("./$types").PageLoad} */
-export async function load({ params, fetch }): Promise<ImageData> {
+export const load = (async ({ params, fetch }) => {
 	const id = params.id;
 	return await fetch(`${host()}/app/images/${id}?exif=true`).then((res) => res.json());
-}
+}) satisfies PageLoad;

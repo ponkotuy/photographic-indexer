@@ -2,7 +2,7 @@
   import { Button, ButtonSet, Form, Modal, TextInput } from "carbon-components-svelte";
   import { host } from "$lib/global";
 
-  export let imageId;
+  export let imageId: number;
   export let note: string = "";
 
   function updateNote(id: number, note: string) {
@@ -13,5 +13,5 @@
 
 <ButtonSet>
   <TextInput inline labelText="Note" bind:value={note} size="sm" />
-  <Button on:click={() => updateNote(imageId, note)} size="sm">Update Note</Button>
+  <Button on:click={() => updateNote(imageId, note)} size="small">Update Note</Button>
 </ButtonSet>
