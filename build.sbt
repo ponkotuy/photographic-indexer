@@ -1,5 +1,5 @@
-import com.typesafe.sbt.packager.docker._
-import NativePackagerHelper._
+import com.typesafe.sbt.packager.docker.*
+import NativePackagerHelper.*
 
 val ScalatraVersion = "3.0.0-M2"
 val CirceVersion = "0.14.3"
@@ -14,7 +14,7 @@ val installExiftool = "apt-get update && " +
     "apt-get install exiftool -y --no-install-recommends && " +
     "apt-get -y clean && rm -rf /var/lib/apt/lists/*"
 
-lazy val hello = (project in file("."))
+lazy val api = (project in file("."))
   .enablePlugins(ContainerPlugin)
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(DockerPlugin)
@@ -41,7 +41,7 @@ lazy val hello = (project in file("."))
       "io.github.yskszk63" % "jnhttp-multipartformdata-bodypublisher" % "0.0.1",
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
-    dockerBaseImage := "amd64/eclipse-temurin:19-jre-jammy",
+    dockerBaseImage := "amd64/eclipse-temurin:17-jre-jammy",
     dockerUsername := Some("ponkotuy"),
     dockerUpdateLatest := true,
     Docker / daemonUserUid := Some("1000"),

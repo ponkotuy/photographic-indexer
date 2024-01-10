@@ -15,7 +15,7 @@ class HttpClientHolder {
   } catch {
     case e: IOException =>
       println(s"error: ${e.getMessage}\nReconnection...")
-      Thread.sleep(1.second.toJava)
+      Thread.sleep(1.second.toMillis)
       reconnect()
       send(req, res)
   }

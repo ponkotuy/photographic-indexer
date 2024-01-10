@@ -1,16 +1,16 @@
 package com.ponkotuy
 
-import com.ponkotuy.batch.{ExifParser, Initializer}
-import com.ponkotuy.config.{FlickrConfig, MyConfig}
-import com.ponkotuy.db.{Image, ImageTag, ImageWithAll, Tag}
-import com.ponkotuy.flickr.{FlickrAccessor, FlickrPhoto}
+import com.ponkotuy.batch.{ ExifParser, Initializer }
+import com.ponkotuy.config.{ FlickrConfig, MyConfig }
+import com.ponkotuy.db.{ Image, ImageTag, ImageWithAll, Tag }
+import com.ponkotuy.flickr.{ FlickrAccessor, FlickrPhoto }
 import scalikejdbc.DB
 
-import java.io.{File, InputStream}
-import java.net.URL
-import java.nio.file.{Files, Path, Paths, StandardCopyOption, StandardOpenOption}
+import java.io.{ File, InputStream }
+import java.net.{ URI, URL }
+import java.nio.file.{ Files, Path, Paths, StandardCopyOption, StandardOpenOption }
 import scala.util.Using
-import scala.util.Using.{Releasable, resource}
+import scala.util.Using.{ Releasable, resource }
 
 object FlickrCrawler {
   def main(args: Array[String]): Unit = {
@@ -71,7 +71,7 @@ object FlickrCrawler {
 
   def downloadTemp(path: String): Path = {
     val file = Files.createTempFile("p-indexer-", ".jpg")
-    val url = new URL(path)
+    val url = URI.create(path).toURL
     Using(url.openStream()) { is =>
       Files.copy(is, file, StandardCopyOption.REPLACE_EXISTING)
     }
