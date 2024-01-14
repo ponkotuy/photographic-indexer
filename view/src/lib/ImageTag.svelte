@@ -12,7 +12,7 @@
   import { onMount } from "svelte";
 
   export let image: ImageData;
-  export let refresh;
+  export let refresh: () => void;
   export let open = false;
   export let tagName = "";
 
