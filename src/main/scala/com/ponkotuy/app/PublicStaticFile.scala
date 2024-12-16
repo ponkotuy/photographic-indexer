@@ -10,7 +10,7 @@ import java.nio.file.Path
 class PublicStaticFile(appConf: AppConfig) extends ScalatraServlet with CORSSetting {
   get("/images/:id") {
     val id = params("id").toLong
-    ImageWithAll.find(id)(AutoSession).map { image =>
+    ImageWithAll.find(id, isPublic = true)(AutoSession).map { image =>
       val file = image.files.filterNot(_.isRetouch).minBy(_.filesize)
       imagePath(file).toFile
     }.getOrElse(NotFound(s"Not found image ${id}"))

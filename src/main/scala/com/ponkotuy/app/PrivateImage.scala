@@ -35,7 +35,7 @@ class PrivateImage(config: MyConfig)
     val id = params("id").toLong
     val withExif = params.get("exif").exists(_.toBoolean)
     DB.readOnly { implicit session =>
-      ImageWithAll.find(id).map { image =>
+      ImageWithAll.find(id, isPublic = false).map { image =>
         if(withExif) {
           val result = for {
             file <- image.files.find(f => isRawFile(f.path))

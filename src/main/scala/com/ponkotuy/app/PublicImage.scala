@@ -3,7 +3,7 @@ package com.ponkotuy.app
 import com.ponkotuy.config.AppConfig
 import com.ponkotuy.db.ImageWithAll
 import com.ponkotuy.res.Pagination
-import org.scalatra.ScalatraServlet
+import org.scalatra.{ NotFound, Ok, ScalatraServlet }
 import scalikejdbc.DB
 import io.circe.*
 import io.circe.generic.auto.*
@@ -23,16 +23,23 @@ class PublicImage()
   get("/") {
     DB.readOnly { implicit session =>
       paging { page =>
-        ImageWithAll.findAll(ImageWithAll.isPublic, limit = page.limit, offset = page.offset)
+        ImageWithAll.findAll(ImageWithAll.isPublicSQL, limit = page.limit, offset = page.offset)
       } {
-        ImageWithAll.findAllCount(ImageWithAll.isPublic)
+        ImageWithAll.findAllCount(ImageWithAll.isPublicSQL)
       }
+    }
+  }
+
+  get("/:id") {
+    val id = params("id").toLong
+    DB.readOnly { implicit session =>
+      ImageWithAll.find(id, isPublic = true).asJson.noSpaces
     }
   }
 
   get("/random") {
     DB.readOnly { implicit session =>
-      ImageWithAll.findRandom(ImageWithAll.isPublic).asJson.noSpaces
+      ImageWithAll.findRandom(ImageWithAll.isPublicSQL).asJson.noSpaces
     }
   }
 }

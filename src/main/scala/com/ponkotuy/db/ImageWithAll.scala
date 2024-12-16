@@ -34,7 +34,7 @@ object ImageWithAll {
       .where(where)
       .groupBy(i.id)
 
-  val isPublic: SQLSyntax = sqls.eq(i.isPublic, true)
+  val isPublicSQL: SQLSyntax = sqls.eq(i.isPublic, true)
 
   def apply(rs: WrappedResultSet): Image = {
     val imResult = autoConstruct(rs, i.resultName)
@@ -68,8 +68,8 @@ object ImageWithAll {
     tags.distinct.sortBy(_.name)
   }
 
-  def find(id: Long)(implicit session: DBSession): Option[Image] = withSQL {
-    selectWithJoin(sqls.eq(i.id, id))
+  def find(id: Long, isPublic: Boolean)(implicit session: DBSession): Option[Image] = withSQL {
+    selectWithJoin(sqls.eq(i.id, id).and(if (isPublic) Some(isPublicSQL) else None))
   }.map(apply).single.apply()
 
   def find(cameraId: Int, shotId: Long)(implicit session: DBSession): Option[Image] = withSQL {
