@@ -35,7 +35,7 @@
 <MyHeader />
 <Content>
   <Grid narrow>
-    <Row>
+    <Row style="align-items: center">
       <Column lg={4}>
         <Button href="/calendar/{monthDate.minus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
           <CaretLeft size={24} />{monthDate.minus({ months: 1 }).toFormat(YMUser)}
