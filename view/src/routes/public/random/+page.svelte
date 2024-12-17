@@ -1,26 +1,32 @@
 <script lang="ts">
-  import { host } from "$lib/global";
-  import { onMount } from "svelte";
+  import 'carbon-components-svelte/css/g80.css'
+  import { CopyButton } from 'carbon-components-svelte'
+  import ExifList from '$lib/ExifList.svelte'
+  import { host } from '$lib/global'
+  import { page } from '$app/stores'
 
-  onMount(() => {
-    fetch(`${host()}/app/public/images/random`)
-      .then(res => res.json())
-      .then(res => {
-        const url = `${host()}/app/public/static/images/${res.id}`;
-        const html = document.getElementsByTagName("html").item(0);
-        html.style.background = `url(${url}) no-repeat center fixed`;
-        html.style.backgroundSize = "contain";
-        html.style.backgroundColor = "#1b1b1b";
-      });
-  });
+  export let data: ImageData
+  $: url = `${host()}/app/public/static/images/${data.id}`
 </script>
 
 <svelte:head>
 </svelte:head>
 
-<html lang="en">
+<html lang="en"
+      style={`background: url("${url}") no-repeat center fixed; background-color: #1b1b1b; background-size: contain;`}>
+
 <head>
   <title>Random Image</title>
-  <meta name="description" content="Photographic Random Image" />
+  <meta name="description" content="Photographic Random Image"/>
 </head>
+
+<body style="background-color: transparent;">
+
+<div style="display: flex; justify-content: flex-end;">
+  <CopyButton text={`${$page.url.host}/public/image/${data.id}`}/>
+</div>
+<ExifList image={data}/>
+
+</body>
+
 </html>

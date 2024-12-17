@@ -1,8 +1,9 @@
 package com.ponkotuy.app
 
-import com.ponkotuy.config.AppConfig
+import com.ponkotuy.config.{ AppConfig, MyConfig }
 import com.ponkotuy.db.ImageWithAll
 import com.ponkotuy.res.Pagination
+import com.ponkotuy.service.ImageService
 import org.scalatra.{ NotFound, Ok, ScalatraServlet }
 import scalikejdbc.DB
 import io.circe.*
@@ -10,11 +11,13 @@ import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
 
-class PublicImage()
+class PublicImage(app: AppConfig)
     extends ScalatraServlet
-        with Pagination
-        with CORSSetting {
+    with Pagination
+    with CORSSetting {
   import com.ponkotuy.util.CustomEncoder.fraction
+
+  val imageService = new ImageService(app.photosDir)
 
   before() {
     contentType = "application/json; charset=utf-8"
@@ -32,14 +35,15 @@ class PublicImage()
 
   get("/:id") {
     val id = params("id").toLong
-    DB.readOnly { implicit session =>
-      ImageWithAll.find(id, isPublic = true).asJson.noSpaces
-    }
+    val withExif = params.get("exif").exists(_.toBoolean)
+    imageService.findImage(id, isPublic = true, withExif).asJson.noSpaces
   }
 
   get("/random") {
     DB.readOnly { implicit session =>
-      ImageWithAll.findRandom(ImageWithAll.isPublicSQL).asJson.noSpaces
+      val withExif = params.get("exif").exists(_.toBoolean)
+      val image = ImageWithAll.findRandom(ImageWithAll.isPublicSQL)
+      image.map(imageService.setExif).asJson.noSpaces
     }
   }
 }
