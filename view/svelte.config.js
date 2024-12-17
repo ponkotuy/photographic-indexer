@@ -1,16 +1,14 @@
 import adapter from '@sveltejs/adapter-node';
-import preprocess from 'svelte-preprocess';
-import { optimizeImports, elements } from 'carbon-preprocess-svelte';
+import sveltePreprocess from 'svelte-preprocess';
+import {optimizeImports} from 'carbon-preprocess-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	// Consult https://github.com/sveltejs/svelte-preprocess
-	// for more information about preprocessors
-	preprocess: [preprocess(), optimizeImports(), elements()],
+  preprocess: [sveltePreprocess(), optimizeImports()],
 
-	kit: {
-		adapter: adapter({ out: 'build' })
-	}
+  kit: {
+    adapter: adapter({out: 'build'})
+  }
 };
 
 export default config;
