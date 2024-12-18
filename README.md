@@ -47,7 +47,7 @@ The use of asdf is recommended. (Enable JDK/nodejs)
 ### Backend(Scala+Scalatra)
 ```shell
 $ docker compose -f docker-compose.dev.yml up # up DB
-$ sbt ~container:start
+$ sbt ~Jetty/start
 ```
 
 If you need migration,
