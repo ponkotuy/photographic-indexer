@@ -1,24 +1,23 @@
 package com.ponkotuy.app
 
-import com.ponkotuy.batch.{ ExifParser, ThumbnailGenerator }
+import com.ponkotuy.batch.ThumbnailGenerator
 import com.ponkotuy.clip.ClipCache
-import com.ponkotuy.config.{ AppConfig, MyConfig }
-import com.ponkotuy.db.{ Image, ImageFile, ImageTag, ImageWithAll, Tag, Thumbnail }
-import com.ponkotuy.req.{ PutImageTag, PutNote, PutTag, SearchParams, SearchParamsGenerator }
+import com.ponkotuy.config.MyConfig
+import com.ponkotuy.db.*
+import com.ponkotuy.req.{ PutNote, PutTag, SearchParamsGenerator }
 import com.ponkotuy.res.{ AggregateDate, DateCount, Pagination }
 import com.ponkotuy.service.ImageService
-import com.ponkotuy.util.Extensions.{ isImageFile, isRawFile }
 import com.ponkotuy.util.CustomFormatter.monthFormatter
-import org.scalatra.*
-import scalikejdbc.*
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
+import org.scalatra.*
+import scalikejdbc.*
 
-import java.nio.file.{ Files, Path }
-import java.time.{ LocalDate, YearMonth }
+import java.nio.file.Files
 import java.time.format.DateTimeFormatter
+import java.time.{ LocalDate, YearMonth }
 
 class PrivateImage(config: MyConfig)
     extends ScalatraServlet
@@ -181,6 +180,7 @@ class PrivateImage(config: MyConfig)
     val month = YearMonth.parse(params("month"), monthFormatter)
     DB.readOnly { implicit session =>
       ImageWithAll.aggregateMonthlyByDate(month)
+        .view
         .map { (date, images) => AggregateDate.fromImages(date, images) }
         .toVector
         .sortBy(_.date)

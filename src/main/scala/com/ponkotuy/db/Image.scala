@@ -1,11 +1,9 @@
 package com.ponkotuy.db
 
 import com.ponkotuy.batch.ExifDetail
-import com.ponkotuy.res.Paging
-
-import java.time.LocalDateTime
 import scalikejdbc.*
 
+import java.time.LocalDateTime
 import scala.util.Try
 import scala.util.control.NonFatal
 
@@ -37,7 +35,6 @@ case class ImageRaw(
 }
 
 object Image extends SQLSyntaxSupport[ImageRaw] {
-  import Geom.g
   val i = Image.syntax("i")
 
   def apply(rn: ResultName[ImageRaw])(rs: WrappedResultSet): ImageRaw =
@@ -54,8 +51,8 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
   }.map(Image(i.resultName)).single.apply()
 
   def months()(implicit session: DBSession): Seq[String] = withSQL {
-    select(sqls.distinct(sqls"date_format(${i.shootingAt}, '%Y%m') as months")).from(Image as i)
-        .orderBy(sqls"months".desc)
+    select(sqls.distinct(sqls"date_format(${ i.shootingAt }, '%Y%m') as months")).from(Image as i)
+      .orderBy(sqls"months".desc)
   }.map(rs => rs.string(1)).list.apply()
 
   def create(
