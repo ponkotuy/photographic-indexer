@@ -7,13 +7,12 @@ import org.scalatra.servlet.ScalatraListener
 object JettyLauncher {
   def main(args: Array[String]): Unit = {
     val port = Option(System.getenv("PORT")).map(_.toInt).getOrElse(8080)
-    val viewDir = Option(System.getenv("ENV_VIEW_STATIC_DIR")).getOrElse("src/main/webapp")
 
     val server = new Server(port)
     val context = new WebAppContext()
 
     context.setContextPath("/")
-    context.setBaseResourceAsString(viewDir)
+    context.setBaseResourceAsString(".")
     context.addEventListener(new ScalatraListener)
     context.addServlet(classOf[DefaultServlet], "/")
 

@@ -54,7 +54,6 @@ lazy val api = (project in file("."))
     dockerCommands ++= Cmd("USER", "root") ::
       Cmd("RUN", installExiftool) ::
       Cmd("USER", "1000:0") ::
-      Cmd("ENV", "ENV_VIEW_STATIC_DIR", "view") ::
       ExecCmd("CMD", "-J" + defaultJOption) :: Nil,
     dockerEntrypoint := "bin/jetty-launcher" :: Nil
   )

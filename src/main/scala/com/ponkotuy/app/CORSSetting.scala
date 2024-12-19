@@ -1,8 +1,7 @@
 package com.ponkotuy.app
 
-import org.scalatra.{Ok, ScalatraServlet}
+import org.scalatra.{ Ok, ScalatraServlet }
 
-import scala.jdk.CollectionConverters.*
 import scala.util.matching.Regex
 
 trait CORSSetting { self: ScalatraServlet =>
