@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   build:
     image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.9_9_1.9.8_3.3.1

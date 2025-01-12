@@ -1,6 +1,6 @@
 <script lang="ts">
 	import 'carbon-components-svelte/css/g80.css';
-	import { CopyButton, OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+	import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
 	import ExifList from '$lib/ExifList.svelte';
 	import { host } from '$lib/global';
 	import { page } from '$app/state';

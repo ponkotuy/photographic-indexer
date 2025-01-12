@@ -1,6 +1,7 @@
 FROM python:3.11.3-slim-bullseye
 
 ENV POETRY_HOME=/opt/poetry
+ENV POETRY_VERSION=1.8.5
 
 RUN apt-get update && \
     apt-get install -y curl pkg-config git make cmake sentencepiece g++ && \
@@ -8,8 +9,7 @@ RUN apt-get update && \
 
 RUN curl -sSL https://install.python-poetry.org | python3 - && \
     cd /usr/local/bin && \
-    ln -s /opt/poetry/bin/poetry && \
-    poetry config virtualenvs.create false
+    ln -s /opt/poetry/bin/poetry
 
 WORKDIR /app
 

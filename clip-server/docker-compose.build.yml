@@ -1,4 +1,3 @@
-version: '3'
 services:
   view:
     image: ponkotuy/clip-server:latest
