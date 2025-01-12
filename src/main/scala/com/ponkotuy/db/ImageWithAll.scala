@@ -2,49 +2,49 @@ package com.ponkotuy.db
 
 import com.ponkotuy.req.SearchParams
 import com.ponkotuy.res.Paging
-import com.ponkotuy.util.CustomFormatter.monthFormatter
 import scalikejdbc.*
-import scalikejdbc.sqls.{count, distinct}
+import scalikejdbc.sqls.{ count, distinct }
 
-import java.time.{LocalDate, LocalDateTime, YearMonth}
+import java.time.{ LocalDate, YearMonth }
 import scala.annotation.nowarn
 import scala.util.Try
 
 object ImageWithAll {
-  import Image.i
+  import FlickrImage.fi
   import Geom.g
+  import Image.i
+  import ImageClipIndex.ici
   import ImageFile.imf
   import ImageTag.it
   import Tag.t
-  import ImageClipIndex.ici
 
-  private def groupConcat(sql: SQLSyntax, name: SQLSyntax) = sqls"group_concat(${sql}) as ${name}"
+  private def groupConcat(sql: SQLSyntax, name: SQLSyntax) = sqls"group_concat(${ sql }) as ${ name }"
   private[this] val imfSelect = groupConcat(imf.id, sqls"imf_ids") ::
-      groupConcat(imf.path, sqls"imf_paths") ::
-      groupConcat(imf.filesize,sqls"imf_filesizes") :: Nil
+    groupConcat(imf.path, sqls"imf_paths") ::
+    groupConcat(imf.filesize, sqls"imf_filesizes") :: Nil
   private[this] val tSelect = groupConcat(t.id, sqls"t_ids") ::
-      groupConcat(t.name, sqls"t_names") :: Nil
-  private[this] val selectAll = i.resultAll +: (imfSelect ++ tSelect ++ Geom.select)
+    groupConcat(t.name, sqls"t_names") :: Nil
+  private[this] val selectAll = i.resultAll +: fi.resultAll +: (imfSelect ++ tSelect ++ Geom.select)
   private def selectWithJoin(where: SQLSyntax) = select(selectAll: _*).from(Image as i)
-      .leftJoin(Geom as g).on(i.geoId, g.id)
-      .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
-      .leftJoin(ImageTag as it).on(i.id, it.imageId)
-      .leftJoin(Tag as t).on(it.tagId, t.id)
-      .leftJoin(ImageClipIndex as ici).on(i.id, ici.imageId)
-      .where(where)
-      .groupBy(i.id)
+    .leftJoin(Geom as g).on(i.geoId, g.id)
+    .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+    .leftJoin(ImageTag as it).on(i.id, it.imageId)
+    .leftJoin(Tag as t).on(it.tagId, t.id)
+    .leftJoin(ImageClipIndex as ici).on(i.id, ici.imageId)
+    .leftJoin(FlickrImage as fi).on(i.id, fi.imageId)
+    .where(where)
+    .groupBy(i.id)
 
   val isPublicSQL: SQLSyntax = sqls.eq(i.isPublic, true)
 
   def apply(rs: WrappedResultSet): Image = {
     val imResult = autoConstruct(rs, i.resultName)
-    val gResult = Try{
-      Geom.apply(g.resultName)(rs)
-    }.toOption
+    val gResult = Try { Geom.apply(g.resultName)(rs) }.toOption
+    val fResult = Try { FlickrImage.apply(fi.resultName)(rs) }.toOption
     val files = extractFiles(rs, imResult)
     val tags = extractTags(rs)
     val clip = Try(ImageClipIndex.apply(ici.resultName)(rs)).toOption
-    imResult.toImage(gResult).copy(files = files, tags = tags, clipIndex = clip)
+    imResult.toImage(geom = gResult, flickr = fResult).copy(files = files, tags = tags, clipIndex = clip)
   }
 
   private def extractFiles(rs: WrappedResultSet, raw: ImageRaw): Seq[ImageFile] = {
@@ -76,16 +76,18 @@ object ImageWithAll {
     selectWithJoin(sqls.eq(i.cameraId, cameraId).and.eq(i.shotId, shotId))
   }.map(apply).single.apply()
 
-  def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0, orderBy: SQLSyntax = i.shootingAt)(implicit session: DBSession): Seq[Image] = withSQL{
+  def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0, orderBy: SQLSyntax = i.shootingAt)(implicit
+  session: DBSession): Seq[Image] = withSQL {
     selectWithJoin(where).orderBy(orderBy).limit(limit).offset(offset)
   }.map(apply).list.apply()
 
-  def findAllIterator(where: SQLSyntax = sqls"true", grouping: Int = 500)(implicit session: DBSession): Iterator[Seq[Image]] = {
+  def findAllIterator(where: SQLSyntax = sqls"true", grouping: Int = 500)(implicit
+  session: DBSession): Iterator[Seq[Image]] = {
     Iterator.unfold(Long.MinValue) { minId =>
       val list = withSQL {
         selectWithJoin(where.and(sqls.gt(i.id, minId))).orderBy(i.id).limit(grouping)
       }.map(apply).list.apply()
-      if(list.isEmpty) None else Some(list -> list.last.id)
+      if (list.isEmpty) None else Some(list -> list.last.id)
     }
   }
 
@@ -118,32 +120,32 @@ object ImageWithAll {
   )(implicit session: DBSession): Seq[Image] = {
     val result = withSQL {
       selectWithJoin(search.query)
-          .orderBy(search.orderColumns:_*)
-          .limit(paging.limit).offset(paging.offset)
+        .orderBy(search.orderColumns: _*)
+        .limit(paging.limit).offset(paging.offset)
     }.map(apply).list.apply()
     findAllInIds(result.map(_.id))
   }
 
   def searchFulltextDateCount(search: SearchParams)(implicit session: DBSession): Map[LocalDate, Int] = withSQL {
-    val dateCol = sqls"cast(${i.shootingAt} as date)"
+    val dateCol = sqls"cast(${ i.shootingAt } as date)"
     select(dateCol, count(distinct(i.id))).from(Image as i)
-        .leftJoin(Geom as g).on(i.geoId, g.id)
-        .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
-        .leftJoin(ImageTag as it).on(i.id, it.imageId)
-        .leftJoin(Tag as t).on(it.tagId, t.id)
-        .where(search.query)
-        .groupBy(dateCol)
+      .leftJoin(Geom as g).on(i.geoId, g.id)
+      .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+      .leftJoin(ImageTag as it).on(i.id, it.imageId)
+      .leftJoin(Tag as t).on(it.tagId, t.id)
+      .where(search.query)
+      .groupBy(dateCol)
   }.map { rs =>
     rs.localDate(1) -> rs.int(2)
   }.list.apply().toMap
 
   def searchFulltextCount(search: SearchParams)(implicit session: DBSession): Long = withSQL {
     select(count(distinct(i.id))).from(Image as i)
-        .leftJoin(Geom as g).on(i.geoId, g.id)
-        .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
-        .leftJoin(ImageTag as it).on(i.id, it.imageId)
-        .leftJoin(Tag as t).on(it.tagId, t.id)
-        .where(search.query)
+      .leftJoin(Geom as g).on(i.geoId, g.id)
+      .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
+      .leftJoin(ImageTag as it).on(i.id, it.imageId)
+      .leftJoin(Tag as t).on(it.tagId, t.id)
+      .where(search.query)
   }.map(_.int(1)).single.apply().get
 
   def findAllCount(where: SQLSyntax)(implicit session: DBSession): Long = withSQL {

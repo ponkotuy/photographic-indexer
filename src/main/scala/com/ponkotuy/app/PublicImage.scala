@@ -1,15 +1,14 @@
 package com.ponkotuy.app
 
-import com.ponkotuy.config.{ AppConfig, MyConfig }
+import com.ponkotuy.config.AppConfig
 import com.ponkotuy.db.ImageWithAll
 import com.ponkotuy.res.Pagination
 import com.ponkotuy.service.ImageService
-import org.scalatra.{ NotFound, Ok, ScalatraServlet }
-import scalikejdbc.DB
 import io.circe.*
 import io.circe.generic.auto.*
-import io.circe.parser.*
 import io.circe.syntax.*
+import org.scalatra.ScalatraServlet
+import scalikejdbc.DB
 
 class PublicImage(app: AppConfig)
     extends ScalatraServlet
@@ -36,13 +35,16 @@ class PublicImage(app: AppConfig)
   get("/:id") {
     val id = params("id").toLong
     val withExif = params.get("exif").exists(_.toBoolean)
-    imageService.findImage(id, isPublic = true, withExif).asJson.noSpaces
+    val result = imageService.findImage(id, isPublic = true, withExif).asJson.noSpaces
+    println(result)
+    result
   }
 
   get("/random") {
     DB.readOnly { implicit session =>
       val withExif = params.get("exif").exists(_.toBoolean)
       val image = ImageWithAll.findRandom(ImageWithAll.isPublicSQL)
+      println(image)
       image.map(imageService.setExif).asJson.noSpaces
     }
   }

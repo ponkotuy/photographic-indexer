@@ -18,7 +18,8 @@ case class Image(
     tags: Seq[Tag] = Nil,
     geo: Option[Geom] = None,
     exif: Option[ExifDetail] = None,
-    clipIndex: Option[ImageClipIndex] = None
+    clipIndex: Option[ImageClipIndex] = None,
+    flickr: Option[FlickrImage] = None
 )
 
 case class ImageRaw(
@@ -30,8 +31,8 @@ case class ImageRaw(
     isPublic: Boolean = false,
     note: Option[String] = None
 ) {
-  def toImage(geom: Option[Geom]): Image =
-    Image(id, cameraId, shotId, shootingAt, geo = geom, isPublic = isPublic, note = note)
+  def toImage(geom: Option[Geom] = None, flickr: Option[FlickrImage] = None): Image =
+    Image(id, cameraId, shotId, shootingAt, geo = geom, isPublic = isPublic, note = note, flickr = flickr)
 }
 
 object Image extends SQLSyntaxSupport[ImageRaw] {
@@ -41,9 +42,15 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
     autoConstruct(rs, rn)
 
   def applyWithGeom(im: ResultName[ImageRaw], g: ResultName[Geom])(rs: WrappedResultSet): Image = {
-    val imResult = autoConstruct(rs, im)
+    val imResult = apply(im)(rs)
     val gResult = Try { Geom.apply(g)(rs) }.toOption
-    imResult.toImage(gResult)
+    imResult.toImage(geom = gResult)
+  }
+
+  def applyWithFlickr(im: ResultName[ImageRaw], f: ResultName[FlickrImage])(rs: WrappedResultSet): Image = {
+    val imResult = apply(im)(rs)
+    val fResult = Try { FlickrImage.apply(f)(rs) }.toOption
+    imResult.toImage(flickr = fResult)
   }
 
   def find(cameraId: Int, shotId: Long)(implicit session: DBSession): Option[ImageRaw] = withSQL {

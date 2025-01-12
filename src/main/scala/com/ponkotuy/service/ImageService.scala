@@ -1,7 +1,6 @@
 package com.ponkotuy.service
 
 import com.ponkotuy.batch.ExifParser
-import com.ponkotuy.config.MyConfig
 import com.ponkotuy.db.{ Image, ImageFile, ImageWithAll }
 import com.ponkotuy.util.Extensions.{ isImageFile, isRawFile }
 import scalikejdbc.DB

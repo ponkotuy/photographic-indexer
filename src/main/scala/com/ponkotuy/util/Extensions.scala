@@ -12,33 +12,33 @@ object Extensions {
   val Images: Seq[String] = Jpeg ++ Png ++ Gif ++ Bmp ++ Webp ++ Tiff
   val Raws: Seq[String] =
     "cr2" :: "cr3" :: "crw" :: // Canon
-        "raf" :: // FUJIFILM
-        "rwl" :: // Leica
-        "nef" :: "nrw" :: // Nikon
-        "orf" :: // OM
-        "rw2" :: // Panasonic
-        "pef" :: // PENTAX
-        "x3f" :: // SIGMA
-        "arw" :: "sr2" :: "srf" :: // SONY
-        "dng" :: Nil // Common
+      "raf" :: // FUJIFILM
+      "rwl" :: // Leica
+      "nef" :: "nrw" :: // Nikon
+      "orf" :: // OM
+      "rw2" :: // Panasonic
+      "pef" :: // PENTAX
+      "x3f" :: // SIGMA
+      "arw" :: "sr2" :: "srf" :: // SONY
+      "dng" :: Nil // Common
   val Retouches: Seq[String] =
     "xmp" :: // Darktable
-        "dop" :: // DxO Photolab
-        "dr4" :: // Digital Photo Professional
-        "nksc" :: // Nikon Capture NX-D
-        Nil
+      "dop" :: // DxO Photolab
+      "dr4" :: // Digital Photo Professional
+      "nksc" :: // Nikon Capture NX-D
+      Nil
   val All: Seq[String] = Images ++ Raws ++ Retouches
 
   private def toLower(str: String) = str.toLowerCase(Locale.ENGLISH)
   private def extractExtension(path: String): Option[String] = {
     val xs = path.split('.')
-    if(2 <= xs.length) Some(toLower(xs.last)) else None
+    if (2 <= xs.length) Some(toLower(xs.last)) else None
   }
 
   def isRetouchFile(path: String): Boolean = {
     val xs = path.split('.')
     2 < xs.length &&
-        ((Raws ++ Images).contains(toLower(xs(1))) || Retouches.contains(toLower(xs.last)))
+    ((Raws ++ Images).contains(toLower(xs(1))) || Retouches.contains(toLower(xs.last)))
   }
 
   def isRawFile(path: String): Boolean = extractExtension(path).exists(Raws.contains)
@@ -50,7 +50,7 @@ object Extensions {
 
   def retouchOrigin(path: String): String = {
     val xs = path.split('.')
-    require(2 < xs.length, s"${path} is not retouch filename")
+    require(2 < xs.length, s"${ path } is not retouch filename")
     xs.init.mkString(".")
   }
 

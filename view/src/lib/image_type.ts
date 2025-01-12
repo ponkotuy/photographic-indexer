@@ -22,6 +22,10 @@ export type Exif = {
 	iso: number;
 };
 
+export type Flickr = {
+	url: string;
+}
+
 export type ImageData = {
 	id: number;
 	cameraId: number;
@@ -32,7 +36,8 @@ export type ImageData = {
 	exif: Exif | null;
 	tags: Tag[];
 	isPublic: boolean;
-  note: string | null;
+	note: string | null;
+	flickr: Flickr | null;
 };
 
 export type Tag = {
