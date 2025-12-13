@@ -72,6 +72,9 @@ jrebel.lic
 .bloop/
 metals.sbt
 
+# claude
+.claude/
+
 # paulp script
 /.lib/
 
