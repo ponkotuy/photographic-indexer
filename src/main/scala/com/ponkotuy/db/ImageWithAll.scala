@@ -17,6 +17,7 @@ object ImageWithAll {
   import ImageFile.imf
   import ImageTag.it
   import Tag.t
+  import ExifCache.ec
 
   private def groupConcat(sql: SQLSyntax, name: SQLSyntax) = sqls"group_concat(${ sql }) as ${ name }"
   private[this] val imfSelect = groupConcat(imf.id, sqls"imf_ids") ::
@@ -32,6 +33,7 @@ object ImageWithAll {
     .leftJoin(Tag as t).on(it.tagId, t.id)
     .leftJoin(ImageClipIndex as ici).on(i.id, ici.imageId)
     .leftJoin(FlickrImage as fi).on(i.id, fi.imageId)
+    .leftJoin(ExifCache as ec)
     .where(where)
     .groupBy(i.id)
 
@@ -43,16 +45,17 @@ object ImageWithAll {
     val fResult = Try { FlickrImage.apply(fi.resultName)(rs) }.toOption
     val files = extractFiles(rs, imResult)
     val tags = extractTags(rs)
-    val clip = Try(ImageClipIndex.apply(ici.resultName)(rs)).toOption
-    imResult.toImage(geom = gResult, flickr = fResult).copy(files = files, tags = tags, clipIndex = clip)
+    val clip = Try { ImageClipIndex.apply(ici.resultName)(rs) }.toOption
+    val exif = Try { ExifCache.apply(ec.resultName)(rs) }.toOption
+    imResult.toImage(geo = gResult, files = files, tags = tags, exif = exif, clipIndex = clip, flickr = fResult)
   }
 
   private def extractFiles(rs: WrappedResultSet, raw: ImageRaw): Seq[ImageFile] = {
     val ids = rs.string("imf_ids").split(',')
     val paths = rs.string("imf_paths").split(',')
-    val filesizes = rs.string("imf_filesizes").split(',')
+    val fileSizes = rs.string("imf_filesizes").split(',')
     @nowarn
-    val files = (ids :: paths :: filesizes :: Nil).transpose.map { case List(id, path, filesize) =>
+    val files = (ids :: paths :: fileSizes :: Nil).transpose.map { case List(id, path, filesize) =>
       ImageFile(id.toLong, raw.id, path, filesize.toLong)
     }
     files.distinct.sortBy(_.path)

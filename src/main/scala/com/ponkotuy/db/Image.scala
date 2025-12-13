@@ -17,7 +17,7 @@ case class Image(
     files: Seq[ImageFile] = Nil,
     tags: Seq[Tag] = Nil,
     geo: Option[Geom] = None,
-    exif: Option[ExifDetail] = None,
+    exif: Option[ExifCache] = None,
     clipIndex: Option[ImageClipIndex] = None,
     flickr: Option[FlickrImage] = None
 )
@@ -31,8 +31,28 @@ case class ImageRaw(
     isPublic: Boolean = false,
     note: Option[String] = None
 ) {
-  def toImage(geom: Option[Geom] = None, flickr: Option[FlickrImage] = None): Image =
-    Image(id, cameraId, shotId, shootingAt, geo = geom, isPublic = isPublic, note = note, flickr = flickr)
+  def toImage(
+      files: Seq[ImageFile] = Nil,
+      tags: Seq[Tag] = Nil,
+      geo: Option[Geom] = None,
+      exif: Option[ExifCache] = None,
+      clipIndex: Option[ImageClipIndex] = None,
+      flickr: Option[FlickrImage] = None
+  ): Image =
+    Image(
+      id,
+      cameraId,
+      shotId,
+      shootingAt,
+      isPublic = isPublic,
+      note = note,
+      files = files,
+      tags = tags,
+      geo = geo,
+      exif = exif,
+      clipIndex = clipIndex,
+      flickr = flickr
+    )
 }
 
 object Image extends SQLSyntaxSupport[ImageRaw] {
@@ -44,7 +64,7 @@ object Image extends SQLSyntaxSupport[ImageRaw] {
   def applyWithGeom(im: ResultName[ImageRaw], g: ResultName[Geom])(rs: WrappedResultSet): Image = {
     val imResult = apply(im)(rs)
     val gResult = Try { Geom.apply(g)(rs) }.toOption
-    imResult.toImage(geom = gResult)
+    imResult.toImage(geo = gResult)
   }
 
   def applyWithFlickr(im: ResultName[ImageRaw], f: ResultName[FlickrImage])(rs: WrappedResultSet): Image = {
