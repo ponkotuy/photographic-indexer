@@ -3,6 +3,7 @@ package com.ponkotuy.batch
 import com.ponkotuy.config.AppConfig
 import com.ponkotuy.db.{ CreateImage, Image, ImageFile }
 import com.ponkotuy.geo.Nominatim
+import com.ponkotuy.service.ExifCacheService
 import com.ponkotuy.util.Extensions
 import scalikejdbc.*
 
@@ -48,7 +49,8 @@ class Indexer(conf: AppConfig) extends Runnable {
         if (exif.shootingAt.isBefore(image.shootingAt)) Image.updateShootingAt(image.id, exif.shootingAt)
         image.id
       }
-      ImageFile.create(imageId, path.name, Files.size(path.absolute))
+      val imageFile = ImageFile.create(imageId, path.name, Files.size(path.absolute))
+      ExifCacheService.getOrElseUpdate(imageId, path.name)
     } catch {
       case NonFatal(e) =>
         e.printStackTrace()
