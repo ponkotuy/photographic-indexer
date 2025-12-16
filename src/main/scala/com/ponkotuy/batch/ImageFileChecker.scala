@@ -1,11 +1,10 @@
 package com.ponkotuy.batch
 
-import com.ponkotuy.config.{AppConfig, MyConfig}
-import com.ponkotuy.db.{Image, ImageFile, ImageWithAll}
-import com.ponkotuy.res.Paging
-import scalikejdbc._
+import com.ponkotuy.config.AppConfig
+import com.ponkotuy.db.{ Image, ImageFile, ImageWithAll }
+import scalikejdbc.*
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.Files
 
 class ImageFileChecker(conf: AppConfig) extends Runnable {
   override def run(): Unit = {
@@ -22,8 +21,8 @@ class ImageFileChecker(conf: AppConfig) extends Runnable {
         val records = ImageFile.findAll(sqls.gt(imf.id, lastId), limit = 200)
         records.foreach { record =>
           val path = conf.photosDir.resolve(record.path.tail)
-          if(!Files.exists(path)) {
-            println(s"Delete record: id=${record.id} path=${record.path}")
+          if (!Files.exists(path)) {
+            println(s"Delete record: id=${ record.id } path=${ record.path }")
             ImageFile.remove(record.id)
           }
         }
@@ -34,12 +33,11 @@ class ImageFileChecker(conf: AppConfig) extends Runnable {
   }
 
   private def removeNotExistsFileImages(): Unit = {
-    import Image.i
     DB.autoCommit { implicit session =>
       ImageWithAll.findAllIterator().foreach { records =>
         records.foreach { record =>
-          if(record.files.isEmpty) {
-            println(s"Delete no image file record: id=${record.id}")
+          if (record.files.isEmpty) {
+            println(s"Delete no image file record: id=${ record.id }")
             Image.remove(record.id)
           }
         }

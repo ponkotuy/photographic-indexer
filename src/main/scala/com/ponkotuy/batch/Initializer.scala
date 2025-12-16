@@ -4,6 +4,8 @@ import com.ponkotuy.config.{ DBConfig, MyConfig }
 import org.apache.commons.dbcp2.BasicDataSource
 import scalikejdbc.{ ConnectionPool, DataSourceConnectionPool }
 
+import scala.concurrent.duration.FiniteDuration
+
 object Initializer {
   def run(conf: MyConfig): Unit = {
     import scala.concurrent.duration.*
@@ -13,6 +15,9 @@ object Initializer {
     val clip = conf.clip.map(new CLIPIndexer(_, conf.app))
     CronRunner.execute(indexer, 1.hour)
     clip.foreach(CronRunner.execute(_, 1.day))
+    runAfter(10.minutes) {
+      new ExifCacheBatch(conf.app).run()
+    }
   }
 
   def initDB(conf: DBConfig): Unit = {
@@ -27,5 +32,14 @@ object Initializer {
     ds.setValidationQuery("SELECT 1")
     ds.setMaxWait(Duration.ofSeconds(5))
     ConnectionPool.singleton(new DataSourceConnectionPool(ds))
+  }
+
+  private def runAfter(delay: FiniteDuration)(body: => Unit): Thread = {
+    val t = new Thread(() => {
+      Thread.sleep(delay.toMillis)
+      body
+    })
+    t.start()
+    t
   }
 }

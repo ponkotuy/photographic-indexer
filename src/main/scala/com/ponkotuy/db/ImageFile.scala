@@ -5,8 +5,11 @@ import com.ponkotuy.util.Extensions
 import java.time.LocalDateTime
 import scalikejdbc.*
 
+import java.nio.file.Path
+
 case class ImageFile(id: Long, imageId: Long, path: String, filesize: Long) {
   def isRetouch: Boolean = Extensions.isRetouchFile(path)
+  def absolutePath(photosDir: Path): Path = photosDir.resolve(path.tail)
 }
 
 object ImageFile extends SQLSyntaxSupport[ImageFile] {
@@ -18,17 +21,18 @@ object ImageFile extends SQLSyntaxSupport[ImageFile] {
   def create(imageId: Long, path: String, filesize: Long)(implicit session: DBSession): Long = {
     withSQL {
       insert.into(ImageFile)
-          .namedValues(column.imageId -> imageId, column.path -> path, column.filesize -> filesize)
+        .namedValues(column.imageId -> imageId, column.path -> path, column.filesize -> filesize)
     }.updateAndReturnGeneratedKey.apply()
   }
 
   def exists(path: String)(implicit session: DBSession): Boolean = findFromPath(path).isDefined
 
   def findFromPath(path: String)(implicit session: DBSession): Option[ImageFile] = withSQL {
-      select.from(ImageFile as imf).where.eq(imf.path, path)
-    }.map(ImageFile(imf.resultName)).single.apply()
-  
-  def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession): Seq[ImageFile] = withSQL {
+    select.from(ImageFile as imf).where.eq(imf.path, path)
+  }.map(ImageFile(imf.resultName)).single.apply()
+
+  def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(implicit
+  session: DBSession): Seq[ImageFile] = withSQL {
     select.from(ImageFile as imf).where(where).limit(limit).offset(offset)
   }.map(ImageFile(imf.resultName)).list.apply()
 

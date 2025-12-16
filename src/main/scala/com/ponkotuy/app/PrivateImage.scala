@@ -47,7 +47,7 @@ class PrivateImage(config: MyConfig)
       files.foreach(f => ImageFile.remove(f.id))
       Image.remove(id)
       files.foreach { file =>
-        Files.delete(imageService.imagePath(file))
+        Files.delete(file.absolutePath(config.app.photosDir))
       }
     }
   }
@@ -88,7 +88,7 @@ class PrivateImage(config: MyConfig)
     implicit val session: DBSession = AutoSession
     Thumbnail.find(id).map(_.file).getOrElse {
       val file = ImageFile.findAllInImageIds(id :: Nil).filterNot(_.isRetouch).minBy(_.filesize)
-      val binary = generator.gen(imageService.imagePath(file))
+      val binary = generator.gen(file.absolutePath(config.app.photosDir))
       Thumbnail.create(id, binary)
       binary
     }

@@ -33,7 +33,7 @@ object ImageWithAll {
     .leftJoin(Tag as t).on(it.tagId, t.id)
     .leftJoin(ImageClipIndex as ici).on(i.id, ici.imageId)
     .leftJoin(FlickrImage as fi).on(i.id, fi.imageId)
-    .leftJoin(ExifCache as ec)
+    .leftJoin(ExifCache as ec).on(i.id, ec.imageId)
     .where(where)
     .groupBy(i.id)
 

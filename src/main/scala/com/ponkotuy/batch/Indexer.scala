@@ -49,8 +49,8 @@ class Indexer(conf: AppConfig) extends Runnable {
         if (exif.shootingAt.isBefore(image.shootingAt)) Image.updateShootingAt(image.id, exif.shootingAt)
         image.id
       }
-      val imageFile = ImageFile.create(imageId, path.name, Files.size(path.absolute))
-      ExifCacheService.getOrElseUpdate(imageId, path.name)
+      ImageFile.create(imageId, path.name, Files.size(path.absolute))
+      ExifCacheService.getOrElseUpdate(imageId, path.absolute)
     } catch {
       case NonFatal(e) =>
         e.printStackTrace()

@@ -1,8 +1,6 @@
 package com.ponkotuy.service
 
-import com.ponkotuy.batch.ExifParser
 import com.ponkotuy.db.{ Image, ImageFile, ImageWithAll }
-import com.ponkotuy.util.Extensions.{ isImageFile, isRawFile }
 import scalikejdbc.{ DB, DBSession }
 
 import java.nio.file.Path
@@ -17,9 +15,7 @@ class ImageService(photosDir: Path) {
 
   def setExif(image: Image)(implicit session: DBSession): Image = {
     image.exif.fold[Image] {
-      image.copy(exif = Some(ExifCacheService.getOrElseUpdate(image)))
+      image.copy(exif = ExifCacheService.getOrElseUpdate(image, photosDir))
     }(_ => image)
   }
-
-  def imagePath(file: ImageFile): Path = photosDir.resolve(file.path.tail)
 }

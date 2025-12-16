@@ -5,68 +5,32 @@ import com.ponkotuy.db.{ ExifCache, Image }
 import com.ponkotuy.util.Extensions
 import scalikejdbc.DBSession
 
-import java.nio.file.Paths
+import java.nio.file.{ Path, Paths }
 import java.time.LocalDateTime
 
 object ExifCacheService {
-  def getOrElseUpdate(imageId: Long, file: String)(implicit session: DBSession): ExifCache = {
-    ExifCache.find(imageId).getOrElse( create(imageId, file) )
+
+  def getOrElseUpdate(imageId: Long, path: Path)(implicit session: DBSession): Option[ExifCache] = {
+    ExifCache.find(imageId).orElse(createFromPath(imageId, path))
   }
-  def getOrElseUpdate(image: Image)(implicit session: DBSession): ExifCache = {
-    image.exif.getOrElse { create(image) }
-  }
-  
-  def create(imageId: Long, file: String)(implicit session: DBSession): ExifCache = {
-    val path = Paths.get(file)
-    val result = ExifParser.parse(path).map { base =>
-      val detail = ExifParser.parseDetail(path)
-      buildCache(imageId, base, detail)
-    }
-    result.fold(throw new Exception("EXIF could not be retrieved.")){ x =>
-      ExifCache.create(
-        x.imageId,
-        x.serialNo,
-        x.shotId,
-        x.shootingAt,
-        x.latitude,
-        x.longitude,
-        x.camera,
-        x.lens,
-        x.focalLength,
-        x.aperture,
-        x.exposure,
-        x.iso,
-        x.createdAt
-      )
-      x
+
+  def getOrElseUpdate(image: Image, photosDir: Path)(implicit session: DBSession): Option[ExifCache] = {
+    image.exif.orElse {
+      for {
+        file <- image.files.find(f => Extensions.isRawFile(f.path))
+          .orElse(image.files.find(f => Extensions.isImageFile(f.path)))
+        cache <- createFromPath(image.id, file.absolutePath(photosDir))
+      } yield cache
     }
   }
 
-  def create(image: Image)(implicit session: DBSession): ExifCache = {
-    val result = for {
-      file <- image.files.find(file => Extensions.isRawFile(file.path))
-      path = Paths.get(file.path)
+  def createFromPath(imageId: Long, path: Path)(implicit session: DBSession): Option[ExifCache] = {
+    for {
       base <- ExifParser.parse(path)
       detail = ExifParser.parseDetail(path)
-    } yield buildCache(imageId = image.id, base = base, detail = detail)
-    result.fold(throw new Exception("EXIF could not be retrieved.")){ x =>
-      ExifCache.create(
-        x.imageId,
-        x.serialNo,
-        x.shotId,
-        x.shootingAt,
-        x.latitude,
-        x.longitude,
-        x.camera,
-        x.lens,
-        x.focalLength,
-        x.aperture,
-        x.exposure,
-        x.iso,
-        x.createdAt
-      )
-      x
-    }
+      cache = buildCache(imageId, base, detail)
+      _ = saveCache(cache)
+    } yield cache
   }
 
   private def buildCache(
@@ -74,9 +38,9 @@ object ExifCacheService {
       base: Exif,
       detail: Option[ExifDetail],
       now: LocalDateTime = LocalDateTime.now()
-  ) =
+  ): ExifCache =
     ExifCache(
-      imageId: Long,
+      imageId,
       base.serialNo,
       base.shotId,
       base.shootingAt,
@@ -90,4 +54,22 @@ object ExifCacheService {
       detail.map(_.iso),
       now
     )
+
+  private def saveCache(cache: ExifCache)(implicit session: DBSession): Unit = {
+    ExifCache.create(
+      cache.imageId,
+      cache.serialNo,
+      cache.shotId,
+      cache.shootingAt,
+      cache.latitude,
+      cache.longitude,
+      cache.camera,
+      cache.lens,
+      cache.focalLength,
+      cache.aperture,
+      cache.exposure,
+      cache.iso,
+      cache.createdAt
+    )
+  }
 }
