@@ -36,6 +36,7 @@
   },
   "type": "module",
   "dependencies": {
+    "chart.js": "^4.5.1",
     "luxon": "^3.5.0"
   }
 }

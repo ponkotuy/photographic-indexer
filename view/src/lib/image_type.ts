@@ -50,3 +50,11 @@ export function thumbnail(image: ImageData): ImageFile {
 	if (minImage) return minImage;
 	throw new Error('image.files is empty');
 }
+
+export type StatsAggregate = {
+	period: string;
+	category: string;
+	min: number | null;
+	max: number | null;
+	count: number;
+};

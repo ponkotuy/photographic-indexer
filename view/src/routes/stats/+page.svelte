@@ -1,0 +1,215 @@
+<script lang="ts">
+	import 'carbon-components-svelte/css/g80.css';
+	import '$lib/app.css';
+	import MyHeader from '$lib/MyHeader.svelte';
+	import {
+		Button,
+		Column,
+		Content,
+		Dropdown,
+		Grid,
+		NumberInput,
+		Row
+	} from 'carbon-components-svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import type { StatsPageResult } from './+page';
+	import type { StatsAggregate } from '$lib/image_type';
+	import _ from 'lodash';
+	import { Chart } from 'chart.js/auto';
+	import { browser } from '$app/environment';
+
+	export let data: StatsPageResult;
+
+	let metric = data.metric;
+	let granularity = data.granularity;
+	let year: number | null = data.year ?? new Date().getFullYear();
+	let month: number | null = data.month ?? new Date().getMonth() + 1;
+
+	let canvas: HTMLCanvasElement;
+	let chart: Chart | null = null;
+
+	const metricItems = [
+		{ id: 'focal_length', text: 'Focal Length' },
+		{ id: 'camera', text: 'Camera' },
+		{ id: 'lens', text: 'Lens' },
+		{ id: 'iso', text: 'ISO' }
+	];
+
+	const granularityItems = [
+		{ id: 'yearly', text: 'Yearly' },
+		{ id: 'monthly', text: 'Monthly' },
+		{ id: 'daily', text: 'Daily' }
+	];
+
+	function buildUrl(): string {
+		const params = new URLSearchParams({ metric, granularity });
+		if (granularity === 'monthly' || granularity === 'daily') {
+			if (year) params.set('year', year.toString());
+		}
+		if (granularity === 'daily') {
+			if (month) params.set('month', month.toString());
+		}
+		return `/stats?${params.toString()}`;
+	}
+
+	const colors = [
+		'rgba(255, 99, 132, 0.8)',
+		'rgba(54, 162, 235, 0.8)',
+		'rgba(255, 206, 86, 0.8)',
+		'rgba(75, 192, 192, 0.8)',
+		'rgba(153, 102, 255, 0.8)',
+		'rgba(255, 159, 64, 0.8)',
+		'rgba(199, 199, 199, 0.8)',
+		'rgba(83, 102, 255, 0.8)',
+		'rgba(255, 99, 255, 0.8)',
+		'rgba(99, 255, 132, 0.8)',
+		'rgba(132, 99, 255, 0.8)',
+		'rgba(255, 132, 99, 0.8)',
+		'rgba(99, 255, 255, 0.8)',
+		'rgba(255, 255, 99, 0.8)',
+		'rgba(192, 75, 192, 0.8)',
+		'rgba(192, 192, 75, 0.8)',
+		'rgba(75, 75, 192, 0.8)',
+		'rgba(192, 75, 75, 0.8)',
+		'rgba(75, 192, 75, 0.8)',
+		'rgba(128, 128, 255, 0.8)',
+		'rgba(255, 128, 128, 0.8)',
+		'rgba(128, 255, 128, 0.8)'
+	];
+
+	function transformData(stats: StatsAggregate[]) {
+		const periods = _.uniq(stats.map((s) => s.period)).sort();
+		const categories = _.uniq(stats.map((s) => s.category));
+
+		const dataByCategory = new Map<string, Map<string, number>>();
+		for (const cat of categories) {
+			dataByCategory.set(cat, new Map());
+		}
+
+		for (const stat of stats) {
+			dataByCategory.get(stat.category)?.set(stat.period, stat.count);
+		}
+
+		const datasets = categories.map((cat, idx) => ({
+			label: cat,
+			data: periods.map((p) => dataByCategory.get(cat)?.get(p) ?? 0),
+			backgroundColor: colors[idx % colors.length]
+		}));
+
+		return {
+			labels: periods,
+			datasets
+		};
+	}
+
+	function createChart() {
+		if (!browser) return;
+		if (!canvas) return;
+
+		if (chart) {
+			chart.destroy();
+		}
+
+		const chartData = transformData(data.data);
+		console.log(chart);
+		chart = new Chart(canvas, {
+			type: 'bar',
+			data: chartData,
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						position: 'right',
+						labels: {
+							color: '#f4f4f4'
+						}
+					},
+					title: {
+						display: false
+					}
+				},
+				scales: {
+					x: {
+						stacked: true,
+						ticks: {
+							color: '#c6c6c6'
+						},
+						grid: {
+							color: '#525252'
+						}
+					},
+					y: {
+						stacked: true,
+						ticks: {
+							color: '#c6c6c6'
+						},
+						grid: {
+							color: '#525252'
+						}
+					}
+				}
+			}
+		});
+	}
+
+	onMount(() => {
+		console.log('onMount');
+		// createChart();
+	});
+
+	onDestroy(() => {
+		if (chart) {
+			chart.destroy();
+		}
+	});
+
+	$: if (canvas && data) {
+		createChart();
+	}
+</script>
+
+<svelte:head>
+	<title>Photographic Indexer -Stats-</title>
+</svelte:head>
+
+<MyHeader />
+<Content>
+	<Grid narrow>
+		<Row style="margin-bottom: 1rem;">
+			<Column lg={3}>
+				<Dropdown titleText="Metric" bind:selectedId={metric} items={metricItems} />
+			</Column>
+			<Column lg={3}>
+				<Dropdown titleText="Granularity" bind:selectedId={granularity} items={granularityItems} />
+			</Column>
+			{#if granularity === 'monthly' || granularity === 'daily'}
+				<Column lg={2}>
+					<NumberInput label="Year" bind:value={year} min={2000} max={2100} />
+				</Column>
+			{/if}
+			{#if granularity === 'daily'}
+				<Column lg={2}>
+					<NumberInput label="Month" bind:value={month} min={1} max={12} />
+				</Column>
+			{/if}
+			<Column lg={2} style="display: flex; align-items: flex-end;">
+				<Button href={buildUrl()}>Update</Button>
+			</Column>
+		</Row>
+		<Row>
+			<Column>
+				<div class="chart-container">
+					<canvas bind:this={canvas} id="statsChart"></canvas>
+				</div>
+			</Column>
+		</Row>
+	</Grid>
+</Content>
+
+<style>
+  .chart-container {
+    height: 600px;
+    width: 100%;
+  }
+</style>
