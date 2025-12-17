@@ -7,8 +7,7 @@ import scalikejdbc.*
 object ExifStats {
   private val ec = ExifCache.ec
 
-  private val FocalLengthBuckets =
-    Seq(10, 15, 20, 24, 28, 35, 40, 45, 50, 60, 70, 85, 105, 135, 200, 300, 400, 500, 600, 800, 1000, 1200)
+  private val FocalLengthBuckets = Seq(14, 24, 35, 50, 70, 105, 135, 200, 300, 400, 500, 600, 800, 1000, 1200)
   private val IsoBuckets = Seq(100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200)
 
   private case class BucketRange(category: String, min: Option[Int], max: Option[Int])

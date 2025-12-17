@@ -26,7 +26,9 @@
 	let month: string = data.month?.toString() ?? (new Date().getMonth() + 1).toString();
 
 	let canvas: HTMLCanvasElement;
+	let pieCanvas: HTMLCanvasElement;
 	let chart: Chart | null = null;
+	let pieChart: Chart | null = null;
 	let availableMonths: string[] = [];
 
 	const metricItems = [
@@ -98,9 +100,7 @@
 		'rgba(128, 255, 128, 0.8)'
 	];
 
-	function transformData(stats: StatsAggregate[]) {
-		const periods = _.uniq(stats.map((s) => s.period)).sort();
-
+	function getSortedCategories(stats: StatsAggregate[]): string[] {
 		// Build category info with min value for sorting
 		const categoryMinMap = new Map<string, number | null>();
 		for (const stat of stats) {
@@ -110,7 +110,7 @@
 		}
 
 		// Sort categories: null first, then by min value ascending
-		const categories = Array.from(categoryMinMap.entries())
+		return Array.from(categoryMinMap.entries())
 			.sort((a, b) => {
 				if (a[1] === null && b[1] === null) return 0;
 				if (a[1] === null) return -1;
@@ -118,6 +118,11 @@
 				return a[1] - b[1];
 			})
 			.map(([cat]) => cat);
+	}
+
+	function transformBarData(stats: StatsAggregate[]) {
+		const periods = _.uniq(stats.map((s) => s.period)).sort();
+		const categories = getSortedCategories(stats);
 
 		const dataByCategory = new Map<string, Map<string, number>>();
 		for (const cat of categories) {
@@ -140,7 +145,28 @@
 		};
 	}
 
-	function createChart() {
+	function transformPieData(stats: StatsAggregate[]) {
+		const categories = getSortedCategories(stats);
+
+		// Sum counts by category
+		const categoryTotals = new Map<string, number>();
+		for (const stat of stats) {
+			const current = categoryTotals.get(stat.category) ?? 0;
+			categoryTotals.set(stat.category, current + stat.count);
+		}
+
+		return {
+			labels: categories,
+			datasets: [
+				{
+					data: categories.map((cat) => categoryTotals.get(cat) ?? 0),
+					backgroundColor: categories.map((_, idx) => colors[idx % colors.length])
+				}
+			]
+		};
+	}
+
+	function createBarChart() {
 		if (!browser) return;
 		if (!canvas) return;
 
@@ -148,8 +174,7 @@
 			chart.destroy();
 		}
 
-		const chartData = transformData(data.data);
-		console.log(chart);
+		const chartData = transformBarData(data.data);
 		chart = new Chart(canvas, {
 			type: 'bar',
 			data: chartData,
@@ -191,19 +216,54 @@
 		});
 	}
 
-	onMount(() => {
-		console.log('onMount');
-		// createChart();
-	});
+	function createPieChart() {
+		if (!browser) return;
+		if (!pieCanvas) return;
+
+		if (pieChart) {
+			pieChart.destroy();
+		}
+
+		const chartData = transformPieData(data.data);
+		pieChart = new Chart(pieCanvas, {
+			type: 'pie',
+			data: chartData,
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						position: 'right',
+						labels: {
+							color: '#f4f4f4'
+						}
+					}
+				},
+				elements: {
+					arc: {
+						borderWidth: 0
+					}
+				}
+			}
+		});
+	}
+
+	function createCharts() {
+		createBarChart();
+		createPieChart();
+	}
 
 	onDestroy(() => {
 		if (chart) {
 			chart.destroy();
 		}
+		if (pieChart) {
+			pieChart.destroy();
+		}
 	});
 
-	$: if (canvas && data) {
-		createChart();
+	$: if (canvas && pieCanvas && data) {
+		createCharts();
 	}
 </script>
 
@@ -242,12 +302,24 @@
 				</div>
 			</Column>
 		</Row>
+		<Row style="margin-top: 2rem;">
+			<Column>
+				<div class="pie-chart-container">
+					<canvas bind:this={pieCanvas} id="pieChart"></canvas>
+				</div>
+			</Column>
+		</Row>
 	</Grid>
 </Content>
 
 <style>
   .chart-container {
     height: 600px;
+    width: 100%;
+  }
+
+  .pie-chart-container {
+    height: 400px;
     width: 100%;
   }
 </style>
