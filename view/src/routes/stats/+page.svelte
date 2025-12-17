@@ -8,7 +8,6 @@
 		Content,
 		Dropdown,
 		Grid,
-		NumberInput,
 		Row
 	} from 'carbon-components-svelte';
 	import { onMount, onDestroy } from 'svelte';
@@ -17,16 +16,18 @@
 	import _ from 'lodash';
 	import { Chart } from 'chart.js/auto';
 	import { browser } from '$app/environment';
+	import { host } from '$lib/global';
 
 	export let data: StatsPageResult;
 
 	let metric = data.metric;
 	let granularity = data.granularity;
-	let year: number | null = data.year ?? new Date().getFullYear();
-	let month: number | null = data.month ?? new Date().getMonth() + 1;
+	let year: string = data.year?.toString() ?? new Date().getFullYear().toString();
+	let month: string = data.month?.toString() ?? (new Date().getMonth() + 1).toString();
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart | null = null;
+	let availableMonths: string[] = [];
 
 	const metricItems = [
 		{ id: 'focal_length', text: 'Focal Length' },
@@ -41,13 +42,33 @@
 		{ id: 'daily', text: 'Daily' }
 	];
 
+	// Extract unique years from availableMonths (format: YYYYMM)
+	$: yearItems = _.uniq(availableMonths.map((m) => m.substring(0, 4)))
+		.sort()
+		.reverse()
+		.map((y) => ({ id: y, text: y }));
+
+	// Extract months for selected year
+	$: monthItems = availableMonths
+		.filter((m) => m.startsWith(year))
+		.map((m) => {
+			const mo = m.substring(4, 6);
+			return { id: parseInt(mo, 10).toString(), text: mo };
+		})
+		.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+
+	onMount(async () => {
+		const res = await fetch(`${host()}/app/images/calendar/months`);
+		availableMonths = await res.json();
+	});
+
 	function buildUrl(): string {
 		const params = new URLSearchParams({ metric, granularity });
 		if (granularity === 'monthly' || granularity === 'daily') {
-			if (year) params.set('year', year.toString());
+			if (year) params.set('year', year);
 		}
 		if (granularity === 'daily') {
-			if (month) params.set('month', month.toString());
+			if (month) params.set('month', month);
 		}
 		return `/stats?${params.toString()}`;
 	}
@@ -202,12 +223,12 @@
 			</Column>
 			{#if granularity === 'monthly' || granularity === 'daily'}
 				<Column lg={2}>
-					<NumberInput label="Year" bind:value={year} min={2000} max={2100} />
+					<Dropdown titleText="Year" bind:selectedId={year} items={yearItems} />
 				</Column>
 			{/if}
 			{#if granularity === 'daily'}
 				<Column lg={2}>
-					<NumberInput label="Month" bind:value={month} min={1} max={12} />
+					<Dropdown titleText="Month" bind:selectedId={month} items={monthItems} />
 				</Column>
 			{/if}
 			<Column lg={2} style="display: flex; align-items: flex-end;">
