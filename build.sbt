@@ -7,7 +7,6 @@ val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
 ThisBuild / scalaVersion := "3.3.4"
 ThisBuild / organization := "com.ponkotuy"
-ThisBuild / dynverVTagPrefix := false
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xmax-inlines", "64")
 ThisBuild / javaOptions += defaultJOption
 
@@ -22,6 +21,7 @@ lazy val api = (project in file("."))
   .enablePlugins(JettyPlugin)
   .settings(
     name := "Photographic Indexer",
+    version := sys.env.get("VERSION").getOrElse("snapshot"),
     resolvers += "GBIF Repository" at "https://repository.gbif.org/repository/releases/",
     libraryDependencies ++= Seq(
       "org.scalatra" %% "scalatra-jakarta" % ScalatraVersion,
