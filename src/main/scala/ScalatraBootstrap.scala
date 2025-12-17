@@ -14,6 +14,7 @@ class ScalatraBootstrap extends LifeCycle {
     context.mount(new PrivateStaticFile(conf.app), "/app/static/*")
     context.mount(new PublicStaticFile(conf.app), "/app/public/static")
     context.mount(new DirectoryAPI(conf.app), "/app/directory/*")
+    context.mount(new PrivateStatsAPI(), "/app/stats/*")
     Initializer.run(conf)
   }
 }
