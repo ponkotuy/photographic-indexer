@@ -1,10 +1,11 @@
 #!/bin/sh
 
+# Pre-download the model for local development
+# For Docker builds, this is done automatically in Dockerfile
+
 cd `dirname $0`
 
-MODEL_NAME=japanese-cloob-vit-b-16
-
-mkdir $MODEL_NAME
-cd $MODEL_NAME
-curl https://huggingface.co/rinna/japanese-cloob-vit-b-16/resolve/main/pytorch_model.bin -o pytorch_model.bin
-curl https://huggingface.co/rinna/japanese-cloob-vit-b-16/resolve/main/config.json -o config.json
+python -c "from transformers import AutoImageProcessor, AutoModel, AutoTokenizer; \
+    AutoTokenizer.from_pretrained('line-corporation/clip-japanese-base', trust_remote_code=True); \
+    AutoImageProcessor.from_pretrained('line-corporation/clip-japanese-base', trust_remote_code=True); \
+    AutoModel.from_pretrained('line-corporation/clip-japanese-base', trust_remote_code=True)"

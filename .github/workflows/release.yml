@@ -44,10 +44,6 @@ jobs:
     environment: dockerhub
     steps:
       - uses: actions/checkout@v3
-      - name: Download Model
-        working-directory: ./clip-server/
-        run: ./download_model.sh
-
       - name: build
         working-directory: ./clip-server/
         run: docker compose -f docker-compose.build.yml build
