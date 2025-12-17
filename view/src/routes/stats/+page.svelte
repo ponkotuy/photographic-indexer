@@ -79,7 +79,24 @@
 
 	function transformData(stats: StatsAggregate[]) {
 		const periods = _.uniq(stats.map((s) => s.period)).sort();
-		const categories = _.uniq(stats.map((s) => s.category));
+
+		// Build category info with min value for sorting
+		const categoryMinMap = new Map<string, number | null>();
+		for (const stat of stats) {
+			if (!categoryMinMap.has(stat.category)) {
+				categoryMinMap.set(stat.category, stat.min);
+			}
+		}
+
+		// Sort categories: null first, then by min value ascending
+		const categories = Array.from(categoryMinMap.entries())
+			.sort((a, b) => {
+				if (a[1] === null && b[1] === null) return 0;
+				if (a[1] === null) return -1;
+				if (b[1] === null) return 1;
+				return a[1] - b[1];
+			})
+			.map(([cat]) => cat);
 
 		const dataByCategory = new Map<string, Map<string, number>>();
 		for (const cat of categories) {
