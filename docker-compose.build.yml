@@ -9,8 +9,9 @@ services:
     environment:
       - DOCKER_USERNAME
       - DOCKER_PASSWORD
+      - VERSION
     command: >
       bash -c 'apt update &&
         apt install -y docker.io &&
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-        sbt docker:publish'
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD &&
+        sbt -Dversion=$VERSION docker:publish'
