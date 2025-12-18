@@ -9,7 +9,7 @@ class ClipCache(conf: ClipConfig) {
   private[this] var cache: Seq[ImageClipIndex] = Nil
 
   private def cacheCheck(): Unit = {
-    if(cache.length < ImageClipIndex.count()(AutoSession).get) cache = ImageClipIndex.findAll()(AutoSession)
+    if (cache.length < ImageClipIndex.count()(AutoSession).get) cache = ImageClipIndex.findAll()(AutoSession)
   }
 
   def search(text: String): Option[Seq[ClipSearchResult]] = {

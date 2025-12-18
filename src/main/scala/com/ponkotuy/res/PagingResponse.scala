@@ -22,7 +22,8 @@ object Paging {
 }
 
 trait Pagination { self: ScalatraServlet =>
-  def paging[T](dataQuery: Paging => Seq[T])(countQuery: => Long)(implicit encoder: Encoder[PagingResponse[T]]): PagingResponse[T] = {
+  def paging[T](dataQuery: Paging => Seq[T])(countQuery: => Long)(implicit
+      encoder: Encoder[PagingResponse[T]]): PagingResponse[T] = {
     val page = params.get("page").flatMap(_.toIntOption).getOrElse(0)
     val perPage = params.get("perPage").flatMap(_.toIntOption).getOrElse(20)
     assert(perPage <= 100 && (page + 1) * perPage <= 3000, "Pagination Limit Over")
@@ -32,4 +33,10 @@ trait Pagination { self: ScalatraServlet =>
   }
 }
 
-case class PagingWithDateCountsResponse[T](data: Seq[T], page: Int, perPage: Int, allCount: Long, dateCounts: Seq[DateCount])
+case class PagingWithDateCountsResponse[T](
+    data: Seq[T],
+    page: Int,
+    perPage: Int,
+    allCount: Long,
+    dateCounts: Seq[DateCount]
+)

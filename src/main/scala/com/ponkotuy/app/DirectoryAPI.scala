@@ -23,7 +23,7 @@ class DirectoryAPI(appConf: AppConfig) extends ScalatraServlet with CORSSetting 
     val path = multiParams("splat").head
     val abs = appConf.photosDir.resolve(path)
     Files.list(abs).toScala(Seq).flatMap { elem =>
-      if(Files.isDirectory(elem)) {
+      if (Files.isDirectory(elem)) {
         Some(FileElement(FileType.Directory, elem.getFileName.toString))
       } else {
         val rel = "/" + appConf.photosDir.relativize(elem)
@@ -33,5 +33,3 @@ class DirectoryAPI(appConf: AppConfig) extends ScalatraServlet with CORSSetting 
     }.sortBy(f => (f.fileType, f.name)).asJson
   }
 }
-
-

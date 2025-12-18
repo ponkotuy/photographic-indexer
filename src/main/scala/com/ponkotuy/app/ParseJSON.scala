@@ -4,7 +4,7 @@ import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
-import org.scalatra.{ActionResult, BadRequest, ScalatraServlet}
+import org.scalatra.{ ActionResult, BadRequest, ScalatraServlet }
 
 trait ParseJSON { self: ScalatraServlet =>
   def parseJson[T]()(implicit d: Decoder[T]): Either[ActionResult, T] = for {

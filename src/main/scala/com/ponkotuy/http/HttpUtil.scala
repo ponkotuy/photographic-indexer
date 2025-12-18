@@ -2,9 +2,9 @@ package com.ponkotuy.http
 
 object HttpUtil {
   def params(base: String, kvs: (String, String)*): String = {
-    if(kvs.isEmpty) base
+    if (kvs.isEmpty) base
     else {
-      s"${base}?${kvs.map{ (k, v) => s"${k}=${v}" }.mkString("&")}"
+      s"${ base }?${ kvs.map { (k, v) => s"${ k }=${ v }" }.mkString("&") }"
     }
   }
 }

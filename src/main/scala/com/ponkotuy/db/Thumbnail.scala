@@ -2,7 +2,7 @@ package com.ponkotuy.db
 
 import scalikejdbc.*
 
-import java.io.{ByteArrayInputStream, InputStream}
+import java.io.{ ByteArrayInputStream, InputStream }
 import java.time.LocalDateTime
 
 case class Thumbnail(imageId: Long, file: Array[Byte], createdAt: LocalDateTime)

@@ -2,7 +2,7 @@ package com.ponkotuy.config
 
 import com.typesafe.config.Config
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.{ Path, Paths }
 
 case class AppConfig(photosDir: Path, email: Option[String])
 

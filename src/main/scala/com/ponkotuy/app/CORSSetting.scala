@@ -10,15 +10,16 @@ trait CORSSetting { self: ScalatraServlet =>
 
   before() {
     val origin = Option(request.getHeader("Origin"))
-    if(origin.exists(Localhost.matches)) {
+    if (origin.exists(Localhost.matches)) {
       response.setHeader("Access-Control-Allow-Origin", origin.get)
       response.setHeader("Access-Control-Allow-Methods", Methods.mkString(","))
     }
   }
 
-  options("/*"){
+  options("/*") {
     response.setHeader(
-      "Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers")
+      "Access-Control-Allow-Headers",
+      request.getHeader("Access-Control-Request-Headers")
     )
     Ok("")
   }

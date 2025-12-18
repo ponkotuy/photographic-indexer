@@ -9,7 +9,7 @@ import scala.collection.mutable
 object Exiftool {
   def run(files: Path*): Seq[Exiftool] = {
     val logger = new ProcessResultEither
-    s"exiftool ${files.mkString(" ")} -json" ! logger
+    s"exiftool ${ files.mkString(" ") } -json" ! logger
     logger.either.fold(
       err => { println(err); Nil },
       str => decode[Seq[JsonObject]](str).fold(err => { println(err.getMessage); Nil }, identity).map(Exiftool(_))
@@ -21,7 +21,7 @@ case class Exiftool(json: JsonObject) {
   def get[T](name: String)(implicit decoder: Decoder[T]): Option[T] = json(name).flatMap(_.as[T].toOption)
   def apply[T](name: String)(implicit decoder: Decoder[T]): T = get[T](name).get
   def contains(name: String): Boolean = json.contains(name)
-  def print(name: String): Unit = println(s"${name}: ${json(name)}")
+  def print(name: String): Unit = println(s"${ name }: ${ json(name) }")
   def iterable: Iterable[(String, Json)] = json.toIterable
 }
 
@@ -34,6 +34,6 @@ class ProcessResultEither extends ProcessLogger {
   override def buffer[T](f: => T): T = f
 
   def either: Either[String, String] =
-    if(stderrLines.nonEmpty) Left(stderrLines.mkString("\n"))
+    if (stderrLines.nonEmpty) Left(stderrLines.mkString("\n"))
     else Right(stdoutLines.mkString("\n"))
 }

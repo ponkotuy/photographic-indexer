@@ -1,7 +1,7 @@
 package com.ponkotuy.app
 
-import com.ponkotuy.config.{AppConfig, MyConfig}
-import com.ponkotuy.db.{ImageFile, ImageWithAll}
+import com.ponkotuy.config.{ AppConfig, MyConfig }
+import com.ponkotuy.db.{ ImageFile, ImageWithAll }
 import org.scalatra._
 import scalikejdbc.AutoSession
 
@@ -13,7 +13,7 @@ class PublicStaticFile(appConf: AppConfig) extends ScalatraServlet with CORSSett
     ImageWithAll.find(id, isPublic = true)(AutoSession).map { image =>
       val file = image.files.filterNot(_.isRetouch).minBy(_.filesize)
       imagePath(file).toFile
-    }.getOrElse(NotFound(s"Not found image ${id}"))
+    }.getOrElse(NotFound(s"Not found image ${ id }"))
   }
 
   def imagePath(file: ImageFile): Path = appConf.photosDir.resolve(file.path.tail)
