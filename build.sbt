@@ -7,7 +7,7 @@ val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
 ThisBuild / scalaVersion := "3.3.4"
 ThisBuild / organization := "com.ponkotuy"
-ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xmax-inlines", "64")
+ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xmax-inlines", "64", "-no-indent", "-rewrite")
 ThisBuild / javaOptions += defaultJOption
 
 val installExiftool = "apt-get update && " +
