@@ -9,6 +9,7 @@ ThisBuild / scalaVersion := "3.3.4"
 ThisBuild / organization := "com.ponkotuy"
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xmax-inlines", "64", "-no-indent", "-rewrite")
 ThisBuild / javaOptions += defaultJOption
+Test / fork := true
 
 val installExiftool = "apt-get update && " +
   "apt-get install exiftool -y --no-install-recommends && " +

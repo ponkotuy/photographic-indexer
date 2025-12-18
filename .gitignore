@@ -90,3 +90,8 @@ __pycache__
 
 # ignore clip-server
 clip-server/japanese-cloob-vit-b-16
+
+# test database
+test_db.mv.db
+test_db.trace.db
+test_db.hash
