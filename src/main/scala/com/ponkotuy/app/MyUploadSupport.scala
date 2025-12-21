@@ -1,9 +1,9 @@
 package com.ponkotuy.app
 
-import jakarta.servlet.http.{HttpServletRequest, Part}
+import jakarta.servlet.http.{ HttpServletRequest, Part }
 import org.scalatra.ScalatraServlet
 import org.scalatra.servlet.FileUploadSupport.BodyParams
-import org.scalatra.servlet.{FileItem, FileMultiParams, FileSingleParams, HasMultipartConfig, MultipartConfig, SizeConstraintExceededException}
+import org.scalatra.servlet.{ FileItem, FileMultiParams, FileSingleParams, HasMultipartConfig, MultipartConfig, SizeConstraintExceededException }
 
 import scala.jdk.CollectionConverters.*
 
@@ -36,8 +36,13 @@ trait MyUploadSupport extends HasMultipartConfig { self: ScalatraServlet =>
             val item = FileItem(part)
 
             if (!(item.isFormField)) {
-              BodyParams(params.fileParams + ((
-                  item.getFieldName, item +: params.fileParams.getOrElse(item.getFieldName, List[FileItem]()))), params.formParams)
+              BodyParams(
+                params.fileParams + ((
+                  item.getFieldName,
+                  item +: params.fileParams.getOrElse(item.getFieldName, List[FileItem]())
+                )),
+                params.formParams
+              )
             } else {
               BodyParams(params.fileParams, params.formParams)
             }
@@ -53,7 +58,8 @@ trait MyUploadSupport extends HasMultipartConfig { self: ScalatraServlet =>
     try {
       if (isMultipartRequest(req)) req.getParts.asScala else Seq.empty[Part]
     } catch {
-      case e: Exception if isSizeConstraintException(e) => throw new SizeConstraintExceededException("Too large request or file", e)
+      case e: Exception if isSizeConstraintException(e) =>
+        throw new SizeConstraintExceededException("Too large request or file", e)
     }
   }
 
@@ -65,10 +71,9 @@ trait MyUploadSupport extends HasMultipartConfig { self: ScalatraServlet =>
     fileMultiParams(request)(key)
   }
 
-  /**
-   * @return a Map, keyed on the names of multipart file upload parameters,
-   *         of all multipart files submitted with the request
-   */
+  /** @return
+    *   a Map, keyed on the names of multipart file upload parameters, of all multipart files submitted with the request
+    */
   def fileParams(implicit request: HttpServletRequest): FileSingleParams = {
     new FileSingleParams(fileMultiParams(request))
   }

@@ -1,8 +1,6 @@
 package com.ponkotuy.db
 
 import com.ponkotuy.util.Extensions
-
-import java.time.LocalDateTime
 import scalikejdbc.*
 
 import java.nio.file.Path
@@ -32,7 +30,7 @@ object ImageFile extends SQLSyntaxSupport[ImageFile] {
   }.map(ImageFile(imf.resultName)).single.apply()
 
   def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(implicit
-  session: DBSession): Seq[ImageFile] = withSQL {
+      session: DBSession): Seq[ImageFile] = withSQL {
     select.from(ImageFile as imf).where(where).limit(limit).offset(offset)
   }.map(ImageFile(imf.resultName)).list.apply()
 

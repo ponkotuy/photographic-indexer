@@ -1,11 +1,11 @@
 package com.ponkotuy.batch
 
 import io.circe.Decoder
-import org.gbif.common.parsers.geospatial.{CoordinateParseUtils, LatLng}
+import org.gbif.common.parsers.geospatial.{ CoordinateParseUtils, LatLng }
 import org.apache.commons.math3.fraction.Fraction
 
 import java.nio.file.Path
-import java.time.{LocalDateTime, ZoneOffset}
+import java.time.{ LocalDateTime, ZoneOffset }
 import java.time.format.DateTimeFormatter
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
@@ -27,13 +27,13 @@ object ExifParser {
   private val NumberPattern = "([\\d.-]+)".r
   private def parseLength(str: String): Int = {
     NumberPattern.findAllIn(str).iterator.toSeq.lastOption
-        .map(_.toDouble).map(Math.round).map(_.toInt)
-        .getOrElse(0)
+      .map(_.toDouble).map(Math.round).map(_.toInt)
+      .getOrElse(0)
   }
 
   private def parseExposure(str: String): Fraction = {
     val xs = NumberPattern.findAllIn(str).toIndexedSeq
-    if(xs.length == 1) {
+    if (xs.length == 1) {
       new Fraction(xs.head.toDouble)
     } else {
       new Fraction(
@@ -48,16 +48,16 @@ object ExifParser {
 
   private def parseSerialNumber(tags: Exiftool): Option[Int] = {
     tags.get[Int]("SerialNumber")
-        .orElse(tags.get[String]("SerialNumber").map { sn =>
-          sn.toLongOption.map(_.toInt).getOrElse(sn.hashCode)
-        }).orElse(
-          tags.get[String]("InternalSerialNumber")
-              .filter(_.nonEmpty)
-              .flatMap { str =>
-                Try(java.lang.Long.parseLong(str, 16).toInt).toOption
-                    .orElse(NumberPattern.findFirstIn(str).map(_.toInt))
-              }
-        )
+      .orElse(tags.get[String]("SerialNumber").map { sn =>
+        sn.toLongOption.map(_.toInt).getOrElse(sn.hashCode)
+      }).orElse(
+        tags.get[String]("InternalSerialNumber")
+          .filter(_.nonEmpty)
+          .flatMap { str =>
+            Try(java.lang.Long.parseLong(str, 16).toInt).toOption
+              .orElse(NumberPattern.findFirstIn(str).map(_.toInt))
+          }
+      )
   }
 
   private def parseLatLon(tags: Exiftool): Option[LatLng] = {
@@ -70,13 +70,13 @@ object ExifParser {
 
   private def parseFocalLength(tags: Exiftool): Option[Int] = {
     find[String](tags, "FocalLengthIn35mmFormat", "FocalLength35efl")
-        .map(tag => parseLength(tag))
-        .filterNot(_ == 0)
+      .map(tag => parseLength(tag))
+      .filterNot(_ == 0)
   }
 
   private def parseShotId(tags: Exiftool): Option[Long] = {
     find[Long](tags, "ShutterCount", "ImageCount")
-        .orElse(find[String](tags, "ImageUniqueID").map(str => BigInt(str, 16).toInt))
+      .orElse(find[String](tags, "ImageUniqueID").map(str => BigInt(str, 16).toInt))
   }
 
   def parse(file: Path): Option[Exif] = {
@@ -99,12 +99,12 @@ object ExifParser {
       camera = parseModel(tags)
       focal = parseFocalLength(tags)
       lens = find[String](tags, "LensModel", "Lens")
-          .filterNot(_ == null)
-          .filter(_.nonEmpty)
-          .filterNot(_ == "Unknown")
+        .filterNot(_ == null)
+        .filter(_.nonEmpty)
+        .filterNot(_ == "Unknown")
       aperture = find[BigDecimal](tags, "FNumber").filterNot(_ < 0.1)
       exposure <- find[Double](tags, "ExposureTime").map(Fraction(_))
-          .orElse(find[String](tags, "ExposureTime").map(tag => parseExposure(tag)))
+        .orElse(find[String](tags, "ExposureTime").map(tag => parseExposure(tag)))
       iso <- find[Int](tags, "ISO")
     } yield ExifDetail(camera, lens, focal, aperture, exposure, iso)
   }
@@ -138,7 +138,13 @@ object ExifParser {
   }
 }
 
-case class Exif(serialNo: Option[Int], shotId: Option[Long], shootingAt: LocalDateTime, latLon: Option[LatLng], camera: String) {
+case class Exif(
+    serialNo: Option[Int],
+    shotId: Option[Long],
+    shootingAt: LocalDateTime,
+    latLon: Option[LatLng],
+    camera: String
+) {
   lazy val cameraId: Int = serialNo.getOrElse(camera.hashCode)
   lazy val calcShotId: Long = shotId.fold(shootingAt.toInstant(ZoneOffset.ofHours(+9)).toEpochMilli)(_.toLong)
 }

@@ -33,9 +33,9 @@ object ImageClipIndex extends SQLSyntaxSupport[ImageClipIndex] {
 
   def create(imageId: Long, clipIndex: Array[Float])(implicit session: DBSession): Int = applyUpdate {
     insert.into(ImageClipIndex)
-        .namedValues(
-          column.imageId -> imageId,
-          column.clipIndex -> clipIndex.asJson.toString
-        )
+      .namedValues(
+        column.imageId -> imageId,
+        column.clipIndex -> clipIndex.asJson.toString
+      )
   }
 }

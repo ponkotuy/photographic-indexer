@@ -4,7 +4,7 @@ import com.ponkotuy.db.ExifStats
 import com.ponkotuy.util.Granularity
 import io.circe.generic.auto.*
 import io.circe.syntax.*
-import org.scalatra.{BadRequest, ScalatraServlet}
+import org.scalatra.{ BadRequest, ScalatraServlet }
 import scalikejdbc.DB
 
 class PrivateStatsAPI extends ScalatraServlet with CORSSetting {

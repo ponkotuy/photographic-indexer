@@ -5,8 +5,9 @@ import scala.util.control.NonFatal
 
 class CronRunner(runner: Runnable, duration: Duration) extends Runnable {
   override def run(): Unit = {
-    while(true) {
-      try { runner.run() } catch {
+    while (true) {
+      try { runner.run() }
+      catch {
         case NonFatal(e) =>
           e.printStackTrace()
       }

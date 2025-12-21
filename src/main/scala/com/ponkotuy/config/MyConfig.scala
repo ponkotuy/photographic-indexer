@@ -1,9 +1,9 @@
 package com.ponkotuy.config
 
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.{ Config, ConfigFactory }
 import com.ponkotuy.config.RichConfig
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.{ Path, Paths }
 
 case class MyConfig(app: AppConfig, db: DBConfig, flickr: Option[FlickrConfig], clip: Option[ClipConfig])
 

@@ -80,12 +80,12 @@ object ImageWithAll {
   }.map(apply).single.apply()
 
   def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0, orderBy: SQLSyntax = i.shootingAt)(implicit
-  session: DBSession): Seq[Image] = withSQL {
+      session: DBSession): Seq[Image] = withSQL {
     selectWithJoin(where).orderBy(orderBy).limit(limit).offset(offset)
   }.map(apply).list.apply()
 
   def findAllIterator(where: SQLSyntax = sqls"true", grouping: Int = 500)(implicit
-  session: DBSession): Iterator[Seq[Image]] = {
+      session: DBSession): Iterator[Seq[Image]] = {
     Iterator.unfold(Long.MinValue) { minId =>
       val list = withSQL {
         selectWithJoin(where.and(sqls.gt(i.id, minId))).orderBy(i.id).limit(grouping)

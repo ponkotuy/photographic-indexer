@@ -12,5 +12,5 @@ object DBConfig {
       username <- conf.getOptString("username")
       password = conf.getOptString("password")
     } yield DBConfig(url, username, password)
-  } 
+  }
 }

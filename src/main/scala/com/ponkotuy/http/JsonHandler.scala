@@ -4,7 +4,7 @@ import io.circe.*
 import io.circe.parser.*
 
 import java.net.http.HttpResponse
-import java.net.http.HttpResponse.{BodyHandler, BodySubscriber, BodySubscribers, ResponseInfo}
+import java.net.http.HttpResponse.{ BodyHandler, BodySubscriber, BodySubscribers, ResponseInfo }
 import java.nio.charset.Charset
 import java.util.Optional
 import scala.annotation.unused

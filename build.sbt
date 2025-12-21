@@ -7,8 +7,9 @@ val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
 ThisBuild / scalaVersion := "3.3.4"
 ThisBuild / organization := "com.ponkotuy"
-ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xmax-inlines", "64")
+ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xmax-inlines", "64", "-no-indent", "-rewrite")
 ThisBuild / javaOptions += defaultJOption
+Test / fork := true
 
 val installExiftool = "apt-get update && " +
   "apt-get install exiftool -y --no-install-recommends && " +
@@ -28,6 +29,8 @@ lazy val api = (project in file("."))
       "org.scalatra" %% "scalatra-json-jakarta" % ScalatraVersion,
       "org.scalatra" %% "scalatra-forms-jakarta" % ScalatraVersion,
       "org.scalatra" %% "scalatra-scalatest-jakarta" % ScalatraVersion % "test",
+      "org.scalameta" %% "munit" % "1.0.3" % Test,
+      "com.h2database" % "h2" % "2.3.232" % Test,
       "ch.qos.logback" % "logback-classic" % "1.5.12" % "runtime",
       "org.eclipse.jetty.ee10" % "jetty-ee10-webapp" % "12.0.16" % "container",
       "jakarta.servlet" % "jakarta.servlet-api" % "6.1.0" % "provided",
@@ -55,7 +58,8 @@ lazy val api = (project in file("."))
       Cmd("RUN", installExiftool) ::
       Cmd("USER", "1000:0") ::
       ExecCmd("CMD", "-J" + defaultJOption) :: Nil,
-    dockerEntrypoint := "bin/jetty-launcher" :: Nil
+    dockerEntrypoint := "bin/jetty-launcher" :: Nil,
+    testFrameworks += new TestFramework("munit.Framework")
   )
 
 Jetty / containerLibs := Seq("org.eclipse.jetty.ee10" % "jetty-ee10-runner" % "12.0.10" intransitive ())

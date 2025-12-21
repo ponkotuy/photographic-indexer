@@ -22,7 +22,7 @@ object TestExifParser {
   def testPattern(conf: MyConfig)(name: String, fileName: String): Unit = {
     println(s"""
                |----------------
-               |    ${name}
+               |    ${ name }
                |----------------
                |""".stripMargin)
     val file = conf.app.photosDir.resolve(fileName)

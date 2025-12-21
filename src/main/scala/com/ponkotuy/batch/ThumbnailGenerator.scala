@@ -2,11 +2,11 @@ package com.ponkotuy.batch
 
 import sun.awt.image.ToolkitImage
 
-import java.awt.image.{AreaAveragingScaleFilter, BufferedImage, FilteredImageSource, ImageObserver}
-import java.awt.{Image, Toolkit, image}
-import java.io.{ByteArrayOutputStream, File}
-import java.nio.file.{Files, Path}
-import javax.imageio.{IIOImage, ImageIO, ImageWriteParam}
+import java.awt.image.{ AreaAveragingScaleFilter, BufferedImage, FilteredImageSource, ImageObserver }
+import java.awt.{ Image, Toolkit, image }
+import java.io.{ ByteArrayOutputStream, File }
+import java.nio.file.{ Files, Path }
+import javax.imageio.{ IIOImage, ImageIO, ImageWriteParam }
 
 case class ThumbnailGenerator(width: Int, height: Int) {
   private[this] val filter = AreaAveragingScaleFilter(width, height)
