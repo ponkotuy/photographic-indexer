@@ -1,8 +1,6 @@
 package com.ponkotuy.db
 
 import com.ponkotuy.util.Extensions
-
-import java.time.LocalDateTime
 import scalikejdbc.*
 
 import java.nio.file.Path

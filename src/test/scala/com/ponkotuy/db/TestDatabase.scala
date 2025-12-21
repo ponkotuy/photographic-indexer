@@ -3,15 +3,17 @@ package com.ponkotuy.db
 import scalikejdbc.*
 
 import java.io.File
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{ Files, Path, Paths }
 import java.security.MessageDigest
 import scala.io.Source
 import scala.util.Using
 
 object TestDatabase {
-  private var initialized = false
+  private[this] var initialized = false
+  private[this] var testData: TestData = _
   private val dbPath = "test_db"
   private val migrationDir = "docker/flyway/sql"
+  private val testDataInitializerFile = "src/test/scala/com/ponkotuy/db/TestDataInitializer.scala"
   private val hashFile = new File(s"$dbPath.hash")
 
   def readOnly(f: DBSession => Unit): Unit = {
@@ -19,7 +21,18 @@ object TestDatabase {
     DB.readOnly(f)
   }
 
-  def initialize(): Unit = {
+  def localTx(f: DBSession => Unit): Unit =
+    try {
+      if (!initialized) initialize()
+      DB.localTx { session =>
+        f(session)
+        throw new RollbackException
+      }
+    } catch {
+      case _: RollbackException =>
+    }
+
+  private def initialize(): Unit = {
     if (!initialized) {
       val currentHash = computeMigrationHash()
       val savedHash = readSavedHash()
@@ -38,6 +51,7 @@ object TestDatabase {
       val dbFile = new File(s"$dbPath.mv.db")
       if (!dbFile.exists()) {
         applyMigrations()
+        TestDataInitializer.generate()
         saveHash(currentHash)
       }
 
@@ -52,7 +66,7 @@ object TestDatabase {
     }
   }
 
-  def deleteDbFiles(): Unit = {
+  private def deleteDbFiles(): Unit = {
     val dbFile = new File(s"$dbPath.mv.db")
     val traceFile = new File(s"$dbPath.trace.db")
     if (dbFile.exists()) dbFile.delete()
@@ -62,8 +76,8 @@ object TestDatabase {
 
   private def computeMigrationHash(): String = {
     val migrationPath = Paths.get(migrationDir)
-    if (Files.exists(migrationPath)) {
-      val content = Files.list(migrationPath)
+    val migrationContent = if (Files.exists(migrationPath)) {
+      Files.list(migrationPath)
         .toArray
         .map(_.asInstanceOf[Path])
         .filter(_.toString.endsWith(".sql"))
@@ -72,12 +86,22 @@ object TestDatabase {
           Using(Source.fromFile(file.toFile, "UTF-8"))(_.mkString).toOption
         }
         .mkString
-
-      val md = MessageDigest.getInstance("SHA-256")
-      md.digest(content.getBytes("UTF-8")).map("%02x".format(_)).mkString
     } else {
       ""
     }
+
+    val initializerContent = {
+      val initializerPath = Paths.get(testDataInitializerFile)
+      if (Files.exists(initializerPath)) {
+        Using(Source.fromFile(initializerPath.toFile, "UTF-8"))(_.mkString).getOrElse("")
+      } else {
+        ""
+      }
+    }
+
+    val content = migrationContent + initializerContent
+    val md = MessageDigest.getInstance("SHA-256")
+    md.digest(content.getBytes("UTF-8")).map("%02x".format(_)).mkString
   }
 
   private def readSavedHash(): Option[String] = {
@@ -122,3 +146,5 @@ object TestDatabase {
     }
   }
 }
+
+class RollbackException extends Exception("Rollback")
