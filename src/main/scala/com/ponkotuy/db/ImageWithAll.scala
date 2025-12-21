@@ -25,7 +25,7 @@ object ImageWithAll {
     groupConcat(imf.filesize, sqls"imf_filesizes") :: Nil
   private[this] val tSelect = groupConcat(t.id, sqls"t_ids") ::
     groupConcat(t.name, sqls"t_names") :: Nil
-  private[this] val selectAll = i.resultAll +: fi.resultAll +: (imfSelect ++ tSelect ++ Geom.select)
+  private[this] val selectAll = i.resultAll +: fi.resultAll +: ec.resultAll +: (imfSelect ++ tSelect ++ Geom.select)
   private def selectWithJoin(where: SQLSyntax) = select(selectAll: _*).from(Image as i)
     .leftJoin(Geom as g).on(i.geoId, g.id)
     .innerJoin(ImageFile as imf).on(i.id, imf.imageId)

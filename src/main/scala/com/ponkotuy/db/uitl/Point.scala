@@ -8,6 +8,6 @@ trait Point {
 }
 
 object MySQLPoint extends Point {
-  override def selectX(column: String) = sqls"ST_X(${ column })"
-  override def selectY(column: String) = sqls"ST_Y(${ column })"
+  override def selectX(column: String): SQLSyntax = SQLSyntax.createUnsafely(s"ST_X(${ column })")
+  override def selectY(column: String): SQLSyntax = SQLSyntax.createUnsafely(s"ST_Y(${ column })")
 }

@@ -36,12 +36,11 @@ class PublicImage(app: AppConfig)
     val id = params("id").toLong
     val withExif = params.get("exif").exists(_.toBoolean)
     val result = imageService.findImage(id, isPublic = true, withExif).asJson.noSpaces
-    println(result)
     result
   }
 
   get("/random") {
-    DB.readOnly { implicit session =>
+    DB.localTx { implicit session =>
       val withExif = params.get("exif").exists(_.toBoolean)
       val image = ImageWithAll.findRandom(ImageWithAll.isPublicSQL)
       println(image)

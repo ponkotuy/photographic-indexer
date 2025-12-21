@@ -1,10 +1,26 @@
 package com.ponkotuy.db
 
 import org.apache.commons.math3.fraction.Fraction
-import org.gbif.common.parsers.geospatial.LatLng
 import scalikejdbc.*
 
 import java.time.LocalDateTime
+
+private case class ExifCacheDB(
+    imageId: Long,
+    serialNo: Option[Int],
+    shotId: Option[Long],
+    shootingAt: LocalDateTime,
+    latitude: Option[Double],
+    longitude: Option[Double],
+    camera: String,
+    lens: Option[String],
+    focalLength: Option[Int],
+    aperture: Option[BigDecimal],
+    exposureNumerator: Option[Int],
+    exposureDenominator: Option[Int],
+    iso: Option[Int],
+    createdAt: LocalDateTime
+)
 
 case class ExifCache(
     imageId: Long,
@@ -22,32 +38,34 @@ case class ExifCache(
     createdAt: LocalDateTime
 )
 
-object ExifCache extends SQLSyntaxSupport[ExifCache] {
+object ExifCache extends SQLSyntaxSupport[ExifCacheDB] {
   override val tableName = "exif_cache"
   val ec = ExifCache.syntax("ec")
 
-  def apply(rn: ResultName[ExifCache])(rs: WrappedResultSet): ExifCache = {
-    val exposureNumerator = rs.intOpt(rn.field("exposureNumerator"))
-    val exposureDenominator = rs.intOpt(rn.field("exposureDenominator"))
-    val exposure = for {
-      num <- exposureNumerator
-      denom <- exposureDenominator
-    } yield new Fraction(num, denom)
+  def apply(rn: ResultName[ExifCacheDB])(rs: WrappedResultSet): ExifCache = {
+    val x = autoConstruct(rs, rn)
+    fromDB(x)
+  }
 
+  def fromDB(x: ExifCacheDB): ExifCache = {
+    val exposure = for {
+      num <- x.exposureNumerator
+      denom <- x.exposureDenominator
+    } yield new Fraction(num, denom)
     ExifCache(
-      imageId = rs.long(rn.imageId),
-      serialNo = rs.intOpt(rn.serialNo),
-      shotId = rs.longOpt(rn.shotId),
-      shootingAt = rs.localDateTime(rn.shootingAt),
-      latitude = rs.doubleOpt(rn.latitude),
-      longitude = rs.doubleOpt(rn.longitude),
-      camera = rs.string(rn.camera),
-      lens = rs.stringOpt(rn.lens),
-      focalLength = rs.intOpt(rn.focalLength),
-      aperture = rs.bigDecimalOpt(rn.aperture).map(BigDecimal(_)),
+      imageId = x.imageId,
+      serialNo = x.serialNo,
+      shotId = x.shotId,
+      shootingAt = x.shootingAt,
+      latitude = x.latitude,
+      longitude = x.longitude,
+      camera = x.camera,
+      lens = x.lens,
+      focalLength = x.focalLength,
+      aperture = x.aperture,
       exposure = exposure,
-      iso = rs.intOpt(rn.iso),
-      createdAt = rs.localDateTime(rn.createdAt)
+      iso = x.iso,
+      createdAt = x.createdAt
     )
   }
 
@@ -55,8 +73,8 @@ object ExifCache extends SQLSyntaxSupport[ExifCache] {
     select.from(ExifCache as ec).where.eq(ec.imageId, imageId)
   }.map(ExifCache(ec.resultName)).single.apply()
 
-  def findAll(imageIds: Seq[Long])(implicit session: DBSession): Seq[ExifCache] = withSQL {
-    select.from(ExifCache as ec).where.in(ec.imageId, imageIds)
+  def findAll(where: Option[SQLSyntax] = None)(implicit session: DBSession): Seq[ExifCache] = withSQL {
+    select.from(ExifCache as ec).where(where)
   }.map(ExifCache(ec.resultName)).list.apply()
 
   def create(

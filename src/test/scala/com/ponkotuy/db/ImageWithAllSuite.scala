@@ -16,6 +16,7 @@ class ImageWithAllSuite extends FunSuite {
       assertEquals(image.id, data.image.id)
       assertEquals(image.files.size, 1)
       assertEquals(image.files.head.id, data.image.fileId)
+      assert(image.exif.isDefined)
     }
   }
 
