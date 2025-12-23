@@ -16,9 +16,9 @@ export type ImageFile = {
 export type Exif = {
 	camera: string;
 	lens: string | null;
-	focal: number | null;
+	focalLength: number | null;
 	aperture: number | null;
-	exposureTime: string;
+	exposure: string;
 	iso: number;
 };
 
