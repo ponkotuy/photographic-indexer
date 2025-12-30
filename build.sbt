@@ -43,8 +43,7 @@ lazy val api = (project in file("."))
       "com.typesafe" % "config" % "1.4.3",
       "org.gbif" % "gbif-parsers" % "0.59",
       "org.apache.commons" % "commons-math3" % "3.6.1",
-      "com.flickr4java" % "flickr4java" % "3.0.9",
-      "io.github.yskszk63" % "jnhttp-multipartformdata-bodypublisher" % "0.0.1"
+      "com.flickr4java" % "flickr4java" % "3.0.9"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
     dockerBaseImage := "amd64/eclipse-temurin:17-jre-jammy",
