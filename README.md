@@ -42,9 +42,11 @@ $ docker compose run flickr
 ```
 
 ## Development
-The use of asdf is recommended. (Enable JDK/nodejs)
+The use of asdf or mise is recommended. (Enable JDK/nodejs)
 
 ### Backend(Scala+Scalatra)
+Requires `exiftool` to be installed on your system.
+
 ```shell
 $ docker compose -f docker-compose.dev.yml up # up DB
 $ sbt ~Jetty/start
