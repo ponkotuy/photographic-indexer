@@ -1,10 +1,17 @@
 <script lang="ts">
-  import "carbon-components-svelte/css/g80.css";
-  import MyHeader from '$lib/MyHeader.svelte'
-  import { Breadcrumb, BreadcrumbItem, Content, Link, ListItem, UnorderedList } from 'carbon-components-svelte'
-  import { FileType } from '$lib/file_element'
-  import type { DirectoryPageResult } from './+page'
-  import * as path from 'path'
+  import 'carbon-components-svelte/css/g80.css';
+  import MyHeader from '$lib/MyHeader.svelte';
+  import {
+    Breadcrumb,
+    BreadcrumbItem,
+    Content,
+    Link,
+    ListItem,
+    UnorderedList
+  } from 'carbon-components-svelte';
+  import { FileType } from '$lib/file_element';
+  import type { DirectoryPageResult } from './+page';
+  import * as path from 'path';
 
   export let data: DirectoryPageResult;
   $: filePath = data.file;

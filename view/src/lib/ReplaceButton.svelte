@@ -1,7 +1,12 @@
 <script lang="ts">
-  import { Button, FileUploaderDropContainer, FileUploaderItem, Modal } from "carbon-components-svelte";
-  import { Upload } from "carbon-icons-svelte";
-  import { host } from "$lib/global";
+  import {
+    Button,
+    FileUploaderDropContainer,
+    FileUploaderItem,
+    Modal
+  } from 'carbon-components-svelte';
+  import { Upload } from 'carbon-icons-svelte';
+  import { host } from '$lib/global';
 
   export let path: string;
 
@@ -11,9 +16,8 @@
 
   function replace() {
     const formData = new FormData();
-    formData.append("file", files[0]);
-    fetch(`${host()}/app/static${path}`, { method: "PUT", body: formData })
-      .then(reset)
+    formData.append('file', files[0]);
+    fetch(`${host()}/app/static${path}`, { method: 'PUT', body: formData }).then(reset);
   }
 
   function checkFile(files: File[]) {
@@ -27,7 +31,13 @@
   }
 </script>
 
-<Button kind="ghost" size="small" icon={Upload} iconDescription="Replace File" on:click={() => open = true} />
+<Button
+  kind="ghost"
+  size="small"
+  icon={Upload}
+  iconDescription="Replace File"
+  on:click={() => (open = true)}
+/>
 <Modal
   bind:open
   modalHeading="Replace file"
@@ -45,16 +55,16 @@
   {:else}
     <p>Upload file to replace {path}</p>
     <div style="text-align: center; margin-top: 8px;">
-    <FileUploaderDropContainer
-      bind:files
-      labelText="Drag and drop files here or click to upload"
-      validateFiles={checkFile}
-      on:change={(e) => {
-        console.log(e);
-        console.log(files);
-        isReady = true;
-      }}
-    />
+      <FileUploaderDropContainer
+        bind:files
+        labelText="Drag and drop files here or click to upload"
+        validateFiles={checkFile}
+        on:change={(e) => {
+          console.log(e);
+          console.log(files);
+          isReady = true;
+        }}
+      />
     </div>
   {/if}
 </Modal>

@@ -1,31 +1,34 @@
 <script lang="ts">
-  import "carbon-components-svelte/css/g80.css";
-  import MyHeader from "$lib/MyHeader.svelte";
+  import 'carbon-components-svelte/css/g80.css';
+  import MyHeader from '$lib/MyHeader.svelte';
   import {
-    Content, Link,
-    ListItem, StructuredList,
+    Content,
+    Link,
+    ListItem,
+    StructuredList,
     StructuredListBody,
     StructuredListCell,
     StructuredListHead,
-    StructuredListRow, Tile,
+    StructuredListRow,
+    Tile,
     UnorderedList
-  } from "carbon-components-svelte";
-  import { host } from "$lib/global";
-  import type { ImageData } from "$lib/image_type";
-  import ImageTag from "$lib/ImageTag.svelte";
-  import LoadImage from "$lib/LoadImage.svelte";
-  import { DateTime } from "luxon";
-  import Exif from "./Exif.svelte";
-  import DeleteImage from "./DeleteImage.svelte";
-  import TogglePublic from "$lib/TogglePublic.svelte";
-  import ReplaceButton from "$lib/ReplaceButton.svelte";
+  } from 'carbon-components-svelte';
+  import { host } from '$lib/global';
+  import type { ImageData } from '$lib/image_type';
+  import ImageTag from '$lib/ImageTag.svelte';
+  import LoadImage from '$lib/LoadImage.svelte';
+  import { DateTime } from 'luxon';
+  import Exif from './Exif.svelte';
+  import DeleteImage from './DeleteImage.svelte';
+  import TogglePublic from '$lib/TogglePublic.svelte';
+  import ReplaceButton from '$lib/ReplaceButton.svelte';
 
   export let data: ImageData;
 
-  const extensions = ["jpg", "jpeg", "png", "webp"];
+  const extensions = ['jpg', 'jpeg', 'png', 'webp'];
 
   function isValidImage(path: String): Boolean {
-    const ext: string | undefined = path.split(".").pop()?.toLowerCase();
+    const ext: string | undefined = path.split('.').pop()?.toLowerCase();
     if (!ext) return false;
     return extensions.includes(ext);
   }
@@ -68,7 +71,7 @@
             {#each data.files as file}
               <ListItem>
                 <Link href="{host()}/app/static{file.path}">{file.path}</Link>
-                <ReplaceButton path={file.path}/>
+                <ReplaceButton path={file.path} />
               </ListItem>
             {/each}
           </UnorderedList>

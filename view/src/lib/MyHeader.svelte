@@ -1,6 +1,6 @@
 <script>
-  import { Header, HeaderNav, HeaderNavItem } from "carbon-components-svelte";
-  import { DateTime } from "luxon";
+  import { Header, HeaderNav, HeaderNavItem } from 'carbon-components-svelte';
+  import { DateTime } from 'luxon';
 </script>
 
 <Header platformName="Photographic Indexer" href="/">

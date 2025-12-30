@@ -1,60 +1,60 @@
 import _ from 'lodash';
 
 export type Geom = {
-	id: number;
-	address: string;
-	lat: number;
-	lon: number;
+  id: number;
+  address: string;
+  lat: number;
+  lon: number;
 };
 
 export type ImageFile = {
-	id: number;
-	path: string;
-	filesize: number;
+  id: number;
+  path: string;
+  filesize: number;
 };
 
 export type Exif = {
-	camera: string;
-	lens: string | null;
-	focalLength: number | null;
-	aperture: number | null;
-	exposure: string;
-	iso: number;
+  camera: string;
+  lens: string | null;
+  focalLength: number | null;
+  aperture: number | null;
+  exposure: string;
+  iso: number;
 };
 
 export type Flickr = {
-	url: string;
-}
+  url: string;
+};
 
 export type ImageData = {
-	id: number;
-	cameraId: number;
-	shotId: number;
-	shootingAt: string;
-	geo: Geom | null;
-	files: ImageFile[];
-	exif: Exif | null;
-	tags: Tag[];
-	isPublic: boolean;
-	note: string | null;
-	flickr: Flickr | null;
+  id: number;
+  cameraId: number;
+  shotId: number;
+  shootingAt: string;
+  geo: Geom | null;
+  files: ImageFile[];
+  exif: Exif | null;
+  tags: Tag[];
+  isPublic: boolean;
+  note: string | null;
+  flickr: Flickr | null;
 };
 
 export type Tag = {
-	id: number;
-	name: string;
+  id: number;
+  name: string;
 };
 
 export function thumbnail(image: ImageData): ImageFile {
-	const minImage = _.minBy(image.files, (f) => f.filesize);
-	if (minImage) return minImage;
-	throw new Error('image.files is empty');
+  const minImage = _.minBy(image.files, (f) => f.filesize);
+  if (minImage) return minImage;
+  throw new Error('image.files is empty');
 }
 
 export type StatsAggregate = {
-	period: string;
-	category: string;
-	min: number | null;
-	max: number | null;
-	count: number;
+  period: string;
+  category: string;
+  min: number | null;
+  max: number | null;
+  count: number;
 };

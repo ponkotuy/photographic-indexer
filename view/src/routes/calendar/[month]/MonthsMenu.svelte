@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Button, OverflowMenu, OverflowMenuItem } from "carbon-components-svelte";
-  import { onMount } from "svelte";
-  import { host } from "$lib/global";
-  import { Calendar } from "carbon-icons-svelte";
+  import { Button, OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import { onMount } from 'svelte';
+  import { host } from '$lib/global';
+  import { Calendar } from 'carbon-icons-svelte';
 
   export let now: string;
   export let data: string[] = [];
@@ -10,7 +10,7 @@
   onMount(() => {
     fetch(`${host()}/app/images/calendar/months`)
       .then((res) => res.json())
-      .then((res) => data = res);
+      .then((res) => (data = res));
   });
 </script>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Grid, Pagination, Row } from "carbon-components-svelte";
-  import { goto } from "$app/navigation";
+  import { Grid, Pagination, Row } from 'carbon-components-svelte';
+  import { goto } from '$app/navigation';
 
   export let totalItems: number;
   export let page = 1;
@@ -8,20 +8,14 @@
 
   function updatePage() {
     const query = new URLSearchParams();
-    query.set("page", page.toString());
-    query.set("count", pageSize.toString());
+    query.set('page', page.toString());
+    query.set('count', pageSize.toString());
     goto(`?${query.toString()}`);
   }
 </script>
 
 <Grid narrow>
   <Row padding>
-    <Pagination
-      totalItems={totalItems}
-      pageSizes={[20, 50]}
-      bind:page
-      bind:pageSize
-      on:update={updatePage}
-    />
+    <Pagination {totalItems} pageSizes={[20, 50]} bind:page bind:pageSize on:update={updatePage} />
   </Row>
 </Grid>

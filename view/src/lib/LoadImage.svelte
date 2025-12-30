@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ImageLoader, Loading } from "carbon-components-svelte";
+  import { ImageLoader, Loading } from 'carbon-components-svelte';
 
   export let src: string;
 </script>
