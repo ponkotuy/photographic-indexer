@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ListItem, UnorderedList } from 'carbon-components-svelte';
+  import type { ImageData } from '$lib/image_type';
 
   export let image: ImageData;
 </script>

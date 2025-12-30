@@ -3,7 +3,7 @@
   import { host } from '$lib/global';
 
   export let imageId: number;
-  export let state: Boolean;
+  export let state: boolean;
 
   function togglePublic() {
     const method = state ? 'PUT' : 'DELETE';

@@ -3,6 +3,7 @@
   import { host } from '$lib/global';
   import ExifList from '$lib/ExifList.svelte';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import type { ImageData } from '$lib/image_type';
 
   export let data: ImageData;
   $: url = `${host()}/app/public/static/images/${data.id}`;

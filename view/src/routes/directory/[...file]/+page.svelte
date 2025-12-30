@@ -11,7 +11,7 @@
   } from 'carbon-components-svelte';
   import { FileType } from '$lib/file_element';
   import type { DirectoryPageResult } from './+page';
-  import * as path from 'path';
+  import * as pathUtil from 'path-browserify';
 
   export let data: DirectoryPageResult;
   $: filePath = data.file;
@@ -36,7 +36,7 @@
     {#each fileList as file}
       <ListItem>
         {#if file.fileType === FileType.Directory}
-          <Link href="/directory/{path.join(filePath, file.name)}">{file.name}/</Link>
+          <Link href="/directory/{pathUtil.join(filePath, file.name)}">{file.name}/</Link>
         {:else if file.imageId}
           <Link href="/image/{file.imageId}">{file.name}</Link>
         {:else}

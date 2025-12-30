@@ -5,7 +5,7 @@
   import { Button, Column, Content, Dropdown, Grid, Link, Row } from 'carbon-components-svelte';
   import { CaretLeft, CaretRight } from 'carbon-icons-svelte';
   import { host } from '$lib/global';
-  import { thumbnail } from '$lib/image_type';
+  import { thumbnail, type ImageData } from '$lib/image_type';
   import { DateTime } from 'luxon';
   import type { DatePageResult } from './+page';
   import LoadImage from '$lib/LoadImage.svelte';
@@ -27,7 +27,7 @@
 
   $: imageValidCount = data.images.filter(imageFilter).length;
 
-  $: imageFilter = (img) => {
+  $: imageFilter = (img: ImageData) => {
     return (
       (isPublic == '0' || img.isPublic) &&
       (selectTag == '-1' || img.tags.map((t) => t.id.toString()).includes(selectTag))
@@ -35,11 +35,11 @@
   };
 
   function yesterday(date: string) {
-    return DateTime.fromISO(date).minus({ days: 1 }).toISODate();
+    return DateTime.fromISO(date).minus({ days: 1 }).toISODate()!;
   }
 
   function tomorrow(date: string) {
-    return DateTime.fromISO(date).plus({ days: 1 }).toISODate();
+    return DateTime.fromISO(date).plus({ days: 1 }).toISODate()!;
   }
 
   function hm(date: string): string {
@@ -71,14 +71,14 @@
   <Grid>
     <Dropdown
       type="inline"
-      titleText="public"
+      {...{ titleText: 'public' }}
       bind:selectedId={isPublic}
       items={[
         { id: '0', text: 'All' },
         { id: '1', text: 'Public Only' }
       ]}
     />
-    <Dropdown type="inline" titleText="tag" bind:selectedId={selectTag} items={tags} />
+    <Dropdown type="inline" {...{ titleText: 'tag' }} bind:selectedId={selectTag} items={tags} />
   </Grid>
 
   {#if imageValidCount > 20}

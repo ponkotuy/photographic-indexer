@@ -4,6 +4,7 @@
   import ExifList from '$lib/ExifList.svelte';
   import { host } from '$lib/global';
   import { page } from '$app/state';
+  import type { ImageData } from '$lib/image_type';
 
   export let data: ImageData;
   $: url = `${host()}/app/public/static/images/${data.id}`;

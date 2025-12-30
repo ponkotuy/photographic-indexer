@@ -20,7 +20,7 @@
     fetch(`${host()}/app/static${path}`, { method: 'PUT', body: formData }).then(reset);
   }
 
-  function checkFile(files: File[]) {
+  function checkFile(files: readonly File[]): readonly File[] {
     return files.filter((file) => path.includes(file.name));
   }
 

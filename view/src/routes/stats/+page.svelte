@@ -274,19 +274,23 @@
   <Grid narrow>
     <Row style="margin-bottom: 1rem;">
       <Column lg={3}>
-        <Dropdown titleText="Metric" bind:selectedId={metric} items={metricItems} />
+        <Dropdown {...{ titleText: 'Metric' }} bind:selectedId={metric} items={metricItems} />
       </Column>
       <Column lg={3}>
-        <Dropdown titleText="Granularity" bind:selectedId={granularity} items={granularityItems} />
+        <Dropdown
+          {...{ titleText: 'Granularity' }}
+          bind:selectedId={granularity}
+          items={granularityItems}
+        />
       </Column>
       {#if granularity === 'monthly' || granularity === 'daily'}
         <Column lg={2}>
-          <Dropdown titleText="Year" bind:selectedId={year} items={yearItems} />
+          <Dropdown {...{ titleText: 'Year' }} bind:selectedId={year} items={yearItems} />
         </Column>
       {/if}
       {#if granularity === 'daily'}
         <Column lg={2}>
-          <Dropdown titleText="Month" bind:selectedId={month} items={monthItems} />
+          <Dropdown {...{ titleText: 'Month' }} bind:selectedId={month} items={monthItems} />
         </Column>
       {/if}
       <Column lg={2} style="display: flex; align-items: flex-end;">

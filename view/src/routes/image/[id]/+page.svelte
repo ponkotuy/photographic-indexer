@@ -34,7 +34,7 @@
   }
 
   function isoDate(at: string): string {
-    return DateTime.fromISO(at).toISODate();
+    return DateTime.fromISO(at).toISODate()!;
   }
 
   function refreshImage() {

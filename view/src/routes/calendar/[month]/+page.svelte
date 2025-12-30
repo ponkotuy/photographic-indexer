@@ -45,7 +45,7 @@
         <h2>{monthDate.toFormat(YMUser)}</h2>
       </Column>
       <Column lg={1}>
-        <MonthsMenu now={monthDate.toFormat(YMMachine)} style="padding: 11px 16px;" />
+        <MonthsMenu now={monthDate.toFormat(YMMachine)} />
       </Column>
       <Column lg={3}>
         <Button href="/calendar/{monthDate.plus({ months: 1 }).toFormat(YMMachine)}" kind="ghost">

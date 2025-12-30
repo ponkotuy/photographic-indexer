@@ -94,7 +94,7 @@
   }
 
   function isoDate(at: string): string {
-    return DateTime.fromISO(at).toISODate();
+    return DateTime.fromISO(at).toISODate()!;
   }
 
   function disableSubmit(keyword: string): boolean {
@@ -113,7 +113,7 @@
 
 <MyHeader />
 <Content>
-  <Form on:submit={searchSubmit} disabled={disableSubmit(keyword)} style="margin-bottom: 24px;">
+  <Form on:submit={searchSubmit} style="margin-bottom: 24px;">
     <FormGroup legendText="Search Keyword(Tab/Address/Note/Path)">
       <Search id="keyword" bind:value={keyword} />
     </FormGroup>
