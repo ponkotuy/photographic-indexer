@@ -2,34 +2,29 @@
 	import 'carbon-components-svelte/css/g80.css';
 	import '$lib/app.css';
 	import MyHeader from '$lib/MyHeader.svelte';
-	import {
-		Button,
-		Column,
-		Content,
-		Dropdown,
-		Grid,
-		Row
-	} from 'carbon-components-svelte';
-	import { onMount, onDestroy } from 'svelte';
+	import { Button, Column, Content, Dropdown, Grid, Row } from 'carbon-components-svelte';
+	import { untrack } from 'svelte';
 	import type { StatsPageResult } from './+page';
 	import type { StatsAggregate } from '$lib/image_type';
 	import _ from 'lodash';
 	import { Chart } from 'chart.js/auto';
 	import { browser } from '$app/environment';
 	import { host } from '$lib/global';
+	import { DateTime } from 'luxon';
 
-	export let data: StatsPageResult;
+	let { data }: { data: StatsPageResult } = $props();
 
-	let metric = data.metric;
-	let granularity = data.granularity;
-	let year: string = data.year?.toString() ?? new Date().getFullYear().toString();
-	let month: string = data.month?.toString() ?? (new Date().getMonth() + 1).toString();
+	const now = DateTime.now();
+	let metric = $derived(data.metric);
+	let granularity = $derived(data.granularity);
+	let year = $derived(data.year?.toString() ?? now.year.toString());
+	let month = $derived(data.month?.toString() ?? now.month.toString());
 
-	let canvas: HTMLCanvasElement;
-	let pieCanvas: HTMLCanvasElement;
-	let chart: Chart | null = null;
-	let pieChart: Chart | null = null;
-	let availableMonths: string[] = [];
+	let canvas: HTMLCanvasElement | undefined = $state();
+	let pieCanvas: HTMLCanvasElement | undefined = $state();
+	let chart: Chart | null = $state(null);
+	let pieChart: Chart | null = $state(null);
+	let availableMonths: string[] = $state([]);
 
 	const metricItems = [
 		{ id: 'focal_length', text: 'Focal Length' },
@@ -44,24 +39,34 @@
 		{ id: 'daily', text: 'Daily' }
 	];
 
+	const updateUrl = $derived(buildUrl());
+
 	// Extract unique years from availableMonths (format: YYYYMM)
-	$: yearItems = _.uniq(availableMonths.map((m) => m.substring(0, 4)))
-		.sort()
-		.reverse()
-		.map((y) => ({ id: y, text: y }));
+	const yearItems = $derived(
+		_.uniq(availableMonths.map((m) => m.substring(0, 4)))
+			.sort()
+			.reverse()
+			.map((y) => ({ id: y, text: y }))
+	);
 
 	// Extract months for selected year
-	$: monthItems = availableMonths
-		.filter((m) => m.startsWith(year))
-		.map((m) => {
-			const mo = m.substring(4, 6);
-			return { id: parseInt(mo, 10).toString(), text: mo };
-		})
-		.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+	const monthItems = $derived(
+		availableMonths
+			.filter((m) => m.startsWith(year))
+			.map((m) => {
+				const mo = m.substring(4, 6);
+				return { id: parseInt(mo, 10).toString(), text: mo };
+			})
+			.sort((a, b) => parseInt(a.id) - parseInt(b.id))
+	);
 
-	onMount(async () => {
-		const res = await fetch(`${host()}/app/images/calendar/months`);
-		availableMonths = await res.json();
+	// Fetch available months on mount
+	$effect(() => {
+		fetch(`${host()}/app/images/calendar/months`)
+			.then((res) => res.json())
+			.then((json) => {
+				availableMonths = json;
+			});
 	});
 
 	function buildUrl(): string {
@@ -253,18 +258,11 @@
 		createPieChart();
 	}
 
-	onDestroy(() => {
-		if (chart) {
-			chart.destroy();
-		}
-		if (pieChart) {
-			pieChart.destroy();
+	$effect(() => {
+		if (canvas && pieCanvas && data) {
+			untrack(() => createCharts());
 		}
 	});
-
-	$: if (canvas && pieCanvas && data) {
-		createCharts();
-	}
 </script>
 
 <svelte:head>
@@ -292,7 +290,7 @@
 				</Column>
 			{/if}
 			<Column lg={2} style="display: flex; align-items: flex-end;">
-				<Button href={buildUrl()}>Update</Button>
+				<Button href={updateUrl}>Update</Button>
 			</Column>
 		</Row>
 		<Row>
@@ -313,13 +311,13 @@
 </Content>
 
 <style>
-  .chart-container {
-    height: 600px;
-    width: 100%;
-  }
+	.chart-container {
+		height: 600px;
+		width: 100%;
+	}
 
-  .pie-chart-container {
-    height: 400px;
-    width: 100%;
-  }
+	.pie-chart-container {
+		height: 400px;
+		width: 100%;
+	}
 </style>
