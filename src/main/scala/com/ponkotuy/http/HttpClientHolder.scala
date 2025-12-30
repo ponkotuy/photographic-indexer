@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 import scala.jdk.DurationConverters._
 
 class HttpClientHolder {
-  private[this] var httpClient = HttpClient.newHttpClient()
+  private var httpClient = HttpClient.newHttpClient()
 
   def send[T](req: HttpRequest, res: BodyHandler[T]): HttpResponse[T] =
     try {

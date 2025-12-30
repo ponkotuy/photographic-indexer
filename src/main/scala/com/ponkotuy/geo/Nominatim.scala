@@ -17,7 +17,7 @@ import scala.util.Try
 class Nominatim {
   val Host = "https://nominatim.openstreetmap.org"
 
-  private[this] val httpClient = new HttpClientHolder
+  private val httpClient = new HttpClientHolder
 
   def reverse(lat: Double, lon: Double): Option[ReverseResult] = {
     val url = HttpUtil.params(

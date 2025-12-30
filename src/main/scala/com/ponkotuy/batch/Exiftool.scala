@@ -26,8 +26,8 @@ case class Exiftool(json: JsonObject) {
 }
 
 class ProcessResultEither extends ProcessLogger {
-  private[this] val stdoutLines = mutable.ArrayBuffer[String]()
-  private[this] val stderrLines = mutable.ArrayBuffer[String]()
+  private val stdoutLines = mutable.ArrayBuffer[String]()
+  private val stderrLines = mutable.ArrayBuffer[String]()
 
   override def out(line: => String): Unit = stdoutLines.append(line)
   override def err(line: => String): Unit = stderrLines.append(line)

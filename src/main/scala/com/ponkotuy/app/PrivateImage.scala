@@ -80,7 +80,7 @@ class PrivateImage(config: MyConfig)
     }
   }
 
-  private[this] val generator = ThumbnailGenerator(960, 640)
+  private val generator = ThumbnailGenerator(960, 640)
 
   get("/:id/thumbnail") {
     contentType = "image/jpeg"
@@ -126,7 +126,7 @@ class PrivateImage(config: MyConfig)
     }
   }
 
-  private[this] val clipOpt = config.clip.map(new ClipCache(_))
+  private val clipOpt = config.clip.map(new ClipCache(_))
 
   get("/search_clip") {
     val result = for {

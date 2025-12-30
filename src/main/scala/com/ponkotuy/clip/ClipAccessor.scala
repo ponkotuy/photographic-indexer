@@ -1,17 +1,17 @@
 package com.ponkotuy.clip
 
 import com.ponkotuy.config.ClipConfig
-import com.ponkotuy.http.{HttpClientHolder, HttpUtil, JsonHandler}
+import com.ponkotuy.http.{ HttpClientHolder, HttpUtil, JsonHandler }
 import io.circe.Json
 import io.circe.generic.auto._
 
 import java.net.URI
-import java.net.http.{HttpRequest, HttpResponse}
-import java.nio.file.{Files, Path}
+import java.net.http.{ HttpRequest, HttpResponse }
+import java.nio.file.{ Files, Path }
 import java.util.UUID
 
 class ClipAccessor(conf: ClipConfig) {
-  private[this] val httpClient = new HttpClientHolder
+  private val httpClient = new HttpClientHolder
 
   def text(str: String): Option[Array[Float]] = {
     val url = HttpUtil.params(

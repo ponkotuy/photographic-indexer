@@ -20,13 +20,13 @@ object ImageWithAll {
   import ExifCache.ec
 
   private def groupConcat(sql: SQLSyntax, name: SQLSyntax) = sqls"group_concat(${ sql }) as ${ name }"
-  private[this] val imfSelect = groupConcat(imf.id, sqls"imf_ids") ::
+  private val imfSelect = groupConcat(imf.id, sqls"imf_ids") ::
     groupConcat(imf.path, sqls"imf_paths") ::
     groupConcat(imf.filesize, sqls"imf_filesizes") :: Nil
-  private[this] val tSelect = groupConcat(t.id, sqls"t_ids") ::
+  private val tSelect = groupConcat(t.id, sqls"t_ids") ::
     groupConcat(t.name, sqls"t_names") :: Nil
-  private[this] val selectAll = i.resultAll +: fi.resultAll +: ec.resultAll +: (imfSelect ++ tSelect ++ Geom.select)
-  private def selectWithJoin(where: SQLSyntax) = select(selectAll: _*).from(Image as i)
+  private val selectAll = i.resultAll +: fi.resultAll +: ec.resultAll +: (imfSelect ++ tSelect ++ Geom.select)
+  private def selectWithJoin(where: SQLSyntax) = select(selectAll*).from(Image as i)
     .leftJoin(Geom as g).on(i.geoId, g.id)
     .innerJoin(ImageFile as imf).on(i.id, imf.imageId)
     .leftJoin(ImageTag as it).on(i.id, it.imageId)
@@ -123,7 +123,7 @@ object ImageWithAll {
   )(implicit session: DBSession): Seq[Image] = {
     val result = withSQL {
       selectWithJoin(search.query)
-        .orderBy(search.orderColumns: _*)
+        .orderBy(search.orderColumns*)
         .limit(paging.limit).offset(paging.offset)
     }.map(apply).list.apply()
     findAllInIds(result.map(_.id))

@@ -25,7 +25,7 @@ case class SearchParams(keyword: String, tags: Seq[Tag]) {
         )
       }
     }
-    sqls.toAndConditionOpt(wordGroups: _*).getOrElse(sqls"true")
+    sqls.toAndConditionOpt(wordGroups*).getOrElse(sqls"true")
   }
 
   def orderColumns: Seq[SQLSyntax] = againstNote(keyword).desc :: againstAddress(keyword).desc :: i.id :: Nil

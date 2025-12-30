@@ -7,7 +7,7 @@ import com.flickr4java.flickr.{ Flickr, REST }
 import scala.jdk.CollectionConverters.*
 
 class FlickrAccessor(apiKey: String, secret: String) {
-  private[this] val api = new Flickr(apiKey, secret, new REST())
+  private val api = new Flickr(apiKey, secret, new REST())
 
   /** @param userId:
     *   NSID like "191519170@N08"

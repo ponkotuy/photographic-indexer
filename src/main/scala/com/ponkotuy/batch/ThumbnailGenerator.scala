@@ -9,7 +9,7 @@ import java.nio.file.{ Files, Path }
 import javax.imageio.{ IIOImage, ImageIO, ImageWriteParam }
 
 case class ThumbnailGenerator(width: Int, height: Int) {
-  private[this] val filter = AreaAveragingScaleFilter(width, height)
+  private val filter = AreaAveragingScaleFilter(width, height)
 
   def gen(path: Path): Array[Byte] = {
     val reader = ImageIO.getImageReadersBySuffix("jpg").next()

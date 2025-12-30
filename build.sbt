@@ -5,9 +5,18 @@ val ScalatraVersion = "3.1.0"
 val CirceVersion = "0.14.15"
 val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
-ThisBuild / scalaVersion := "3.3.4"
+ThisBuild / scalaVersion := "3.7.4"
 ThisBuild / organization := "com.ponkotuy"
-ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xmax-inlines", "64", "-no-indent", "-rewrite")
+ThisBuild / scalacOptions ++= Seq(
+  "-unchecked",
+  "-deprecation",
+  "-Xmax-inlines",
+  "64",
+  "-no-indent",
+  "-rewrite",
+  "-source",
+  "3.4-migration"
+)
 ThisBuild / javaOptions += defaultJOption
 Test / fork := true
 
@@ -61,5 +70,7 @@ lazy val api = (project in file("."))
     testFrameworks += new TestFramework("munit.Framework")
   )
 
-Jetty / containerLibs := Seq("org.eclipse.jetty.ee10" % "jetty-ee10-runner" % "12.0.30" intransitive ())
+Jetty / containerLibs := Seq(
+  "org.eclipse.jetty.ee10" % "jetty-ee10-runner" % "12.0.30" intransitive ()
+)
 Jetty / containerMain := "org.eclipse.jetty.ee10.runner.Runner"
