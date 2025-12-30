@@ -2,7 +2,7 @@ import com.typesafe.sbt.packager.docker.*
 import NativePackagerHelper.*
 
 val ScalatraVersion = "3.1.0"
-val CirceVersion = "0.14.10"
+val CirceVersion = "0.14.15"
 val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
 ThisBuild / scalaVersion := "3.3.4"
@@ -29,21 +29,21 @@ lazy val api = (project in file("."))
       "org.scalatra" %% "scalatra-json-jakarta" % ScalatraVersion,
       "org.scalatra" %% "scalatra-forms-jakarta" % ScalatraVersion,
       "org.scalatra" %% "scalatra-scalatest-jakarta" % ScalatraVersion % "test",
-      "org.scalameta" %% "munit" % "1.0.3" % Test,
-      "com.h2database" % "h2" % "2.3.232" % Test,
-      "ch.qos.logback" % "logback-classic" % "1.5.12" % "runtime",
-      "org.eclipse.jetty.ee10" % "jetty-ee10-webapp" % "12.0.16" % "container",
+      "org.scalameta" %% "munit" % "1.1.0" % Test,
+      "com.h2database" % "h2" % "2.4.240" % Test,
+      "ch.qos.logback" % "logback-classic" % "1.5.23" % "runtime",
+      "org.eclipse.jetty.ee10" % "jetty-ee10-webapp" % "12.0.30" % "container",
       "jakarta.servlet" % "jakarta.servlet-api" % "6.1.0" % "provided",
-      "org.scalikejdbc" %% "scalikejdbc" % "4.3.2",
-      "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "4.3.2",
+      "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
+      "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "4.3.5",
       "com.mysql" % "mysql-connector-j" % "8.4.0",
       "io.circe" %% "circe-core" % CirceVersion,
       "io.circe" %% "circe-generic" % CirceVersion,
       "io.circe" %% "circe-parser" % CirceVersion,
-      "com.typesafe" % "config" % "1.4.3",
-      "org.gbif" % "gbif-parsers" % "0.59",
+      "com.typesafe" % "config" % "1.4.5",
+      "org.gbif" % "gbif-parsers" % "0.67",
       "org.apache.commons" % "commons-math3" % "3.6.1",
-      "com.flickr4java" % "flickr4java" % "3.0.9"
+      "com.flickr4java" % "flickr4java" % "3.0.11"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
     dockerBaseImage := "amd64/eclipse-temurin:17-jre-jammy",
@@ -61,5 +61,5 @@ lazy val api = (project in file("."))
     testFrameworks += new TestFramework("munit.Framework")
   )
 
-Jetty / containerLibs := Seq("org.eclipse.jetty.ee10" % "jetty-ee10-runner" % "12.0.10" intransitive ())
+Jetty / containerLibs := Seq("org.eclipse.jetty.ee10" % "jetty-ee10-runner" % "12.0.30" intransitive ())
 Jetty / containerMain := "org.eclipse.jetty.ee10.runner.Runner"
