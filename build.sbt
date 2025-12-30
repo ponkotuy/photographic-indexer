@@ -36,7 +36,7 @@ lazy val api = (project in file("."))
       "jakarta.servlet" % "jakarta.servlet-api" % "6.1.0" % "provided",
       "org.scalikejdbc" %% "scalikejdbc" % "4.3.2",
       "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "4.3.2",
-      "mysql" % "mysql-connector-java" % "8.0.33",
+      "com.mysql" % "mysql-connector-j" % "8.4.0",
       "io.circe" %% "circe-core" % CirceVersion,
       "io.circe" %% "circe-generic" % CirceVersion,
       "io.circe" %% "circe-parser" % CirceVersion,
