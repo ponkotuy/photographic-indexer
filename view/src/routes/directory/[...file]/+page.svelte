@@ -1,15 +1,23 @@
 <script lang="ts">
-  import "carbon-components-svelte/css/g80.css";
-  import MyHeader from '$lib/MyHeader.svelte'
-  import { Breadcrumb, BreadcrumbItem, Content, Link, ListItem, UnorderedList } from 'carbon-components-svelte'
-  import { FileType } from '$lib/file_element'
-  import type { DirectoryPageResult } from './+page'
-  import * as path from 'path'
+  import 'carbon-components-svelte/css/g80.css';
+  import MyHeader from '$lib/MyHeader.svelte';
+  import {
+    Breadcrumb,
+    BreadcrumbItem,
+    Content,
+    Link,
+    ListItem,
+    UnorderedList
+  } from 'carbon-components-svelte';
+  import { FileType } from '$lib/file_element';
+  import type { DirectoryPageResult } from './+page';
+  import * as pathUtil from 'path-browserify';
 
-  export let data: DirectoryPageResult;
-  $: filePath = data.file;
-  $: fileList = data.fileList;
-  $: paths = ('/' + data.file).split('/');
+  let { data }: { data: DirectoryPageResult } = $props();
+
+  let filePath = $derived(data.file);
+  let fileList = $derived(data.fileList);
+  let paths = $derived(('/' + data.file).split('/'));
 </script>
 
 <MyHeader />
@@ -29,7 +37,7 @@
     {#each fileList as file}
       <ListItem>
         {#if file.fileType === FileType.Directory}
-          <Link href="/directory/{path.join(filePath, file.name)}">{file.name}/</Link>
+          <Link href="/directory/{pathUtil.join(filePath, file.name)}">{file.name}/</Link>
         {:else if file.imageId}
           <Link href="/image/{file.imageId}">{file.name}</Link>
         {:else}

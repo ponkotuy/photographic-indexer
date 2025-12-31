@@ -1,23 +1,24 @@
 <script lang="ts">
-  import "carbon-components-svelte/css/g80.css";
-  import "$lib/app.css";
-  import MyHeader from "$lib/MyHeader.svelte";
-  import { Button, Column, Content, Grid, Link, Row } from "carbon-components-svelte";
-  import { DateTime } from "luxon";
-  import { host } from "$lib/global.js";
-  import { thumbnail } from "$lib/image_type.js";
-  import { CaretLeft, CaretRight } from "carbon-icons-svelte";
-  import LoadImage from "$lib/LoadImage.svelte";
-  import MonthsMenu from "./MonthsMenu.svelte";
-  import type { CalendarPageResult } from "./+page";
+  import 'carbon-components-svelte/css/g80.css';
+  import '$lib/app.css';
+  import MyHeader from '$lib/MyHeader.svelte';
+  import { Button, Column, Content, Grid, Link, Row } from 'carbon-components-svelte';
+  import { DateTime } from 'luxon';
+  import { host } from '$lib/global.js';
+  import { thumbnail } from '$lib/image_type.js';
+  import { CaretLeft, CaretRight } from 'carbon-icons-svelte';
+  import LoadImage from '$lib/LoadImage.svelte';
+  import MonthsMenu from './MonthsMenu.svelte';
+  import type { CalendarPageResult } from './+page';
 
-  export let data: CalendarPageResult;
-  $: agg = data.agg;
-  $: month = data.month;
-  $: monthDate = DateTime.fromISO(month);
+  let { data }: { data: CalendarPageResult } = $props();
 
-  const YMUser = "LLLL, yyyy";
-  const YMMachine = "yyyyMM";
+  let agg = $derived(data.agg);
+  let month = $derived(data.month);
+  let monthDate = $derived(DateTime.fromISO(month));
+
+  const YMUser = 'LLLL, yyyy';
+  const YMMachine = 'yyyyMM';
 
   function parse(date: string): DateTime {
     return DateTime.fromISO(date);
@@ -37,7 +38,7 @@
   <Grid narrow>
     <Row style="align-items: center">
       <Column lg={4}>
-        <Button href="/calendar/{monthDate.minus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
+        <Button href="/calendar/{monthDate.minus({ months: 1 }).toFormat(YMMachine)}" kind="ghost">
           <CaretLeft size={24} />{monthDate.minus({ months: 1 }).toFormat(YMUser)}
         </Button>
       </Column>
@@ -45,10 +46,10 @@
         <h2>{monthDate.toFormat(YMUser)}</h2>
       </Column>
       <Column lg={1}>
-        <MonthsMenu now={monthDate.toFormat(YMMachine)} style="padding: 11px 16px;" />
+        <MonthsMenu now={monthDate.toFormat(YMMachine)} />
       </Column>
       <Column lg={3}>
-        <Button href="/calendar/{monthDate.plus({ months: 1}).toFormat(YMMachine)}" kind="ghost">
+        <Button href="/calendar/{monthDate.plus({ months: 1 }).toFormat(YMMachine)}" kind="ghost">
           {monthDate.plus({ months: 1 }).toFormat(YMUser)}
           <CaretRight size={24} />
         </Button>
