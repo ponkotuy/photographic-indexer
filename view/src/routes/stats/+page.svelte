@@ -19,6 +19,9 @@
   let granularity = $derived(data.granularity);
   let year = $derived(data.year?.toString() ?? now.year.toString());
   let month = $derived(data.month?.toString() ?? now.month.toString());
+  let camera = $derived(data.camera ?? '');
+  let lens = $derived(data.lens ?? '');
+  let tagId = $derived(data.tagId?.toString() ?? '');
 
   let canvas: HTMLCanvasElement | undefined = $state();
   let pieCanvas: HTMLCanvasElement | undefined = $state();
@@ -38,6 +41,21 @@
     { id: 'monthly', text: 'Monthly' },
     { id: 'daily', text: 'Daily' }
   ];
+
+  const cameraItems = $derived([
+    { id: '', text: 'All Cameras' },
+    ...data.cameras.map((c) => ({ id: c, text: c }))
+  ]);
+
+  const lensItems = $derived([
+    { id: '', text: 'All Lenses' },
+    ...data.lenses.map((l) => ({ id: l, text: l }))
+  ]);
+
+  const tagItems = $derived([
+    { id: '', text: 'All Tags' },
+    ...data.tags.map((t) => ({ id: t.id.toString(), text: t.name }))
+  ]);
 
   const updateUrl = $derived(buildUrl());
 
@@ -77,6 +95,9 @@
     if (granularity === 'daily') {
       if (month) params.set('month', month);
     }
+    if (camera) params.set('camera', camera);
+    if (lens) params.set('lens', lens);
+    if (tagId) params.set('tagId', tagId);
     return `/stats?${params.toString()}`;
   }
 
@@ -295,6 +316,17 @@
       {/if}
       <Column lg={2} style="display: flex; align-items: flex-end;">
         <Button href={updateUrl}>Update</Button>
+      </Column>
+    </Row>
+    <Row style="margin-bottom: 1rem;">
+      <Column lg={4}>
+        <Dropdown {...{ titleText: 'Camera' }} bind:selectedId={camera} items={cameraItems} />
+      </Column>
+      <Column lg={4}>
+        <Dropdown {...{ titleText: 'Lens' }} bind:selectedId={lens} items={lensItems} />
+      </Column>
+      <Column lg={4}>
+        <Dropdown {...{ titleText: 'Tag' }} bind:selectedId={tagId} items={tagItems} />
       </Column>
     </Row>
     <Row>
