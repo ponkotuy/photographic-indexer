@@ -1,7 +1,7 @@
 package com.ponkotuy.app
 
-import com.ponkotuy.db.ExifStats
-import com.ponkotuy.util.Granularity
+import com.ponkotuy.db.{ ExifStats, Tag }
+import com.ponkotuy.util.{ Granularity, StatsFilter }
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import org.scalatra.{ BadRequest, ScalatraServlet }
@@ -30,20 +30,47 @@ class PrivateStatsAPI extends ScalatraServlet with CORSSetting {
     }
   }
 
+  private def parseFilter(): StatsFilter = {
+    StatsFilter(
+      camera = params.get("camera").filter(_.nonEmpty),
+      lens = params.get("lens").filter(_.nonEmpty),
+      tagId = params.get("tagId").flatMap(_.toLongOption)
+    )
+  }
+
   get("/") {
     (parseGranularity(), parseMetric()) match {
       case (Right(granularity), Right(metric)) =>
+        val filter = parseFilter()
         DB.readOnly { implicit session =>
           val data = metric match {
-            case "focal_length" => ExifStats.aggregateByFocalLength(granularity)
-            case "camera" => ExifStats.aggregateByCamera(granularity)
-            case "lens" => ExifStats.aggregateByLens(granularity)
-            case "iso" => ExifStats.aggregateByIso(granularity)
+            case "focal_length" => ExifStats.aggregateByFocalLength(granularity, filter)
+            case "camera" => ExifStats.aggregateByCamera(granularity, filter)
+            case "lens" => ExifStats.aggregateByLens(granularity, filter)
+            case "iso" => ExifStats.aggregateByIso(granularity, filter)
           }
           data.asJson.noSpaces
         }
       case (Left(error), _) => BadRequest(error)
       case (_, Left(error)) => BadRequest(error)
+    }
+  }
+
+  get("/cameras") {
+    DB.readOnly { implicit session =>
+      ExifStats.listCameras().asJson.noSpaces
+    }
+  }
+
+  get("/lenses") {
+    DB.readOnly { implicit session =>
+      ExifStats.listLenses().asJson.noSpaces
+    }
+  }
+
+  get("/tags") {
+    DB.readOnly { implicit session =>
+      Tag.findAll().asJson.noSpaces
     }
   }
 }
