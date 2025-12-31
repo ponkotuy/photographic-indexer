@@ -3,10 +3,9 @@
   import { host } from '$lib/global';
   import { TrashCan } from 'carbon-icons-svelte';
 
-  export let imageId: number;
-  export let withText: boolean;
+  let { imageId, withText }: { imageId: number; withText: boolean } = $props();
 
-  let open: boolean = false;
+  let open = $state(false);
 
   function remove() {
     fetch(`${host()}/app/images/${imageId}`, { method: 'DELETE' })
@@ -16,14 +15,14 @@
 </script>
 
 {#if withText}
-  <Button kind="danger" size="small" icon={TrashCan} on:click={() => (open = true)}>Delete</Button>
+  <Button kind="danger" size="small" icon={TrashCan} onclick={() => (open = true)}>Delete</Button>
 {:else}
   <Button
     kind="danger"
     size="small"
     icon={TrashCan}
     iconDescription="Delete"
-    on:click={() => (open = true)}
+    onclick={() => (open = true)}
   />
 {/if}
 
@@ -33,13 +32,8 @@
   modalHeading="Delete a image"
   primaryButtonText="Delete"
   secondaryButtonText="cancel"
-  on:click:button--primary={remove}
-  on:click:button--secondary={() => {
-    open = false;
-  }}
-  on:open
-  on:close
-  on:submit
+  {...{ 'on:click:button--primary': remove }}
+  {...{ 'on:click:button--secondary': () => (open = false) }}
 >
   <p>Delete all bound record and files.</p>
 </Modal>

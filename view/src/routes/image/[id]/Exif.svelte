@@ -1,7 +1,8 @@
 <script lang="ts">
   import { StructuredListCell, StructuredListRow } from 'carbon-components-svelte';
+  import type { Exif as ExifType } from '$lib/image_type';
 
-  export let exif;
+  let { exif }: { exif: ExifType | null } = $props();
 </script>
 
 {#if exif}
@@ -11,7 +12,7 @@
       {#if exif.lens}
         <div>Lens</div>
       {/if}
-      {#if exif.focal}
+      {#if exif.focalLength}
         <div>Focal length</div>
       {/if}
       <div>Exposure</div>

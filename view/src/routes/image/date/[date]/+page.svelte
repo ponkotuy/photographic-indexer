@@ -11,28 +11,28 @@
   import LoadImage from '$lib/LoadImage.svelte';
   import PagingGrid from './PagingGrid.svelte';
 
-  export let data: DatePageResult;
-  export let page = data.page;
-  export let count = data.count;
-  let tags = [
+  let { data }: { data: DatePageResult } = $props();
+
+  let tags = $derived([
     { id: '-1', text: 'All' },
     ...data.tags.map((tag) => {
       return { id: tag.id.toString(), text: tag.name };
     })
-  ];
-  let isPublic = '0';
-  let selectTag = '-1';
+  ]);
+  let isPublic = $state('0');
+  let selectTag = $state('-1');
 
-  $: images = data.images.filter(imageFilter).slice((page - 1) * count, page * count);
-
-  $: imageValidCount = data.images.filter(imageFilter).length;
-
-  $: imageFilter = (img: ImageData) => {
+  let imageFilter = $derived((img: ImageData) => {
     return (
       (isPublic == '0' || img.isPublic) &&
       (selectTag == '-1' || img.tags.map((t) => t.id.toString()).includes(selectTag))
     );
-  };
+  });
+
+  let imageValidCount = $derived(data.images.filter(imageFilter).length);
+  let images = $derived(
+    data.images.filter(imageFilter).slice((data.page - 1) * data.count, data.page * data.count)
+  );
 
   function yesterday(date: string) {
     return DateTime.fromISO(date).minus({ days: 1 }).toISODate()!;
@@ -82,7 +82,7 @@
   </Grid>
 
   {#if imageValidCount > 20}
-    <PagingGrid totalItems={imageValidCount} bind:page bind:pageSize={count}></PagingGrid>
+    <PagingGrid totalItems={imageValidCount} page={data.page} pageSize={data.count}></PagingGrid>
   {/if}
 
   <Grid>
@@ -107,6 +107,6 @@
   </Grid>
 
   {#if imageValidCount > 20}
-    <PagingGrid totalItems={imageValidCount} bind:page bind:pageSize={count}></PagingGrid>
+    <PagingGrid totalItems={imageValidCount} page={data.page} pageSize={data.count}></PagingGrid>
   {/if}
 </Content>

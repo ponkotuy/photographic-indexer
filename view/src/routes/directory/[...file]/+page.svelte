@@ -13,10 +13,11 @@
   import type { DirectoryPageResult } from './+page';
   import * as pathUtil from 'path-browserify';
 
-  export let data: DirectoryPageResult;
-  $: filePath = data.file;
-  $: fileList = data.fileList;
-  $: paths = ('/' + data.file).split('/');
+  let { data }: { data: DirectoryPageResult } = $props();
+
+  let filePath = $derived(data.file);
+  let fileList = $derived(data.fileList);
+  let paths = $derived(('/' + data.file).split('/'));
 </script>
 
 <MyHeader />

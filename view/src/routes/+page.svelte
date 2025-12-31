@@ -29,7 +29,7 @@
   import type { ImageData } from '$lib/image_type';
   import { thumbnail } from '$lib/image_type';
   import { DateTime } from 'luxon';
-  import { page as pp } from '$app/stores';
+  import { page as pageState } from '$app/state';
   import ImageTag from '$lib/ImageTag.svelte';
   import ImageNote from '$lib/ImageNote.svelte';
   import LoadImage from '$lib/LoadImage.svelte';
@@ -40,15 +40,15 @@
     count: number;
   };
 
-  export let keyword = '';
-  export let images: ImageData[] = [];
-  export let allCount = -1;
-  export let dateCounts: DateCount[] = [];
-  let page = 1;
-  let pageSize = 20;
+  let keyword = $state('');
+  let images = $state<ImageData[]>([]);
+  let allCount = $state(-1);
+  let dateCounts = $state<DateCount[]>([]);
+  let page = $state(1);
+  let pageSize = $state(20);
 
   onMount(() => {
-    const params = $pp.url.searchParams;
+    const params = pageState.url.searchParams;
     keyword = params.get('keyword') || '';
     if (keyword != '') search();
   });
@@ -97,8 +97,8 @@
     return DateTime.fromISO(at).toISODate()!;
   }
 
-  function disableSubmit(keyword: string): boolean {
-    return keyword == '';
+  function disableSubmit(kw: string): boolean {
+    return kw == '';
   }
 
   function updateImage() {
@@ -113,12 +113,12 @@
 
 <MyHeader />
 <Content>
-  <Form on:submit={searchSubmit} style="margin-bottom: 24px;">
+  <Form onsubmit={searchSubmit} style="margin-bottom: 24px;">
     <FormGroup legendText="Search Keyword(Tab/Address/Note/Path)">
       <Search id="keyword" bind:value={keyword} />
     </FormGroup>
     <Button type="submit" disabled={disableSubmit(keyword)}>Search</Button>
-    <Button type="button" kind="tertiary" disabled={disableSubmit(keyword)} on:click={searchClip}
+    <Button type="button" kind="tertiary" disabled={disableSubmit(keyword)} onclick={searchClip}
       >SearchCLIP</Button
     >
   </Form>
@@ -148,7 +148,7 @@
       pageSizes={[20, 50]}
       bind:page
       bind:pageSize
-      on:update={search}
+      on:change={search}
     />
 
     <StructuredList condensed>
@@ -161,11 +161,10 @@
       <StructuredListBody>
         {#each images as image}
           <StructuredListRow>
-            <StructuredListCell style="vertical-align: bottom">
+            <StructuredListCell style="vertical-align: bottom; width: 320px;">
               <Link href="/image/{image.id}">
                 <LoadImage
                   src="{host()}/app/images/{image.id}/thumbnail"
-                  style="width: 320px"
                   alt={thumbnail(image).path}
                   class="fixed"
                 />
@@ -207,7 +206,7 @@
       pageSizeInputDisabled
       {pageSize}
       bind:page
-      on:update={search}
+      on:change={search}
     />
   {/if}
 </Content>

@@ -5,8 +5,9 @@
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import type { ImageData } from '$lib/image_type';
 
-  export let data: ImageData;
-  $: url = `${host()}/app/public/static/images/${data.id}`;
+  let { data }: { data: ImageData } = $props();
+
+  let url = $derived(`${host()}/app/public/static/images/${data.id}`);
 </script>
 
 <svelte:head>

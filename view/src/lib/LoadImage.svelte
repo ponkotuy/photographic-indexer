@@ -1,10 +1,10 @@
 <script lang="ts">
   import { ImageLoader, Loading } from 'carbon-components-svelte';
 
-  export let src: string;
+  let { src, ...rest }: { src: string; [key: string]: unknown } = $props();
 </script>
 
-<ImageLoader {src} {...$$restProps}>
+<ImageLoader {src} {...rest}>
   <svelte:fragment slot="loading">
     <Loading withOverlay={false} />
   </svelte:fragment>

@@ -23,11 +23,11 @@
   import TogglePublic from '$lib/TogglePublic.svelte';
   import ReplaceButton from '$lib/ReplaceButton.svelte';
 
-  export let data: ImageData;
+  let { data }: { data: ImageData } = $props();
 
   const extensions = ['jpg', 'jpeg', 'png', 'webp'];
 
-  function isValidImage(path: String): Boolean {
+  function isValidImage(path: string): boolean {
     const ext: string | undefined = path.split('.').pop()?.toLowerCase();
     if (!ext) return false;
     return extensions.includes(ext);

@@ -1,9 +1,9 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   import type { Tag as TagType } from '$lib/image_type';
   import { host } from '$lib/global';
 
-  export let loading: boolean = false;
-  export let tags: TagType[] = [];
+  let loading = $state(false);
+  let tags = $state<TagType[]>([]);
 </script>
 
 <script lang="ts">
@@ -19,10 +19,10 @@
   import type { ImageData } from '$lib/image_type';
   import { onMount } from 'svelte';
 
-  export let image: ImageData;
-  export let refresh: () => void;
-  export let open = false;
-  export let tagName = '';
+  let { image, refresh }: { image: ImageData; refresh: () => void } = $props();
+
+  let open = $state(false);
+  let tagName = $state('');
 
   onMount(() => {
     if (loading === false) {
@@ -38,20 +38,20 @@
     tags = await refreshTags();
   }
 
-  async function setTag(image: ImageData, tag: TagType, finalize: () => void = function () {}) {
-    const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, { method: 'PUT' });
+  async function setTag(img: ImageData, tag: TagType, finalize: () => void = function () {}) {
+    const result = await fetch(host() + `/app/images/${img.id}/tag/${tag.id}`, { method: 'PUT' });
     if (result.ok) {
-      image.tags.push(tag);
+      img.tags.push(tag);
       finalize();
     }
   }
 
-  async function removeTag(image: ImageData, tag: TagType, finalize: () => void = function () {}) {
-    const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, {
+  async function removeTag(img: ImageData, tag: TagType, finalize: () => void = function () {}) {
+    const result = await fetch(host() + `/app/images/${img.id}/tag/${tag.id}`, {
       method: 'DELETE'
     });
     if (result.ok) {
-      image.tags = image.tags.filter((t) => t.id !== tag.id);
+      img.tags = img.tags.filter((t) => t.id !== tag.id);
       finalize();
     }
   }
@@ -62,7 +62,7 @@
 </script>
 
 {#each image.tags as tag}
-  <Tag filter on:close={() => removeTag(image, tag, refresh)} style="vertical-align: bottom;"
+  <Tag filter onclose={() => removeTag(image, tag, refresh)} style="vertical-align: bottom;"
     >{tag.name}</Tag
   >
 {/each}
@@ -70,18 +70,18 @@
   <Button slot="menu" icon={Add} size="small">Tag</Button>
   {#each tags as tag}
     {#if !image.tags.map((t) => t.id).includes(tag.id)}
-      <OverflowMenuItem text={tag.name} on:click={() => setTag(image, tag, refresh)} />
+      <OverflowMenuItem text={tag.name} onclick={() => setTag(image, tag, refresh)} />
     {/if}
   {/each}
-  <OverflowMenuItem hasDivider text="+ New tag" on:click={() => (open = true)} />
+  <OverflowMenuItem hasDivider text="+ New tag" onclick={() => (open = true)} />
 </OverflowMenu>
 <Modal
   bind:open
   modalHeading="Create new tag"
   primaryButtonText="Add tag"
   secondaryButtonText="Cancel"
-  on:click:button--secondary={() => (open = false)}
-  on:submit={() => addTag(tagName)}
+  {...{ 'on:click:button--secondary': () => (open = false) }}
+  onsubmit={() => addTag(tagName)}
 >
   <p>Add a new tag in Photographic Indexer.</p>
   <TextInput id="tagName" labelText="Tag name" bind:value={tagName} />

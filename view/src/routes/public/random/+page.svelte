@@ -6,9 +6,10 @@
   import { page } from '$app/state';
   import type { ImageData } from '$lib/image_type';
 
-  export let data: ImageData;
-  $: url = `${host()}/app/public/static/images/${data.id}`;
-  $: link = `${page.url.origin}/public/image/${data.id}`;
+  let { data }: { data: ImageData } = $props();
+
+  let url = $derived(`${host()}/app/public/static/images/${data.id}`);
+  let link = $derived(`${page.url.origin}/public/image/${data.id}`);
 </script>
 
 <svelte:head>

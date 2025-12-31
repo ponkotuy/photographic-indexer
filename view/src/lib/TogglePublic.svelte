@@ -2,8 +2,7 @@
   import { Toggle } from 'carbon-components-svelte';
   import { host } from '$lib/global';
 
-  export let imageId: number;
-  export let state: boolean;
+  let { imageId, state = $bindable() }: { imageId: number; state: boolean } = $props();
 
   function togglePublic() {
     const method = state ? 'PUT' : 'DELETE';
@@ -18,5 +17,5 @@
   labelB="Public"
   hideLabel
   bind:toggled={state}
-  on:toggle={togglePublic}
+  ontoggle={togglePublic}
 />

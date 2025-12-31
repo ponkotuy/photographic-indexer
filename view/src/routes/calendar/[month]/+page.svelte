@@ -11,10 +11,11 @@
   import MonthsMenu from './MonthsMenu.svelte';
   import type { CalendarPageResult } from './+page';
 
-  export let data: CalendarPageResult;
-  $: agg = data.agg;
-  $: month = data.month;
-  $: monthDate = DateTime.fromISO(month);
+  let { data }: { data: CalendarPageResult } = $props();
+
+  let agg = $derived(data.agg);
+  let month = $derived(data.month);
+  let monthDate = $derived(DateTime.fromISO(month));
 
   const YMUser = 'LLLL, yyyy';
   const YMMachine = 'yyyyMM';

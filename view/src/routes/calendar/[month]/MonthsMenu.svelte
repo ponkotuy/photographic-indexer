@@ -4,8 +4,9 @@
   import { host } from '$lib/global';
   import { Calendar } from 'carbon-icons-svelte';
 
-  export let now: string;
-  export let data: string[] = [];
+  let { now }: { now: string } = $props();
+
+  let data = $state<string[]>([]);
 
   onMount(() => {
     fetch(`${host()}/app/images/calendar/months`)
