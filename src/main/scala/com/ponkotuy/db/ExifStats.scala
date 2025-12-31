@@ -1,27 +1,42 @@
 package com.ponkotuy.db
 
 import com.ponkotuy.res.StatsAggregate
-import com.ponkotuy.util.{ Granularity, StatsFilter }
+import com.ponkotuy.util.{Granularity, StatsFilter}
 import scalikejdbc.*
 
 object ExifStats {
-  private val ec = ExifCache.ec
-  private val it = ImageTag.it
+  import com.ponkotuy.db.ExifCache.ec
+  import com.ponkotuy.db.ImageTag.it
 
-  private val FocalLengthBuckets = Seq(14, 24, 35, 50, 70, 105, 135, 200, 300, 400, 500, 600, 800, 1000, 1200)
-  private val IsoBuckets = Seq(100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200)
+  private val FocalLengthBuckets =
+    Seq(14, 24, 35, 50, 70, 105, 135, 200, 300, 400, 500, 600, 800, 1000, 1200)
+  private val IsoBuckets =
+    Seq(100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200)
 
-  private case class BucketRange(category: String, min: Option[Int], max: Option[Int])
+  private case class BucketRange(
+      category: String,
+      min: Option[Int],
+      max: Option[Int]
+  )
 
-  private def buildBucketCase(column: SQLSyntax, buckets: Seq[Int]): SQLSyntax = {
-    val cases = buckets.sliding(2).map { case Seq(low, high) =>
-      sqls"when $column >= $low and $column < $high then ${s"$low-${high - 1}"}"
-    }.toSeq :+ sqls"when $column >= ${buckets.last} then ${s"${buckets.last}+"}"
+  private def buildBucketCase(
+      column: SQLSyntax,
+      buckets: Seq[Int]
+  ): SQLSyntax = {
+    val cases = buckets
+      .sliding(2)
+      .map { case Seq(low, high) =>
+        sqls"when $column >= $low and $column < $high then ${s"$low-${high - 1}"}"
+      }
+      .toSeq :+ sqls"when $column >= ${buckets.last} then ${s"${buckets.last}+"}"
 
     sqls"case when $column < ${buckets.head} then ${s"<${buckets.head}"} ${sqls.join(cases, sqls" ")} else 'unknown' end"
   }
 
-  private def parseBucketRange(category: String, buckets: Seq[Int]): BucketRange = {
+  private def parseBucketRange(
+      category: String,
+      buckets: Seq[Int]
+  ): BucketRange = {
     if (category.startsWith("<")) {
       BucketRange(category, None, Some(buckets.head - 1))
     } else if (category.endsWith("+")) {
@@ -64,7 +79,8 @@ object ExifStats {
     val filterCond = buildFilterCondition(filter)
     val tagCond = filter.tagId.map(buildTagSubquery)
     val granularityCond = granularity.condition(ec.shootingAt)
-    val cond = combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
+    val cond =
+      combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
 
     withSQL {
       select(dateSql, bucketSql, sqls.count)
@@ -74,8 +90,15 @@ object ExifStats {
         .orderBy(dateSql)
     }.map { rs =>
       val range = parseBucketRange(rs.string(2), FocalLengthBuckets)
-      StatsAggregate(rs.string(1), range.category, range.min, range.max, rs.int(3))
-    }.list.apply()
+      StatsAggregate(
+        rs.string(1),
+        range.category,
+        range.min,
+        range.max,
+        rs.int(3)
+      )
+    }.list
+      .apply()
   }
 
   def aggregateByCamera(
@@ -94,7 +117,10 @@ object ExifStats {
         .where(cond)
         .groupBy(dateSql, ec.camera)
         .orderBy(dateSql)
-    }.map(rs => StatsAggregate(rs.string(1), rs.string(2), None, None, rs.int(3))).list.apply()
+    }.map(rs =>
+      StatsAggregate(rs.string(1), rs.string(2), None, None, rs.int(3))
+    ).list
+      .apply()
   }
 
   def aggregateByLens(
@@ -106,7 +132,8 @@ object ExifStats {
     val filterCond = buildFilterCondition(filter)
     val tagCond = filter.tagId.map(buildTagSubquery)
     val granularityCond = granularity.condition(ec.shootingAt)
-    val cond = combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
+    val cond =
+      combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
 
     withSQL {
       select(dateSql, ec.lens, sqls.count)
@@ -114,7 +141,10 @@ object ExifStats {
         .where(cond)
         .groupBy(dateSql, ec.lens)
         .orderBy(dateSql)
-    }.map(rs => StatsAggregate(rs.string(1), rs.string(2), None, None, rs.int(3))).list.apply()
+    }.map(rs =>
+      StatsAggregate(rs.string(1), rs.string(2), None, None, rs.int(3))
+    ).list
+      .apply()
   }
 
   def aggregateByIso(
@@ -127,7 +157,8 @@ object ExifStats {
     val filterCond = buildFilterCondition(filter)
     val tagCond = filter.tagId.map(buildTagSubquery)
     val granularityCond = granularity.condition(ec.shootingAt)
-    val cond = combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
+    val cond =
+      combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
 
     withSQL {
       select(dateSql, bucketSql, sqls.count)
@@ -137,8 +168,15 @@ object ExifStats {
         .orderBy(dateSql)
     }.map { rs =>
       val range = parseBucketRange(rs.string(2), IsoBuckets)
-      StatsAggregate(rs.string(1), range.category, range.min, range.max, rs.int(3))
-    }.list.apply()
+      StatsAggregate(
+        rs.string(1),
+        range.category,
+        range.min,
+        range.max,
+        rs.int(3)
+      )
+    }.list
+      .apply()
   }
 
   def listCameras()(implicit session: DBSession): Seq[String] = {
@@ -153,7 +191,8 @@ object ExifStats {
     withSQL {
       select(sqls.distinct(ec.lens))
         .from(ExifCache as ec)
-        .where.isNotNull(ec.lens)
+        .where
+        .isNotNull(ec.lens)
         .orderBy(ec.lens)
     }.map(_.string(1)).list.apply()
   }
