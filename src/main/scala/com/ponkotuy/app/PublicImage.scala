@@ -25,7 +25,11 @@ class PublicImage(app: AppConfig)
   get("/") {
     DB.readOnly { implicit session =>
       paging { page =>
-        ImageWithAll.findAll(ImageWithAll.isPublicSQL, limit = page.limit, offset = page.offset)
+        ImageWithAll.findAll(
+          ImageWithAll.isPublicSQL,
+          limit = page.limit,
+          offset = page.offset
+        )
       } {
         ImageWithAll.findAllCount(ImageWithAll.isPublicSQL)
       }
@@ -35,7 +39,8 @@ class PublicImage(app: AppConfig)
   get("/:id") {
     val id = params("id").toLong
     val withExif = params.get("exif").exists(_.toBoolean)
-    val result = imageService.findImage(id, isPublic = true, withExif).asJson.noSpaces
+    val result =
+      imageService.findImage(id, isPublic = true, withExif).asJson.noSpaces
     result
   }
 
@@ -43,7 +48,6 @@ class PublicImage(app: AppConfig)
     DB.localTx { implicit session =>
       val withExif = params.get("exif").exists(_.toBoolean)
       val image = ImageWithAll.findRandom(ImageWithAll.isPublicSQL)
-      println(image)
       image.map(imageService.setExif).asJson.noSpaces
     }
   }
