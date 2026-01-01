@@ -51,8 +51,7 @@ lazy val api = (project in file("."))
       "io.circe" %% "circe-parser" % CirceVersion,
       "com.typesafe" % "config" % "1.4.5",
       "org.gbif" % "gbif-parsers" % "0.67",
-      "org.apache.commons" % "commons-math3" % "3.6.1",
-      "com.flickr4java" % "flickr4java" % "3.0.11"
+      "org.apache.commons" % "commons-math3" % "3.6.1"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
     dockerBaseImage := "amd64/eclipse-temurin:17-jre-jammy",
