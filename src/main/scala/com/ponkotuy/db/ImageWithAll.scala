@@ -54,7 +54,6 @@ object ImageWithAll {
     val ids = rs.string("imf_ids").split(',')
     val paths = rs.string("imf_paths").split(',')
     val fileSizes = rs.string("imf_filesizes").split(',')
-    debugTranspose(ids :: paths :: fileSizes :: Nil)
     @nowarn
     val files = (ids :: paths :: fileSizes :: Nil).transpose.map { case List(id, path, filesize) =>
       ImageFile(id.toLong, raw.id, path, filesize.toLong)
@@ -65,7 +64,6 @@ object ImageWithAll {
   private def extractTags(rs: WrappedResultSet): Seq[Tag] = {
     val ids = rs.stringOpt("t_ids").map(_.split(',')).getOrElse(Array.empty[String]).distinct
     val names = rs.stringOpt("t_names").map(_.split(',')).getOrElse(Array.empty[String]).distinct
-    debugTranspose(ids :: names :: Nil)
     @nowarn
     val tags = (ids :: names :: Nil).transpose.map { case List(id, name) =>
       Tag(id.toLong, name)
@@ -156,10 +154,4 @@ object ImageWithAll {
   def findAllCount(where: SQLSyntax)(implicit session: DBSession): Long = withSQL {
     select(count(distinct(i.id))).from(Image as i).where(where)
   }.map(_.int(1)).single.apply().get
-
-  private def debugTranspose[T](xss: List[Array[T]]): Unit = {
-    if (1 < xss.map(_.length).distinct.size) {
-      xss.foreach(xs => println(xs.mkString(",")))
-    }
-  }
 }
