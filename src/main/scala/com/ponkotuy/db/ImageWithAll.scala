@@ -3,14 +3,14 @@ package com.ponkotuy.db
 import com.ponkotuy.req.SearchParams
 import com.ponkotuy.res.Paging
 import scalikejdbc.*
-import scalikejdbc.sqls.{count, distinct}
+import scalikejdbc.sqls.{ count, distinct }
 
-import java.time.{LocalDate, YearMonth}
+import java.time.{ LocalDate, YearMonth }
 import scala.annotation.nowarn
 import scala.util.Try
-import scala.util.chaining.scalaUtilChainingOps
 
 object ImageWithAll {
+  import ExifCache.ec
   import FlickrImage.fi
   import Geom.g
   import Image.i
@@ -18,7 +18,6 @@ object ImageWithAll {
   import ImageFile.imf
   import ImageTag.it
   import Tag.t
-  import ExifCache.ec
 
   private def groupConcat(sql: SQLSyntax, name: SQLSyntax) = sqls"group_concat(${ sql }) as ${ name }"
   private val imfSelect = groupConcat(imf.id, sqls"imf_ids") ::

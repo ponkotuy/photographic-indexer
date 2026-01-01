@@ -17,5 +17,5 @@
   labelB="Public"
   hideLabel
   bind:toggled={state}
-  ontoggle={togglePublic}
+  on:toggle={togglePublic}
 />
