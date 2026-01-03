@@ -9,7 +9,7 @@ RUN npm run build
 FROM node:22.12.0-bullseye-slim
 WORKDIR /root
 COPY --from=0 /root/build build
-COPY package*.json .
+COPY package*.json ./
 RUN npm ci --only=production
 EXPOSE 3000
 CMD node build

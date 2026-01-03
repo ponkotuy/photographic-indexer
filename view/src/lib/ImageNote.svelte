@@ -12,5 +12,5 @@
 
 <ButtonSet>
   <TextInput inline labelText="Note" bind:value={note} size="sm" />
-  <Button onclick={() => updateNote(imageId, note)} size="small">Update Note</Button>
+  <Button on:click={() => updateNote(imageId, note)} size="small">Update Note</Button>
 </ButtonSet>

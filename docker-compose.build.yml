@@ -9,9 +9,16 @@ services:
     environment:
       - DOCKER_USERNAME
       - DOCKER_PASSWORD
+      - PONKOTUY_DOCKER_USERNAME
+      - PONKOTUY_DOCKER_PASSWORD
       - VERSION
     command: >
       bash -c 'apt update &&
         apt install -y docker.io &&
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD &&
-        sbt -Dversion=$VERSION docker:publish'
+        sbt -Dversion=$VERSION docker:publish &&
+        docker login docker.ponkotuy.com -u $PONKOTUY_DOCKER_USERNAME -p $PONKOTUY_DOCKER_PASSWORD &&
+        docker tag ponkotuy/photographic-indexer:$VERSION docker.ponkotuy.com/photographic-indexer:$VERSION &&
+        docker tag ponkotuy/photographic-indexer:latest docker.ponkotuy.com/photographic-indexer:latest &&
+        docker push docker.ponkotuy.com/photographic-indexer:$VERSION &&
+        docker push docker.ponkotuy.com/photographic-indexer:latest'
