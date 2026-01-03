@@ -2,7 +2,7 @@
   import { Button, ButtonSet, TextInput } from 'carbon-components-svelte';
   import { host } from '$lib/global';
 
-  let { imageId, note = '' }: { imageId: number; note?: string } = $props();
+  let { imageId, note = '' }: { imageId: number; note: string | null } = $props();
 
   function updateNote(id: number, noteText: string) {
     const body = JSON.stringify({ note: noteText });
@@ -11,6 +11,6 @@
 </script>
 
 <ButtonSet>
-  <TextInput inline labelText="Note" bind:value={note} size="sm" />
+  <TextInput hideLabel labelText="Note" bind:value={note} size="sm" />
   <Button on:click={() => updateNote(imageId, note)} size="small">Update Note</Button>
 </ButtonSet>

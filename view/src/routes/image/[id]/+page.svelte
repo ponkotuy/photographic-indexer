@@ -22,6 +22,7 @@
   import DeleteImage from './DeleteImage.svelte';
   import TogglePublic from '$lib/TogglePublic.svelte';
   import ReplaceButton from '$lib/ReplaceButton.svelte';
+  import ImageNote from "$lib/ImageNote.svelte";
 
   let { data }: { data: ImageData } = $props();
 
@@ -86,11 +87,12 @@
       <Exif exif={data.exif} />
       <StructuredListRow>
         <StructuredListCell head>Operation</StructuredListCell>
-        <StructuredListCell>
-          <DeleteImage imageId={data.id} withText={true} />
-          <div style="padding-top: 6px;">
+        <StructuredListCell style="display: flex; flex-direction: column; gap: 6px;">
+          <div>
             <TogglePublic imageId={data.id} state={data.isPublic} />
           </div>
+          <ImageNote imageId={data.id} note={data.note} />
+          <DeleteImage imageId={data.id} withText={true} />
         </StructuredListCell>
       </StructuredListRow>
     </StructuredListBody>

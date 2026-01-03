@@ -15,14 +15,15 @@
 </script>
 
 {#if withText}
-  <Button kind="danger" size="small" icon={TrashCan} onclick={() => (open = true)}>Delete</Button>
+  <Button kind="danger" size="small" style="width: 120px" icon={TrashCan} on:click={() => (open = true)}>Delete</Button>
 {:else}
   <Button
     kind="danger"
     size="small"
+    style="width: 120px;"
     icon={TrashCan}
     iconDescription="Delete"
-    onclick={() => (open = true)}
+    on:click={() => (open = true)}
   />
 {/if}
 
