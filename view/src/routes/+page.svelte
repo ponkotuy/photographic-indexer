@@ -5,24 +5,14 @@
   import MyHeader from '$lib/MyHeader.svelte';
   import {
     Button,
-    Column,
     Content,
     Form,
     FormGroup,
-    Grid,
     InlineNotification,
     Link,
-    ListItem,
     Pagination,
-    Row,
     Search,
-    StructuredList,
-    StructuredListBody,
-    StructuredListCell,
-    StructuredListHead,
-    StructuredListRow,
-    Tag,
-    UnorderedList
+    Tag
   } from 'carbon-components-svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
@@ -30,10 +20,7 @@
   import { thumbnail } from '$lib/image_type';
   import { DateTime } from 'luxon';
   import { page as pageState } from '$app/state';
-  import ImageTag from '$lib/ImageTag.svelte';
-  import ImageNote from '$lib/ImageNote.svelte';
   import LoadImage from '$lib/LoadImage.svelte';
-  import TogglePublic from '$lib/TogglePublic.svelte';
 
   type DateCount = {
     date: string;
@@ -92,17 +79,8 @@
         dateCounts = res.dateCounts;
       });
   }
-
-  function isoDate(at: string): string {
-    return DateTime.fromISO(at).toISODate()!;
-  }
-
   function disableSubmit(kw: string): boolean {
     return kw == '';
-  }
-
-  function updateImage() {
-    images = images;
   }
 </script>
 
@@ -113,12 +91,12 @@
 
 <MyHeader />
 <Content>
-  <Form onsubmit={searchSubmit} style="margin-bottom: 24px;">
+  <Form on:submit={searchSubmit} style="margin-bottom: 24px;">
     <FormGroup legendText="Search Keyword(Tab/Address/Note/Path)">
       <Search id="keyword" bind:value={keyword} />
     </FormGroup>
     <Button type="submit" disabled={disableSubmit(keyword)}>Search</Button>
-    <Button type="button" kind="tertiary" disabled={disableSubmit(keyword)} onclick={searchClip}
+    <Button type="button" kind="tertiary" disabled={disableSubmit(keyword)} on:click={searchClip}
       >SearchCLIP</Button
     >
   </Form>
@@ -128,20 +106,13 @@
   {/if}
 
   {#if 0 < allCount}
-    <h3>Date Result</h3>
-    <Grid style="margin-bottom: 24px;">
-      <Row>
-        {#each dateCounts as dc}
-          <Column>
-            <Tag type="outline">
-              <Link href="/image/date/{dc.date}">{dc.date}({dc.count})</Link>
-            </Tag>
-          </Column>
-        {/each}
-      </Row>
-    </Grid>
-
-    <h3>Image Result</h3>
+    <div class="date-tags">
+      {#each dateCounts as dc}
+        <Tag type="outline">
+          <Link href="/image/date/{dc.date}">{dc.date}({dc.count})</Link>
+        </Tag>
+      {/each}
+    </div>
 
     <Pagination
       totalItems={allCount}
@@ -151,68 +122,102 @@
       on:change={search}
     />
 
-    <StructuredList condensed>
-      <StructuredListHead>
-        <StructuredListRow head>
-          <StructuredListCell head>image</StructuredListCell>
-          <StructuredListCell head>detail/files/tags</StructuredListCell>
-        </StructuredListRow>
-      </StructuredListHead>
-      <StructuredListBody>
-        {#each images as image}
-          <StructuredListRow>
-            <StructuredListCell style="vertical-align: bottom; width: 320px;">
-              <Link href="/image/{image.id}">
-                <LoadImage
-                  src="{host()}/app/images/{image.id}/thumbnail"
-                  alt={thumbnail(image).path}
-                  class="fixed"
-                />
-              </Link>
-            </StructuredListCell>
-            <StructuredListCell>
-              <UnorderedList>
-                <ListItem>
-                  <Link href="/image/date/{isoDate(image.shootingAt)}">{image.shootingAt}</Link>
-                </ListItem>
-                {#if image.geo}
-                  <ListItem>{image.geo.address}</ListItem>
-                {/if}
-                <UnorderedList nested>
-                  {#each image.files as file}
-                    <ListItem>
-                      <Link href="{host()}/app/static{file.path}">{file.path}</Link>
-                    </ListItem>
-                  {/each}
-                </UnorderedList>
-              </UnorderedList>
-              <div class="space-form">
-                <TogglePublic imageId={image.id} state={image.isPublic} />
+    <div class="image-grid">
+      {#each images as image}
+        <a href="/image/{image.id}" class="image-card">
+          <LoadImage
+            src="{host()}/app/images/{image.id}/thumbnail"
+            alt={thumbnail(image).path}
+            class="grid-image"
+          />
+          <div class="image-overlay">
+            {#if image.geo}
+              <div class="overlay-address">{image.geo.address}</div>
+            {/if}
+            {#if image.note}
+              <div class="overlay-note">{image.note}</div>
+            {/if}
+            {#if image.tags.length > 0}
+              <div class="overlay-tags">
+                {#each image.tags as tag}
+                  <span class="overlay-tag">{tag.name}</span>
+                {/each}
               </div>
-              <div class="space-form">
-                <ImageTag {image} refresh={updateImage} />
-              </div>
-              <div class="space-form">
-                <ImageNote imageId={image.id} note={image.note || ''} />
-              </div>
-            </StructuredListCell>
-          </StructuredListRow>
-        {/each}
-      </StructuredListBody>
-    </StructuredList>
-
-    <Pagination
-      totalItems={allCount}
-      pageSizeInputDisabled
-      {pageSize}
-      bind:page
-      on:change={search}
-    />
+            {/if}
+          </div>
+        </a>
+      {/each}
+    </div>
   {/if}
 </Content>
 
 <style>
-  .space-form {
-    margin-top: 4px;
+  .date-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .image-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: #262626;
+  }
+
+  .image-card :global(.grid-image) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 8px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .image-card:hover .image-overlay {
+    opacity: 1;
+  }
+
+  .overlay-address {
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .overlay-note {
+    margin-bottom: 4px;
+    color: #a8a8a8;
+  }
+
+  .overlay-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .overlay-tag {
+    background: #393939;
+    padding: 2px 6px;
+    border-radius: 2px;
   }
 </style>

@@ -37,10 +37,6 @@
   function isoDate(at: string): string {
     return DateTime.fromISO(at).toISODate()!;
   }
-
-  function refreshImage() {
-    data = data;
-  }
 </script>
 
 <MyHeader />
@@ -81,7 +77,7 @@
       <StructuredListRow>
         <StructuredListCell head>Tags</StructuredListCell>
         <StructuredListCell>
-          <ImageTag image={data} refresh={refreshImage} />
+          <ImageTag image={data} />
         </StructuredListCell>
       </StructuredListRow>
       <Exif exif={data.exif} />
