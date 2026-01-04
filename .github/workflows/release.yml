@@ -7,6 +7,9 @@ jobs:
     name: Release docker image
     runs-on: ubuntu-latest
     environment: dockerhub
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -18,8 +21,7 @@ jobs:
         env:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-          PONKOTUY_DOCKER_USERNAME: ${{secrets.PONKOTUY_DOCKER_USERNAME}}
-          PONKOTUY_DOCKER_PASSWORD: ${{secrets.PONKOTUY_DOCKER_PASSWORD}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           VERSION: ${{github.ref_name}}
         run: docker compose -f docker-compose.build.yml up --abort-on-container-exit --exit-code-from build
 
@@ -27,6 +29,9 @@ jobs:
     name: Publish view docker image
     runs-on: ubuntu-latest
     environment: dockerhub
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v3
       - name: build
@@ -38,27 +43,30 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Login to docker.ponkotuy.com
+      - name: Login to GHCR
         uses: docker/login-action@v2
         with:
-          registry: docker.ponkotuy.com
-          username: ${{ secrets.PONKOTUY_DOCKER_USERNAME }}
-          password: ${{ secrets.PONKOTUY_DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: publish
         working-directory: ./view/
         run: |
           docker tag ponkotuy/photographic-indexer-view:latest ponkotuy/photographic-indexer-view:${GITHUB_REF##*/}
           docker push ponkotuy/photographic-indexer-view:${GITHUB_REF##*/}
           docker push ponkotuy/photographic-indexer-view:latest
-          docker tag ponkotuy/photographic-indexer-view:latest docker.ponkotuy.com/photographic-indexer-view:${GITHUB_REF##*/}
-          docker tag ponkotuy/photographic-indexer-view:latest docker.ponkotuy.com/photographic-indexer-view:latest
-          docker push docker.ponkotuy.com/photographic-indexer-view:${GITHUB_REF##*/}
-          docker push docker.ponkotuy.com/photographic-indexer-view:latest
+          docker tag ponkotuy/photographic-indexer-view:latest ghcr.io/ponkotuy/photographic-indexer-view:${GITHUB_REF##*/}
+          docker tag ponkotuy/photographic-indexer-view:latest ghcr.io/ponkotuy/photographic-indexer-view:latest
+          docker push ghcr.io/ponkotuy/photographic-indexer-view:${GITHUB_REF##*/}
+          docker push ghcr.io/ponkotuy/photographic-indexer-view:latest
 
   release-clip-server:
     name: Publish clip-server docker image
     runs-on: ubuntu-latest
     environment: dockerhub
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v3
       - name: build
@@ -70,12 +78,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Login to docker.ponkotuy.com
+      - name: Login to GHCR
         uses: docker/login-action@v2
         with:
-          registry: docker.ponkotuy.com
-          username: ${{ secrets.PONKOTUY_DOCKER_USERNAME }}
-          password: ${{ secrets.PONKOTUY_DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: publish
         working-directory: ./clip-server/
@@ -83,7 +91,7 @@ jobs:
           docker tag ponkotuy/clip-server:latest ponkotuy/clip-server:${GITHUB_REF##*/}
           docker push ponkotuy/clip-server:${GITHUB_REF##*/}
           docker push ponkotuy/clip-server:latest
-          docker tag ponkotuy/clip-server:latest docker.ponkotuy.com/clip-server:${GITHUB_REF##*/}
-          docker tag ponkotuy/clip-server:latest docker.ponkotuy.com/clip-server:latest
-          docker push docker.ponkotuy.com/clip-server:${GITHUB_REF##*/}
-          docker push docker.ponkotuy.com/clip-server:latest
+          docker tag ponkotuy/clip-server:latest ghcr.io/ponkotuy/clip-server:${GITHUB_REF##*/}
+          docker tag ponkotuy/clip-server:latest ghcr.io/ponkotuy/clip-server:latest
+          docker push ghcr.io/ponkotuy/clip-server:${GITHUB_REF##*/}
+          docker push ghcr.io/ponkotuy/clip-server:latest
