@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1f3c"/>
+      <stop offset="100%" style="stop-color:#0d1020"/>
+    </linearGradient>
+    <linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c0c8d8"/>
+      <stop offset="100%" style="stop-color:#8090a8"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="64" height="64" rx="12" fill="url(#bgGrad)"/>
+  
+  <!-- 絞り羽 8枚 -->
+  <g transform="translate(32, 32)">
+    <!-- 羽1 -->
+    <path d="M 0 -24 Q 12 -18 14 -8 Q 6 -10 0 -12 Q -6 -10 -8 -6 Q -4 -14 0 -24" 
+          fill="url(#bladeGrad)" opacity="0.95" transform="rotate(0)"/>
+    <!-- 羽2 -->
+    <path d="M 0 -24 Q 12 -18 14 -8 Q 6 -10 0 -12 Q -6 -10 -8 -6 Q -4 -14 0 -24" 
+          fill="url(#bladeGrad)" opacity="0.9" transform="rotate(45)"/>
+    <!-- 羽3 -->
+    <path d="M 0 -24 Q 12 -18 14 -8 Q 6 -10 0 -12 Q -6 -10 -8 -6 Q -4 -14 0 -24" 
+          fill="url(#bladeGrad)" opacity="0.95" transform="rotate(90)"/>
+    <!-- 羽4 -->
+    <path d="M 0 -24 Q 12 -18 14 -8 Q 6 -10 0 -12 Q -6 -10 -8 -6 Q -4 -14 0 -24" 
+          fill="url(#bladeGrad)" opacity="0.9" transform="rotate(135)"/>
+    <!-- 羽5 -->
+    <path d="M 0 -24 Q 12 -18 14 -8 Q 6 -10 0 -12 Q -6 -10 -8 -6 Q -4 -14 0 -24" 
+          fill="url(#bladeGrad)" opacity="0.95" transform="rotate(180)"/>
+    <!-- 羽6 -->
+    <path d="M 0 -24 Q 12 -18 14 -8 Q 6 -10 0 -12 Q -6 -10 -8 -6 Q -4 -14 0 -24" 
+          fill="url(#bladeGrad)" opacity="0.9" transform="rotate(225)"/>
+    <!-- 羽7 -->
+    <path d="M 0 -24 Q 12 -18 14 -8 Q 6 -10 0 -12 Q -6 -10 -8 -6 Q -4 -14 0 -24" 
+          fill="url(#bladeGrad)" opacity="0.95" transform="rotate(270)"/>
+    <!-- 羽8 -->
+    <path d="M 0 -24 Q 12 -18 14 -8 Q 6 -10 0 -12 Q -6 -10 -8 -6 Q -4 -14 0 -24" 
+          fill="url(#bladeGrad)" opacity="0.9" transform="rotate(315)"/>
+  </g>
+  
+  <!-- 中心の虫眼鏡 -->
+  <g transform="translate(32, 31)">
+    <!-- 虫眼鏡のレンズ -->
+    <circle cx="-2" cy="-2" r="6" fill="none" stroke="#e8eef8" stroke-width="2.5"/>
+    <!-- 虫眼鏡の柄 -->
+    <line x1="2.5" y1="2.5" x2="8" y2="8" stroke="#e8eef8" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- レンズの光沢 -->
+    <path d="M -5 -5 Q -3 -7 0 -6" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.6" stroke-linecap="round"/>
+  </g>
+</svg>
