@@ -24,7 +24,7 @@ services:
       db:
         condition: service_healthy
   web:
-    image: ponkotuy/photographic-indexer:latest
+    image: ghcr.io/ponkotuy/photographic-indexer:latest
     ports:
       - "8080"
     volumes:
@@ -40,7 +40,7 @@ services:
       clip-server:
         condition: service_started
   view:
-    image: ponkotuy/photographic-indexer-view:latest
+    image: ghcr.io/ponkotuy/photographic-indexer-view:latest
     ports:
       - "3000"
     depends_on:
@@ -55,7 +55,7 @@ services:
       - web
       - view
   flickr:
-    image: ponkotuy/photographic-indexer:latest
+    image: ghcr.io/ponkotuy/photographic-indexer:latest
     entrypoint: bin/flickr-crawler
     volumes:
       - ${ENV_APP_PHOTOS_DIR}:/docker/photographic-indexer/photos
