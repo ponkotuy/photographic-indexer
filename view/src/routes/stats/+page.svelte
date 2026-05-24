@@ -2,13 +2,15 @@
   import 'carbon-components-svelte/css/g80.css';
   import '$lib/app.css';
   import MyHeader from '$lib/MyHeader.svelte';
-  import { Button, Column, Content, Dropdown, Grid, Row } from 'carbon-components-svelte';
+  import { Column, Content, Dropdown, Grid, Row } from 'carbon-components-svelte';
   import { untrack } from 'svelte';
   import type { StatsPageResult } from './+page';
   import type { StatsAggregate } from '$lib/image_type';
   import _ from 'lodash';
   import { Chart } from 'chart.js/auto';
   import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/state';
   import { host } from '$lib/global';
   import { DateTime } from 'luxon';
 
@@ -67,8 +69,6 @@
     ...data.tags.map((t) => ({ id: t.id.toString(), text: t.name }))
   ]);
 
-  const updateUrl = $derived(buildUrl());
-
   // Extract unique years from availableMonths (format: YYYYMM)
   const yearItems = $derived(
     _.uniq(availableMonths.map((m) => m.substring(0, 4)))
@@ -95,6 +95,14 @@
       .then((json) => {
         availableMonths = json;
       });
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    const url = buildUrl();
+    if (url !== page.url.pathname + page.url.search) {
+      goto(url, { replaceState: true, keepFocus: true, noScroll: true });
+    }
   });
 
   function buildUrl(): string {
@@ -383,9 +391,6 @@
           <Dropdown {...{ titleText: 'Month' }} bind:selectedId={month} items={monthItems} />
         </Column>
       {/if}
-      <Column lg={2} style="display: flex; align-items: flex-end;">
-        <Button href={updateUrl}>Update</Button>
-      </Column>
     </Row>
     <Row style="margin-bottom: 1rem;">
       <Column lg={4}>
