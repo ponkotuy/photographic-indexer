@@ -73,7 +73,11 @@ jrebel.lic
 metals.sbt
 
 # claude
-.claude/
+# Override global ~/.gitignore which excludes .claude/ entirely; we want to commit shared skills
+# while keeping per-user files (settings.local.json, etc.) ignored.
+!.claude/
+.claude/*
+!.claude/skills/
 
 # paulp script
 /.lib/
