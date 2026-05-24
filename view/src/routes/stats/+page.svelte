@@ -252,12 +252,71 @@
     });
   }
 
+  function transformOverallBarData(stats: StatsAggregate[]) {
+    const categories = getSortedCategories(stats);
+
+    const categoryTotals = new Map<string, number>();
+    for (const stat of stats) {
+      const current = categoryTotals.get(stat.category) ?? 0;
+      categoryTotals.set(stat.category, current + stat.count);
+    }
+
+    return {
+      labels: categories,
+      datasets: [
+        {
+          label: 'Count',
+          data: categories.map((cat) => categoryTotals.get(cat) ?? 0),
+          backgroundColor: categories.map((_, idx) => colors[idx % colors.length])
+        }
+      ]
+    };
+  }
+
   function createPieChart() {
     if (!browser) return;
     if (!pieCanvas) return;
 
     if (pieChart) {
       pieChart.destroy();
+    }
+
+    const useBar = data.metric === 'focal_length' || data.metric === 'iso';
+
+    if (useBar) {
+      const chartData = transformOverallBarData(data.data);
+      pieChart = new Chart(pieCanvas, {
+        type: 'bar',
+        data: chartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#c6c6c6'
+              },
+              grid: {
+                color: '#525252'
+              }
+            },
+            y: {
+              ticks: {
+                color: '#c6c6c6'
+              },
+              grid: {
+                color: '#525252'
+              }
+            }
+          }
+        }
+      });
+      return;
     }
 
     const chartData = transformPieData(data.data);
