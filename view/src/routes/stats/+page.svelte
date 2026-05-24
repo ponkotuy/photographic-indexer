@@ -15,13 +15,23 @@
   let { data }: { data: StatsPageResult } = $props();
 
   const now = DateTime.now();
-  let metric = $derived(data.metric);
-  let granularity = $derived(data.granularity);
-  let year = $derived(data.year?.toString() ?? now.year.toString());
-  let month = $derived(data.month?.toString() ?? now.month.toString());
-  let camera = $derived(data.camera ?? '');
-  let lens = $derived(data.lens ?? '');
-  let tagId = $derived(data.tagId?.toString() ?? '');
+  let metric = $state(data.metric);
+  let granularity = $state(data.granularity);
+  let year = $state(data.year?.toString() ?? now.year.toString());
+  let month = $state(data.month?.toString() ?? now.month.toString());
+  let camera = $state(data.camera ?? '');
+  let lens = $state(data.lens ?? '');
+  let tagId = $state(data.tagId?.toString() ?? '');
+
+  $effect(() => {
+    metric = data.metric;
+    granularity = data.granularity;
+    year = data.year?.toString() ?? now.year.toString();
+    month = data.month?.toString() ?? now.month.toString();
+    camera = data.camera ?? '';
+    lens = data.lens ?? '';
+    tagId = data.tagId?.toString() ?? '';
+  });
 
   let canvas: HTMLCanvasElement | undefined = $state();
   let pieCanvas: HTMLCanvasElement | undefined = $state();
