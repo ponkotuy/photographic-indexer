@@ -9,8 +9,8 @@ import scala.io.Source
 import scala.util.Using
 
 object TestDatabase {
-  private[this] var initialized = false
-  private[this] var testData: TestData = _
+  private var initialized = false
+  private var testData: TestData = scala.compiletime.uninitialized
   private val dbPath = "test_db"
   private val migrationDir = "docker/flyway/sql"
   private val testDataInitializerFile = "src/test/scala/com/ponkotuy/db/TestDataInitializer.scala"
