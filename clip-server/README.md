@@ -22,6 +22,12 @@
 mise install      # または: asdf install
 ```
 
+> **重要**: `torch` は `torch-2.0.1+cpu.cxx11.abi-cp311-cp311-linux_x86_64.whl` を
+> URL で直接ピンしているため **Python 3.11 専用**。`torchvision` 等の依存も
+> cp311 wheel しか lockfile に無いので、3.12 以降を使うと
+> `Unable to find installation candidates for torchvision` のように全 wheel が
+> ABI 不一致で skip される。
+
 ### 2. 依存関係のインストール
 
 `pyproject.toml` の `packages = [{include = "test_clip"}]` は実体が無いため、
@@ -29,10 +35,11 @@ mise install      # または: asdf install
 
 ```shell
 cd clip-server
+poetry env use 3.11        # 既存の venv が別 Python で作られていた場合に必要
 poetry install --no-root
 ```
 
-`torch` は CPU 版 (`torch-2.0.1+cpu.cxx11.abi`) を直接 URL から取得する。
+事前に `poetry env info` の Python が 3.11.x であることを確認するとよい。
 
 ### 3. モデルの事前ダウンロード (任意)
 

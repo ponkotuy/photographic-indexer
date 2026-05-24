@@ -66,8 +66,12 @@ $ npm run dev -- --open
 ### clip-server(FastAPI)
 Python 3.11.3 / Poetry 1.8.5 (see `clip-server/.tool-versions`). The model is auto-downloaded by `transformers` on first request; `./download_model.sh` pre-fetches it.
 
+> **Note**: `torch` is pinned to a cp311 wheel URL, and the rest of the lockfile only ships cp311 wheels. Using Python 3.12+ will make `poetry install` fail with "Unable to find installation candidates" / ABI tag mismatch. Make sure mise/asdf has activated 3.11 before installing.
+
 ```shell
 $ cd clip-server
+$ mise install                 # or: asdf install
+$ poetry env use 3.11           # only if an env was already created with another Python
 $ poetry install --no-root
 $ poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
