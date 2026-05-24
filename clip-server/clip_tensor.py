@@ -23,7 +23,10 @@ class ClipTensor:
         return features[0]
 
     def text(self, s: string) -> torch.Tensor:
-        inputs = self._tokenizer([s], return_tensors="pt").to(DEVICE)
+        # CLYPTokenizer always returns torch tensors via BatchEncoding; passing
+        # return_tensors="pt" forwards to the inner T5Tokenizer and breaks the
+        # subsequent list concatenation in tokenization_clyp.py.
+        inputs = self._tokenizer([s]).to(DEVICE)
         with torch.no_grad():
             features = self._model.get_text_features(**inputs)
         return features[0]
