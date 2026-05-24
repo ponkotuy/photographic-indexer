@@ -61,9 +61,7 @@
 </script>
 
 {#each image.tags as tag}
-  <Tag filter on:close={() => removeTag(tag)} style="vertical-align: bottom;"
-    >{tag.name}</Tag
-  >
+  <Tag filter on:close={() => removeTag(tag)} style="vertical-align: bottom;">{tag.name}</Tag>
 {/each}
 <OverflowMenu style="width: auto; height: auto; display: inline;">
   <Button slot="menu" icon={Add} size="small">Tag</Button>
@@ -79,7 +77,7 @@
   modalHeading="Create new tag"
   primaryButtonText="Add tag"
   secondaryButtonText="Cancel"
-  on:click:button--secondary={() => (open = false) }
+  on:click:button--secondary={() => (open = false)}
   on:submit={() => addTag(tagName)}
 >
   <p>Add a new tag in Photographic Indexer.</p>

@@ -22,7 +22,7 @@
   import DeleteImage from './DeleteImage.svelte';
   import TogglePublic from '$lib/TogglePublic.svelte';
   import ReplaceButton from '$lib/ReplaceButton.svelte';
-  import ImageNote from "$lib/ImageNote.svelte";
+  import ImageNote from '$lib/ImageNote.svelte';
 
   let { data }: { data: ImageData } = $props();
 

@@ -31,7 +31,13 @@
   }
 </script>
 
-<Button kind="ghost" size="small" icon={Upload} iconDescription="Replace File" onclick={() => (open = true)} />
+<Button
+  kind="ghost"
+  size="small"
+  icon={Upload}
+  iconDescription="Replace File"
+  onclick={() => (open = true)}
+/>
 <Modal
   bind:open
   modalHeading="Replace file"

@@ -18,7 +18,6 @@
   import { goto } from '$app/navigation';
   import type { ImageData } from '$lib/image_type';
   import { thumbnail } from '$lib/image_type';
-  import { DateTime } from 'luxon';
   import { page as pageState } from '$app/state';
   import LoadImage from '$lib/LoadImage.svelte';
 

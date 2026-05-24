@@ -93,4 +93,4 @@ Tagging a GitHub release triggers `.github/workflows/release.yml`, which builds 
 
 - Scala 3 with `-no-indent -rewrite -source 3.4-migration` (braced syntax, not significant indentation). Formatted by scalafmt 3.10.1 — `maxColumn = 120`, `spaces.inImportCurlyBraces = true`, `spaces.inInterpolatedStringCurlyBraces = true`.
 - Frontend formatted by Prettier + eslint (`npm run lint` / `npm run format`).
-- Toolchain pinned in `.tool-versions` (Temurin 17.0.9, Node 22.12.0) — use asdf or mise.
+- Toolchain pinned in `.tool-versions` (Temurin 17.0.9, Node 24.16.0) — use asdf or mise.

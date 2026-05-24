@@ -55,9 +55,9 @@ export const load = (async ({ url, fetch }) => {
     camera,
     lens,
     tagId: tagId ? parseInt(tagId) : null,
-    cameras: cameras as string[] || [],
-    lenses: lenses as string[] || [],
-    tags: tags as Tag[] || []
+    cameras: (cameras as string[]) || [],
+    lenses: (lenses as string[]) || [],
+    tags: (tags as Tag[]) || []
   };
 }) satisfies PageLoad;
 
