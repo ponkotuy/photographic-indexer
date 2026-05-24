@@ -1,0 +1,28 @@
+name: View
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: Build view
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: view
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+          cache-dependency-path: view/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
