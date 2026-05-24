@@ -72,8 +72,8 @@ Python 3.11.3 / Poetry 1.8.5 (see `clip-server/.tool-versions`). The model is au
 $ cd clip-server
 $ mise install                 # or: asdf install
 $ poetry env use 3.11           # only if an env was already created with another Python
-$ poetry install --no-root
-$ poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+$ poetry install
+$ poetry run dev                # alias for uvicorn with --reload; see clip_server/__init__.py
 ```
 
 Point the backend at it via `ENV_CLIP_SERVER_URL=http://localhost:8000` in `.env`. See `clip-server/README.md` for endpoints and details.

@@ -7,7 +7,7 @@ from fastapi import FastAPI, UploadFile, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from clip_tensor import ClipTensor
+from .clip_tensor import ClipTensor
 
 app = FastAPI()
 processor = ClipTensor()

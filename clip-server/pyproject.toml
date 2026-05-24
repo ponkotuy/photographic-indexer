@@ -5,7 +5,11 @@ description = ""
 authors = ["ponkotuy <web@ponkotuy.com>"]
 license = "Apache2"
 readme = "README.md"
-packages = [{include = "test_clip"}]
+packages = [{include = "clip_server"}]
+
+[tool.poetry.scripts]
+dev = "clip_server:dev"
+prod = "clip_server:prod"
 
 [tool.poetry.dependencies]
 python = "^3.11"

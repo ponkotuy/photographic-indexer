@@ -30,13 +30,10 @@ mise install      # または: asdf install
 
 ### 2. 依存関係のインストール
 
-`pyproject.toml` の `packages = [{include = "test_clip"}]` は実体が無いため、
-プロジェクト自身をインストールせず依存だけ入れる:
-
 ```shell
 cd clip-server
 poetry env use 3.11        # 既存の venv が別 Python で作られていた場合に必要
-poetry install --no-root
+poetry install
 ```
 
 事前に `poetry env info` の Python が 3.11.x であることを確認するとよい。
@@ -59,14 +56,16 @@ poetry run ./download_model.sh
 開発用 (オートリロード):
 
 ```shell
-poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+poetry run dev
 ```
 
 本番相当 (Dockerfile の `CMD` と同じ):
 
 ```shell
-poetry run gunicorn -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app
+poetry run prod
 ```
+
+それぞれ `clip_server/__init__.py` の `dev()` / `prod()` を呼ぶ。中身は uvicorn / gunicorn 直叩きと等価。
 
 ### 5. 動作確認
 

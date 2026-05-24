@@ -24,6 +24,10 @@ RUN poetry run python -c "from transformers import AutoImageProcessor, AutoModel
     AutoImageProcessor.from_pretrained('line-corporation/clip-japanese-base', trust_remote_code=True); \
     AutoModel.from_pretrained('line-corporation/clip-japanese-base', trust_remote_code=True)"
 
+COPY clip_server /app/clip_server
 COPY *.py /app/
 
-CMD poetry run gunicorn -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app
+# Install the local package itself so the `prod` script entry point is on PATH.
+RUN poetry install --no-dev
+
+CMD poetry run prod
