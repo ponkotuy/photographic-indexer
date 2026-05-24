@@ -166,9 +166,19 @@
       .map(([cat]) => cat);
   }
 
+  function trimEdgeZeroCategories(stats: StatsAggregate[], categories: string[]): string[] {
+    const totals = new Map<string, number>();
+    for (const s of stats) totals.set(s.category, (totals.get(s.category) ?? 0) + s.count);
+    let lo = 0;
+    let hi = categories.length - 1;
+    while (lo <= hi && (totals.get(categories[lo]) ?? 0) === 0) lo++;
+    while (hi >= lo && (totals.get(categories[hi]) ?? 0) === 0) hi--;
+    return categories.slice(lo, hi + 1);
+  }
+
   function transformBarData(stats: StatsAggregate[]) {
     const periods = _.uniq(stats.map((s) => s.period)).sort();
-    const categories = getSortedCategories(stats);
+    const categories = trimEdgeZeroCategories(stats, getSortedCategories(stats));
 
     const dataByCategory = new Map<string, Map<string, number>>();
     for (const cat of categories) {
@@ -263,7 +273,7 @@
   }
 
   function transformOverallBarData(stats: StatsAggregate[]) {
-    const categories = getSortedCategories(stats);
+    const categories = trimEdgeZeroCategories(stats, getSortedCategories(stats));
 
     const categoryTotals = new Map<string, number>();
     for (const stat of stats) {

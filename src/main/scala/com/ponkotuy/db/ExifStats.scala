@@ -49,6 +49,31 @@ object ExifStats {
     }
   }
 
+  private def allBucketRanges(buckets: Seq[Int]): Seq[BucketRange] = {
+    val leading = BucketRange(s"<${buckets.head}", None, Some(buckets.head - 1))
+    val middle = buckets.sliding(2).collect { case Seq(low, high) =>
+      BucketRange(s"$low-${high - 1}", Some(low), Some(high - 1))
+    }.toSeq
+    val trailing = BucketRange(s"${buckets.last}+", Some(buckets.last), None)
+    (leading +: middle) :+ trailing
+  }
+
+  private def fillZeroBuckets(
+      results: Seq[StatsAggregate],
+      buckets: Seq[Int]
+  ): Seq[StatsAggregate] = {
+    if (results.isEmpty) return results
+    val all = allBucketRanges(buckets)
+    val present = results.iterator.map(r => (r.period, r.category)).toSet
+    val periods = results.iterator.map(_.period).toSet.toSeq
+    val extras = for {
+      p <- periods
+      br <- all
+      if !present((p, br.category))
+    } yield StatsAggregate(p, br.category, br.min, br.max, 0)
+    results ++ extras
+  }
+
   private def buildFilterCondition(filter: StatsFilter): Option[SQLSyntax] = {
     val conditions = Seq(
       filter.camera.map(c => sqls"${ec.camera} = $c"),
@@ -82,7 +107,7 @@ object ExifStats {
     val cond =
       combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
 
-    withSQL {
+    val rows = withSQL {
       select(dateSql, bucketSql, sqls.count)
         .from(ExifCache as ec)
         .where(cond)
@@ -99,6 +124,7 @@ object ExifStats {
       )
     }.list
       .apply()
+    fillZeroBuckets(rows, FocalLengthBuckets)
   }
 
   def aggregateByCamera(
@@ -160,7 +186,7 @@ object ExifStats {
     val cond =
       combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
 
-    withSQL {
+    val rows = withSQL {
       select(dateSql, bucketSql, sqls.count)
         .from(ExifCache as ec)
         .where(cond)
@@ -177,6 +203,7 @@ object ExifStats {
       )
     }.list
       .apply()
+    fillZeroBuckets(rows, IsoBuckets)
   }
 
   def listCameras()(implicit session: DBSession): Seq[String] = {
