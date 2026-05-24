@@ -5,7 +5,7 @@ import com.ponkotuy.db.{ ExifCache, Image }
 import com.ponkotuy.util.Extensions
 import scalikejdbc.DBSession
 
-import java.nio.file.{ Path, Paths }
+import java.nio.file.Path
 import java.time.LocalDateTime
 
 object ExifCacheService {
