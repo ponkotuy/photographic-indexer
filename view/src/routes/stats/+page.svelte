@@ -10,7 +10,9 @@
   import { Chart } from 'chart.js/auto';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
+  import type { ResolvedPathname } from '$app/types';
   import { host } from '$lib/global';
   import { DateTime } from 'luxon';
 
@@ -105,7 +107,7 @@
     }
   });
 
-  function buildUrl(): string {
+  function buildUrl(): ResolvedPathname {
     const params = new URLSearchParams({ metric, granularity });
     if (granularity === 'monthly' || granularity === 'daily') {
       if (year) params.set('year', year);
@@ -116,7 +118,7 @@
     if (camera) params.set('camera', camera);
     if (lens) params.set('lens', lens);
     if (tagId) params.set('tagId', tagId);
-    return `/stats?${params.toString()}`;
+    return `${resolve('/stats')}?${params.toString()}` as ResolvedPathname;
   }
 
   const colors = [

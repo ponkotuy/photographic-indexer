@@ -60,12 +60,12 @@
   }
 </script>
 
-{#each image.tags as tag}
+{#each image.tags as tag (tag.id)}
   <Tag filter on:close={() => removeTag(tag)} style="vertical-align: bottom;">{tag.name}</Tag>
 {/each}
 <OverflowMenu style="width: auto; height: auto; display: inline;">
   <Button slot="menu" icon={Add} size="small">Tag</Button>
-  {#each allTags as tag}
+  {#each allTags as tag (tag.id)}
     {#if !image.tags.map((t) => t.id).includes(tag.id)}
       <OverflowMenuItem text={tag.name} on:click={() => setTag(tag)} />
     {/if}

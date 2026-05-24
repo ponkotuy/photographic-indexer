@@ -16,6 +16,8 @@
   } from 'carbon-components-svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import type { ResolvedPathname } from '$app/types';
   import type { ImageData } from '$lib/image_type';
   import { thumbnail } from '$lib/image_type';
   import { page as pageState } from '$app/state';
@@ -57,7 +59,7 @@
       .then((res) => {
         images = res.data;
         allCount = res.allCount;
-        goto(`/?${coreParams}`);
+        goto(`${resolve('/')}?${coreParams}` as ResolvedPathname);
       });
     fetch(host() + '/app/images/search_date_count?' + coreParams)
       .then((res) => res.json())
@@ -106,7 +108,7 @@
 
   {#if 0 < allCount}
     <div class="date-tags">
-      {#each dateCounts as dc}
+      {#each dateCounts as dc (dc.date)}
         <Tag type="outline">
           <Link href="/image/date/{dc.date}">{dc.date}({dc.count})</Link>
         </Tag>
@@ -122,8 +124,8 @@
     />
 
     <div class="image-grid">
-      {#each images as image}
-        <a href="/image/{image.id}" class="image-card">
+      {#each images as image (image.id)}
+        <a href={resolve('/image/[id]', { id: image.id.toString() })} class="image-card">
           <LoadImage
             src="{host()}/app/images/{image.id}/thumbnail"
             alt={thumbnail(image).path}
@@ -138,7 +140,7 @@
             {/if}
             {#if image.tags.length > 0}
               <div class="overlay-tags">
-                {#each image.tags as tag}
+                {#each image.tags as tag (tag.id)}
                   <span class="overlay-tag">{tag.name}</span>
                 {/each}
               </div>

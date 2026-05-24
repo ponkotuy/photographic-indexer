@@ -87,7 +87,7 @@
 
   <Grid>
     <Row padding>
-      {#each images as image}
+      {#each images as image (image.id)}
         <Column lg={4}>
           <Link href="/image/{image.id}">
             <figure>

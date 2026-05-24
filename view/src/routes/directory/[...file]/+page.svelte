@@ -23,7 +23,7 @@
 <MyHeader />
 <Content>
   <Breadcrumb noTrailingSlash>
-    {#each paths as path, index}
+    {#each paths as path, index (index)}
       <BreadcrumbItem href="/directory/{paths.slice(0, index).join('/')}">
         {#if index === 0}
           Top
@@ -34,7 +34,7 @@
     {/each}
   </Breadcrumb>
   <UnorderedList>
-    {#each fileList as file}
+    {#each fileList as file (file.name)}
       <ListItem>
         {#if file.fileType === FileType.Directory}
           <Link href="/directory/{pathUtil.join(filePath, file.name)}">{file.name}/</Link>

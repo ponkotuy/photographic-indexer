@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Grid, Pagination, Row } from 'carbon-components-svelte';
   import { goto } from '$app/navigation';
+  import { page as pageState } from '$app/state';
+  import type { ResolvedPathname } from '$app/types';
 
   type Props = {
     page: number;
@@ -16,7 +18,7 @@
     const query = new URLSearchParams();
     if (e.detail.page) query.set('page', e.detail.page.toString());
     if (e.detail.pageSize) query.set('count', e.detail.pageSize.toString());
-    goto(`?${query.toString()}`);
+    goto(`${pageState.url.pathname}?${query.toString()}` as ResolvedPathname);
   }
 </script>
 

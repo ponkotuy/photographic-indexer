@@ -61,7 +61,7 @@
   {:else}
     <Grid>
       <Row padding>
-        {#each agg as day}
+        {#each agg as day (day.date)}
           {@const path = thumbnail(day.favoriteImage).path}
           <Column lg={4}>
             <Link href="/image/date/{day.date}">

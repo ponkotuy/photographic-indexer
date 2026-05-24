@@ -49,7 +49,7 @@
 >
   {#if isReady}
     <p>Replace {path} with the following file</p>
-    {#each files as file}
+    {#each files as file (file.name)}
       <FileUploaderItem name={file.name} status="complete" />
     {/each}
   {:else}

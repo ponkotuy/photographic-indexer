@@ -65,7 +65,7 @@
         <StructuredListCell head>Files</StructuredListCell>
         <StructuredListCell>
           <UnorderedList>
-            {#each data.files as file}
+            {#each data.files as file (file.path)}
               <ListItem>
                 <Link href="{host()}/app/static{file.path}">{file.path}</Link>
                 <ReplaceButton path={file.path} />
@@ -93,7 +93,7 @@
       </StructuredListRow>
     </StructuredListBody>
   </StructuredList>
-  {#each data.files.filter((file) => isValidImage(file.path)) as file}
+  {#each data.files.filter((file) => isValidImage(file.path)) as file (file.path)}
     <Tile style="margin: 16px 0;">
       <figure style="text-align: center;">
         <LoadImage

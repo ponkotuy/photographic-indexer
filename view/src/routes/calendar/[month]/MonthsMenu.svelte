@@ -17,7 +17,7 @@
 
 <OverflowMenu size="sm">
   <Button icon={Calendar} iconDescription="Change month" kind="ghost" slot="menu" />
-  {#each data as month}
+  {#each data as month (month)}
     <OverflowMenuItem text={month} href="/calendar/{month}" primaryFocus={now === month} />
   {/each}
 </OverflowMenu>

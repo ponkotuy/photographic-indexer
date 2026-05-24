@@ -30,7 +30,9 @@ export default [
       parser: tsParser,
       parserOptions: {
         sourceType: 'module',
-        ecmaVersion: 2020
+        ecmaVersion: 2020,
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname
       },
       globals: {
         ...globals.browser,
@@ -51,6 +53,8 @@ export default [
       parser: svelteParser,
       parserOptions: {
         parser: tsParser,
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
         extraFileExtensions: ['.svelte']
       },
       globals: {
@@ -66,9 +70,7 @@ export default [
       }
     },
     rules: {
-      'svelte/require-each-key': 'off',
-      'svelte/prefer-svelte-reactivity': 'off',
-      'svelte/no-navigation-without-resolve': 'off'
+      'svelte/prefer-svelte-reactivity': 'off'
     }
   }
 ];
