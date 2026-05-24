@@ -63,5 +63,16 @@ $ docker compose -f docker-compose.dev.yml --profile migration up
 $ npm run dev -- --open
 ```
 
+### clip-server(FastAPI)
+Python 3.11.3 / Poetry 1.8.5 (see `clip-server/.tool-versions`). The model is auto-downloaded by `transformers` on first request; `./download_model.sh` pre-fetches it.
+
+```shell
+$ cd clip-server
+$ poetry install --no-root
+$ poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Point the backend at it via `ENV_CLIP_SERVER_URL=http://localhost:8000` in `.env`. See `clip-server/README.md` for endpoints and details.
+
 ### Release
 Rewrite the version of build.sbt, commit and release on GitHub. Docker images are pushed to DockerHub by GitHub Actions.
