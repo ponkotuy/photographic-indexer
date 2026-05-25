@@ -46,7 +46,7 @@ services:
     depends_on:
       - web
   lb:
-    image: nginx:1.23
+    image: nginx:1.30
     ports:
       - "8081:80"
     volumes:
