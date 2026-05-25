@@ -10,8 +10,13 @@ import java.nio.file.{ Files, OpenOption, StandardOpenOption }
 class PrivateStaticFile(appConf: AppConfig) extends ScalatraServlet with MyUploadSupport with CORSSetting {
   get("/*") {
     val path = multiParams("splat").head
-    contentType = Extensions.contentType(path)
-    appConf.photosDir.resolve(path).toFile
+    val file = appConf.photosDir.resolve(path).toFile
+    if (!file.isFile) NotFound(s"Not found: $path")
+    else {
+      contentType = Extensions.contentType(path)
+      response.setContentLengthLong(file.length())
+      file
+    }
   }
 
   post("/*") {

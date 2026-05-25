@@ -12,7 +12,9 @@ class PublicStaticFile(appConf: AppConfig) extends ScalatraServlet with CORSSett
     val id = params("id").toLong
     ImageWithAll.find(id, isPublic = true)(AutoSession).map { image =>
       val file = image.files.filterNot(_.isRetouch).minBy(_.filesize)
-      imagePath(file).toFile
+      val f = imagePath(file).toFile
+      response.setContentLengthLong(f.length())
+      f
     }.getOrElse(NotFound(s"Not found image ${ id }"))
   }
 
