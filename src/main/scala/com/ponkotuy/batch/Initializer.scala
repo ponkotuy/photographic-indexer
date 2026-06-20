@@ -5,12 +5,15 @@ import org.apache.commons.dbcp2.BasicDataSource
 import scalikejdbc.{ ConnectionPool, DataSourceConnectionPool }
 
 import scala.concurrent.duration.FiniteDuration
+import scala.util.control.NonFatal
 
 object Initializer {
   def run(conf: MyConfig): Unit = {
     import scala.concurrent.duration.*
     Initializer.initDB(conf.db)
-    new ImageFileChecker(conf.app).run()
+    runBackground("ImageFileChecker") {
+      new ImageFileChecker(conf.app).run()
+    }
     val indexer = new Indexer(conf.app)
     val clip = conf.clip.map(new CLIPIndexer(_, conf.app))
     CronRunner.execute(indexer, 1.hour)
@@ -39,6 +42,21 @@ object Initializer {
       Thread.sleep(delay.toMillis)
       body
     })
+    t.start()
+    t
+  }
+
+  private def runBackground(name: String)(body: => Unit): Thread = {
+    val t = new Thread(
+      () => {
+        try { body }
+        catch {
+          case NonFatal(e) =>
+            e.printStackTrace()
+        }
+      },
+      name
+    )
     t.start()
     t
   }
