@@ -29,9 +29,13 @@ object ImageFile extends SQLSyntaxSupport[ImageFile] {
     select.from(ImageFile as imf).where.eq(imf.path, path)
   }.map(ImageFile(imf.resultName)).single.apply()
 
-  def findAll(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(implicit
-      session: DBSession): Seq[ImageFile] = withSQL {
-    select.from(ImageFile as imf).where(where).limit(limit).offset(offset)
+  def findAll(
+      where: SQLSyntax,
+      limit: Int = Int.MaxValue,
+      offset: Int = 0,
+      orderBy: Seq[SQLSyntax] = imf.id :: Nil
+  )(implicit session: DBSession): Seq[ImageFile] = withSQL {
+    select.from(ImageFile as imf).where(where).orderBy(orderBy*).limit(limit).offset(offset)
   }.map(ImageFile(imf.resultName)).list.apply()
 
   def findAllInImageIds(imageIds: Seq[Long])(implicit session: DBSession): Seq[ImageFile] = {

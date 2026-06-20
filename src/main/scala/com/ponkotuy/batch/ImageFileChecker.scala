@@ -13,6 +13,7 @@ class ImageFileChecker(conf: AppConfig) extends Runnable {
     println("Done ImageFileChecker::run")
   }
 
+  // DBのImageFileはファイルが削除されると残ってしまうので、これをrunすることで当該のゴーストを削除できる
   private def removeNotExistsImageFiles(): Unit = {
     import ImageFile.imf
     DB.autoCommit { implicit session =>
@@ -32,6 +33,7 @@ class ImageFileChecker(conf: AppConfig) extends Runnable {
     }
   }
 
+  // ImageFileの残っていないImageは要らないので削除する
   private def removeNotExistsFileImages(): Unit = {
     DB.autoCommit { implicit session =>
       ImageWithAll.findAllIterator().foreach { records =>
