@@ -49,7 +49,7 @@ Requires `exiftool` to be installed on your system.
 
 ```shell
 $ docker compose -f docker-compose.dev.yml up # up DB
-$ sbt ~Jetty/start
+$ sbt ~warStart
 ```
 
 If you need migration,

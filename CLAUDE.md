@@ -17,8 +17,8 @@ Plus: `docker/flyway/sql/` (DB migrations), `docker/db/conf/` (MySQL config), `l
 ### Backend (Scala / sbt)
 ```shell
 # Requires exiftool installed on the host.
-sbt ~Jetty/start           # hot-reload Jetty dev server on :8080
-sbt test                   # run all tests (munit + scalatra-scalatest)
+sbt ~warStart              # hot-reload Jetty dev server on :8080
+sbt testFull               # run all tests (munit + scalatra-scalatest)
 sbt "testOnly *ImageWithAllSuite"   # run a single suite
 ```
 

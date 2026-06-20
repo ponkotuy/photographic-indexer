@@ -1,8 +1,10 @@
 import com.typesafe.sbt.packager.docker.*
+import com.earldouglas.sbt.war.SbtWar
 import NativePackagerHelper.*
 
 val ScalatraVersion = "3.1.0"
 val CirceVersion = "0.14.15"
+val JettyVersion = "12.0.30"
 val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
 ThisBuild / scalaVersion := "3.7.4"
@@ -25,10 +27,9 @@ val installExiftool = "apt-get update && " +
   "apt-get -y clean && rm -rf /var/lib/apt/lists/*"
 
 lazy val api = (project in file("."))
-  .enablePlugins(ContainerPlugin)
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(DockerPlugin)
-  .enablePlugins(JettyPlugin)
+  .enablePlugins(SbtWar)
   .settings(
     name := "Photographic Indexer",
     version := sys.env.get("VERSION").getOrElse("snapshot"),
@@ -41,7 +42,7 @@ lazy val api = (project in file("."))
       "org.scalameta" %% "munit" % "1.1.0" % Test,
       "com.h2database" % "h2" % "2.4.240" % Test,
       "ch.qos.logback" % "logback-classic" % "1.5.23" % "runtime",
-      "org.eclipse.jetty.ee10" % "jetty-ee10-webapp" % "12.0.30" % "container",
+      "org.eclipse.jetty.ee10" % "jetty-ee10-webapp" % JettyVersion,
       "jakarta.servlet" % "jakarta.servlet-api" % "6.1.0" % "provided",
       "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
       "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "4.3.5",
@@ -58,8 +59,8 @@ lazy val api = (project in file("."))
     dockerUsername := Some("ponkotuy"),
     dockerUpdateLatest := true,
     Docker / daemonUserUid := Some("1000"),
-    Universal / mappings ++= directory("view/build").map { case (f, to) =>
-      f -> rebase(file("build"), "view")(file(to)).get
+    Universal / mappings ++= contentOf(baseDirectory.value / "view" / "build", fileConverter.value).map { case (f, to) =>
+      f -> s"view/$to"
     },
     dockerCommands ++= Cmd("USER", "root") ::
       Cmd("RUN", installExiftool) ::
@@ -68,8 +69,3 @@ lazy val api = (project in file("."))
     dockerEntrypoint := "bin/jetty-launcher" :: Nil,
     testFrameworks += new TestFramework("munit.Framework")
   )
-
-Jetty / containerLibs := Seq(
-  "org.eclipse.jetty.ee10" % "jetty-ee10-runner" % "12.0.30" intransitive ()
-)
-Jetty / containerMain := "org.eclipse.jetty.ee10.runner.Runner"

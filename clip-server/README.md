@@ -76,7 +76,7 @@ curl -F file=@/path/to/photo.jpg http://localhost:8000/image
 
 ## バックエンドから繋ぐ場合
 
-Scala バックエンドをローカル `sbt ~Jetty/start` で動かしつつ、このサーバも
+Scala バックエンドをローカル `sbt ~warStart` で動かしつつ、このサーバも
 ローカル直起動した場合は `.env` で:
 
 ```
