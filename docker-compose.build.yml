@@ -15,7 +15,7 @@ services:
       bash -c 'apt update &&
         apt install -y docker.io &&
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD &&
-        sbt -Dversion=$VERSION docker:publish &&
+        sbt -Dversion=$VERSION "Docker / publish" &&
         echo $GITHUB_TOKEN | docker login ghcr.io -u ponkotuy --password-stdin &&
         docker tag ponkotuy/photographic-indexer:$VERSION ghcr.io/ponkotuy/photographic-indexer:$VERSION &&
         docker tag ponkotuy/photographic-indexer:latest ghcr.io/ponkotuy/photographic-indexer:latest &&
