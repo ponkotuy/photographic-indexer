@@ -21,6 +21,7 @@ ThisBuild / scalacOptions ++= Seq(
 )
 ThisBuild / javaOptions += defaultJOption
 Test / fork := true
+Test / parallelExecution := false
 
 val installExiftool = "apt-get update && " +
   "apt-get install exiftool -y --no-install-recommends && " +
