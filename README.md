@@ -1,5 +1,8 @@
 # Photographic Indexer
 
+[![Test](https://github.com/ponkotuy/photographic-indexer/actions/workflows/test.yml/badge.svg)](https://github.com/ponkotuy/photographic-indexer/actions/workflows/test.yml)
+[![View](https://github.com/ponkotuy/photographic-indexer/actions/workflows/view.yml/badge.svg)](https://github.com/ponkotuy/photographic-indexer/actions/workflows/view.yml)
+
 ## What this
 The web application to search for photos in your storage.
 - Search address conversion between lat and lng
