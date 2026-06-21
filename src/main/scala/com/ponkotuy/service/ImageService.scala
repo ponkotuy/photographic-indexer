@@ -1,6 +1,6 @@
 package com.ponkotuy.service
 
-import com.ponkotuy.db.{ Image, ImageFile, ImageWithAll }
+import com.ponkotuy.db.{ Image, ImageWithAll }
 import scalikejdbc.{ DB, DBSession }
 
 import java.nio.file.Path

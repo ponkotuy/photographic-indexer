@@ -39,8 +39,7 @@ class PublicImage(app: AppConfig)
   get("/:id") {
     val id = params("id").toLong
     val withExif = params.get("exif").exists(_.toBoolean)
-    val result =
-      imageService.findImage(id, isPublic = true, withExif).asJson.noSpaces
+    val result = imageService.findImage(id, isPublic = true, withExif).asJson.noSpaces
     result
   }
 
