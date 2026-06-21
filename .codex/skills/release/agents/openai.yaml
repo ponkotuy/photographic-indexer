@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release"
+  short_description: "Create GitHub releases with curated notes"
+  default_prompt: "Use $release to create a GitHub release for the current master."
