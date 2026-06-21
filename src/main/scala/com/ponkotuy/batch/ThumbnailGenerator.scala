@@ -1,6 +1,6 @@
 package com.ponkotuy.batch
 
-import com.ponkotuy.util.Extensions
+import com.ponkotuy.util.{ Extensions, RawPreviewExtractor }
 import sun.awt.image.ToolkitImage
 
 import java.awt.Toolkit
@@ -11,7 +11,6 @@ import javax.imageio.{ IIOImage, ImageIO, ImageWriteParam }
 
 case class ThumbnailGenerator(width: Int, height: Int) {
   private val filter = AreaAveragingScaleFilter(width, height)
-  private val rawPreviewTags = Seq("JpgFromRaw", "PreviewImage", "OtherImage", "ThumbnailImage")
 
   def gen(path: Path): Array[Byte] = {
     val input =
@@ -22,20 +21,10 @@ case class ThumbnailGenerator(width: Int, height: Int) {
   }
 
   private def rawThumbnailInput(path: Path): InputStream = {
-    val previews = rawPreviewTags.flatMap(tag => extractExifBinary(path, tag))
-    val largest = previews.maxByOption(_.length).getOrElse {
+    val largest = RawPreviewExtractor.largest(path).getOrElse {
       throw new IllegalArgumentException(s"No embedded JPEG preview found in RAW file: ${ path }")
     }
     new ByteArrayInputStream(largest)
-  }
-
-  private def extractExifBinary(path: Path, tag: String): Option[Array[Byte]] = {
-    val process = new ProcessBuilder("exiftool", "-b", s"-$tag", path.toString)
-      .redirectError(ProcessBuilder.Redirect.DISCARD)
-      .start()
-    val stdout = process.getInputStream.readAllBytes()
-    val exitCode = process.waitFor()
-    if (exitCode == 0 && stdout.nonEmpty) Some(stdout) else None
   }
 
   private def gen(input: InputStream): Array[Byte] = {
