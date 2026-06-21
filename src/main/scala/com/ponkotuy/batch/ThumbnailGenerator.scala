@@ -32,7 +32,6 @@ case class ThumbnailGenerator(width: Int, height: Int) {
     val imageInput = ImageIO.createImageInputStream(input)
     try {
       reader.setInput(imageInput)
-      val metadata = reader.getImageMetadata(0)
       val image = reader.read(0)
       val producer = new FilteredImageSource(image.getSource, filter)
       val thumbnail = Toolkit.getDefaultToolkit.createImage(producer)
@@ -46,7 +45,7 @@ case class ThumbnailGenerator(width: Int, height: Int) {
         iwParam.setCompressionQuality(0.70f)
         val ir = thumbnail.asInstanceOf[ToolkitImage].getImageRep
         ir.reconstruct(ImageObserver.ALLBITS)
-        writer.write(null, new IIOImage(ir.getOpaqueRGBImage, null, metadata), iwParam)
+        writer.write(null, new IIOImage(ir.getOpaqueRGBImage, null, null), iwParam)
         baos.toByteArray
       } finally {
         writer.dispose()
