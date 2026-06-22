@@ -21,5 +21,8 @@ jobs:
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
 
+      - name: Check scalafmt
+        run: sbt scalafmtCheckAll
+
       - name: Run tests
         run: sbt testFull
