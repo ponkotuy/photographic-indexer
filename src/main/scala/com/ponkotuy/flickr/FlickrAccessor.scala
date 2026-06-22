@@ -31,7 +31,7 @@ class FlickrAccessor(apiKey: String, secret: String) {
     )
 
     val queryString = params.map { case (k, v) =>
-      s"${URLEncoder.encode(k, StandardCharsets.UTF_8)}=${URLEncoder.encode(v, StandardCharsets.UTF_8)}"
+      s"${ URLEncoder.encode(k, StandardCharsets.UTF_8) }=${ URLEncoder.encode(v, StandardCharsets.UTF_8) }"
     }.mkString("&")
 
     val request = HttpRequest.newBuilder()
@@ -43,7 +43,7 @@ class FlickrAccessor(apiKey: String, secret: String) {
     val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
     if (response.statusCode() != 200) {
-      throw new RuntimeException(s"Flickr API error: ${response.statusCode()} - ${response.body()}")
+      throw new RuntimeException(s"Flickr API error: ${ response.statusCode() } - ${ response.body() }")
     }
 
     parsePhotosResponse(response.body())
@@ -83,7 +83,13 @@ private case class ContentWrapper(_content: String)
 private object FlickrPhotoJson {
   given Decoder[ContentWrapper] = Decoder.forProduct1("_content")(ContentWrapper.apply)
   given Decoder[FlickrPhotoJson] = Decoder.forProduct7(
-    "id", "owner", "title", "description", "tags", "url_o", "ispublic"
+    "id",
+    "owner",
+    "title",
+    "description",
+    "tags",
+    "url_o",
+    "ispublic"
   )(FlickrPhotoJson.apply)
 }
 

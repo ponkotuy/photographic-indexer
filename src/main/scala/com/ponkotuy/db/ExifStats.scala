@@ -1,7 +1,7 @@
 package com.ponkotuy.db
 
 import com.ponkotuy.res.StatsAggregate
-import com.ponkotuy.util.{Granularity, StatsFilter}
+import com.ponkotuy.util.{ Granularity, StatsFilter }
 import scalikejdbc.*
 
 object ExifStats {
@@ -26,11 +26,11 @@ object ExifStats {
     val cases = buckets
       .sliding(2)
       .map { case Seq(low, high) =>
-        sqls"when $column >= $low and $column < $high then ${s"$low-${high - 1}"}"
+        sqls"when $column >= $low and $column < $high then ${ s"$low-${ high - 1 }" }"
       }
-      .toSeq :+ sqls"when $column >= ${buckets.last} then ${s"${buckets.last}+"}"
+      .toSeq :+ sqls"when $column >= ${ buckets.last } then ${ s"${ buckets.last }+" }"
 
-    sqls"case when $column < ${buckets.head} then ${s"<${buckets.head}"} ${sqls.join(cases, sqls" ")} else 'unknown' end"
+    sqls"case when $column < ${ buckets.head } then ${ s"<${ buckets.head }" } ${ sqls.join(cases, sqls" ") } else 'unknown' end"
   }
 
   private def parseBucketRange(
@@ -50,11 +50,11 @@ object ExifStats {
   }
 
   private def allBucketRanges(buckets: Seq[Int]): Seq[BucketRange] = {
-    val leading = BucketRange(s"<${buckets.head}", None, Some(buckets.head - 1))
+    val leading = BucketRange(s"<${ buckets.head }", None, Some(buckets.head - 1))
     val middle = buckets.sliding(2).collect { case Seq(low, high) =>
-      BucketRange(s"$low-${high - 1}", Some(low), Some(high - 1))
+      BucketRange(s"$low-${ high - 1 }", Some(low), Some(high - 1))
     }.toSeq
-    val trailing = BucketRange(s"${buckets.last}+", Some(buckets.last), None)
+    val trailing = BucketRange(s"${ buckets.last }+", Some(buckets.last), None)
     (leading +: middle) :+ trailing
   }
 
@@ -76,8 +76,8 @@ object ExifStats {
 
   private def buildFilterCondition(filter: StatsFilter): Option[SQLSyntax] = {
     val conditions = Seq(
-      filter.camera.map(c => sqls"${ec.camera} = $c"),
-      filter.lens.map(l => sqls"${ec.lens} = $l")
+      filter.camera.map(c => sqls"${ ec.camera } = $c"),
+      filter.lens.map(l => sqls"${ ec.lens } = $l")
     ).flatten
 
     if (conditions.isEmpty) None
@@ -85,7 +85,7 @@ object ExifStats {
   }
 
   private def buildTagSubquery(tagId: Long): SQLSyntax = {
-    sqls"${ec.imageId} in (select ${it.imageId} from ${ImageTag as it} where ${it.tagId} = $tagId)"
+    sqls"${ ec.imageId } in (select ${ it.imageId } from ${ ImageTag as it } where ${ it.tagId } = $tagId)"
   }
 
   private def combineConditions(conditions: Option[SQLSyntax]*): SQLSyntax = {
@@ -98,9 +98,9 @@ object ExifStats {
       granularity: Granularity,
       filter: StatsFilter = StatsFilter()
   )(implicit session: DBSession): Seq[StatsAggregate] = {
-    val dateSql = sqls"date_format(${ec.shootingAt}, ${granularity.dateFormat})"
+    val dateSql = sqls"date_format(${ ec.shootingAt }, ${ granularity.dateFormat })"
     val bucketSql = buildBucketCase(ec.focalLength, FocalLengthBuckets)
-    val baseCond = sqls"${ec.focalLength} is not null"
+    val baseCond = sqls"${ ec.focalLength } is not null"
     val filterCond = buildFilterCondition(filter)
     val tagCond = filter.tagId.map(buildTagSubquery)
     val granularityCond = granularity.condition(ec.shootingAt)
@@ -131,7 +131,7 @@ object ExifStats {
       granularity: Granularity,
       filter: StatsFilter = StatsFilter()
   )(implicit session: DBSession): Seq[StatsAggregate] = {
-    val dateSql = sqls"date_format(${ec.shootingAt}, ${granularity.dateFormat})"
+    val dateSql = sqls"date_format(${ ec.shootingAt }, ${ granularity.dateFormat })"
     val filterCond = buildFilterCondition(filter)
     val tagCond = filter.tagId.map(buildTagSubquery)
     val granularityCond = granularity.condition(ec.shootingAt)
@@ -153,8 +153,8 @@ object ExifStats {
       granularity: Granularity,
       filter: StatsFilter = StatsFilter()
   )(implicit session: DBSession): Seq[StatsAggregate] = {
-    val dateSql = sqls"date_format(${ec.shootingAt}, ${granularity.dateFormat})"
-    val baseCond = sqls"${ec.lens} is not null"
+    val dateSql = sqls"date_format(${ ec.shootingAt }, ${ granularity.dateFormat })"
+    val baseCond = sqls"${ ec.lens } is not null"
     val filterCond = buildFilterCondition(filter)
     val tagCond = filter.tagId.map(buildTagSubquery)
     val granularityCond = granularity.condition(ec.shootingAt)
@@ -177,9 +177,9 @@ object ExifStats {
       granularity: Granularity,
       filter: StatsFilter = StatsFilter()
   )(implicit session: DBSession): Seq[StatsAggregate] = {
-    val dateSql = sqls"date_format(${ec.shootingAt}, ${granularity.dateFormat})"
+    val dateSql = sqls"date_format(${ ec.shootingAt }, ${ granularity.dateFormat })"
     val bucketSql = buildBucketCase(ec.iso, IsoBuckets)
-    val baseCond = sqls"${ec.iso} is not null"
+    val baseCond = sqls"${ ec.iso } is not null"
     val filterCond = buildFilterCondition(filter)
     val tagCond = filter.tagId.map(buildTagSubquery)
     val granularityCond = granularity.condition(ec.shootingAt)
