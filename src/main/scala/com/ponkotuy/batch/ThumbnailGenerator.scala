@@ -1,6 +1,6 @@
 package com.ponkotuy.batch
 
-import com.ponkotuy.util.{ Extensions, RawPreviewExtractor }
+import com.ponkotuy.util.{ Extensions, ExifOrientation, RawPreviewExtractor }
 import sun.awt.image.ToolkitImage
 
 import java.awt.Toolkit
@@ -16,8 +16,11 @@ case class ThumbnailGenerator(width: Int, height: Int) {
     val input =
       if (Extensions.isRawFile(path.toString)) rawThumbnailInput(path)
       else Files.newInputStream(path)
-    try { gen(input) }
-    finally { input.close() }
+    val thumbnail =
+      try { gen(input) }
+      finally { input.close() }
+    // 再エンコードでEXIFが落ちるので、元ファイルのOrientationを付け直す
+    ExifOrientation.read(path).filter(_ != 1).fold(thumbnail)(ExifOrientation.write(thumbnail, _))
   }
 
   private def rawThumbnailInput(path: Path): InputStream = {
