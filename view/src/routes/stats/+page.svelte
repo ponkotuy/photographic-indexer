@@ -47,7 +47,8 @@
     { id: 'focal_length', text: 'Focal Length' },
     { id: 'camera', text: 'Camera' },
     { id: 'lens', text: 'Lens' },
-    { id: 'iso', text: 'ISO' }
+    { id: 'iso', text: 'ISO' },
+    { id: 'hour', text: 'Hour' }
   ];
 
   const granularityItems = [
@@ -167,6 +168,9 @@
   }
 
   function trimEdgeZeroCategories(stats: StatsAggregate[], categories: string[]): string[] {
+    // Hour is a cyclic axis (23 and 0 are adjacent), so trimming empty edges would
+    // hide the wrap-around. Always keep all 24 buckets.
+    if (data.metric === 'hour') return categories;
     const totals = new Map<string, number>();
     for (const s of stats) totals.set(s.category, (totals.get(s.category) ?? 0) + s.count);
     let lo = 0;
@@ -301,7 +305,8 @@
       pieChart.destroy();
     }
 
-    const useBar = data.metric === 'focal_length' || data.metric === 'iso';
+    const useBar =
+      data.metric === 'focal_length' || data.metric === 'iso' || data.metric === 'hour';
 
     if (useBar) {
       const chartData = transformOverallBarData(data.data);

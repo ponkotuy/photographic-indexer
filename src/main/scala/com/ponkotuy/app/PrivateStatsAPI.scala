@@ -13,7 +13,7 @@ class PrivateStatsAPI extends ScalatraServlet with CORSSetting {
     contentType = "application/json; charset=utf-8"
   }
 
-  private val validMetrics = Set("focal_length", "camera", "lens", "iso")
+  private val validMetrics = Set("focal_length", "camera", "lens", "iso", "hour")
 
   private def parseGranularity(): Either[String, Granularity] =
     Granularity.parse(
@@ -25,7 +25,8 @@ class PrivateStatsAPI extends ScalatraServlet with CORSSetting {
   private def parseMetric(): Either[String, String] = {
     params.get("metric") match {
       case Some(m) if validMetrics.contains(m) => Right(m)
-      case Some(other) => Left(s"Unknown metric: $other. Use 'focal_length', 'camera', 'lens', or 'iso'")
+      case Some(other) =>
+        Left(s"Unknown metric: $other. Use 'focal_length', 'camera', 'lens', 'iso', or 'hour'")
       case None => Left("Parameter 'metric' is required")
     }
   }
@@ -48,6 +49,7 @@ class PrivateStatsAPI extends ScalatraServlet with CORSSetting {
             case "camera" => ExifStats.aggregateByCamera(granularity, filter)
             case "lens" => ExifStats.aggregateByLens(granularity, filter)
             case "iso" => ExifStats.aggregateByIso(granularity, filter)
+            case "hour" => ExifStats.aggregateByHour(granularity, filter)
           }
           data.asJson.noSpaces
         }

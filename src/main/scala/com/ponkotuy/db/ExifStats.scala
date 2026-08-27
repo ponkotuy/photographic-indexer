@@ -74,6 +74,21 @@ object ExifStats {
     results ++ extras
   }
 
+  private def hourCategory(hour: Int): String = f"$hour%02d"
+
+  private def fillZeroHours(results: Seq[StatsAggregate]): Seq[StatsAggregate] = {
+    if (results.isEmpty) return results
+    val present = results.iterator.map(r => (r.period, r.category)).toSet
+    val periods = results.iterator.map(_.period).toSet.toSeq
+    val extras = for {
+      p <- periods
+      h <- 0 to 23
+      category = hourCategory(h)
+      if !present((p, category))
+    } yield StatsAggregate(p, category, Some(h), Some(h), 0)
+    results ++ extras
+  }
+
   private def buildFilterCondition(filter: StatsFilter): Option[SQLSyntax] = {
     val conditions = Seq(
       filter.camera.map(c => sqls"${ ec.camera } = $c"),
@@ -204,6 +219,33 @@ object ExifStats {
     }.list
       .apply()
     fillZeroBuckets(rows, IsoBuckets)
+  }
+
+  def aggregateByHour(
+      granularity: Granularity,
+      filter: StatsFilter = StatsFilter()
+  )(implicit session: DBSession): Seq[StatsAggregate] = {
+    val dateSql = sqls"date_format(${ ec.shootingAt }, ${ granularity.dateFormat })"
+    val hourSql = sqls"hour(${ ec.shootingAt })"
+    val baseCond = sqls"${ ec.shootingAt } is not null"
+    val filterCond = buildFilterCondition(filter)
+    val tagCond = filter.tagId.map(buildTagSubquery)
+    val granularityCond = granularity.condition(ec.shootingAt)
+    val cond =
+      combineConditions(Some(baseCond), filterCond, tagCond, granularityCond)
+
+    val rows = withSQL {
+      select(dateSql, hourSql, sqls.count)
+        .from(ExifCache as ec)
+        .where(cond)
+        .groupBy(dateSql, hourSql)
+        .orderBy(dateSql)
+    }.map { rs =>
+      val hour = rs.int(2)
+      StatsAggregate(rs.string(1), hourCategory(hour), Some(hour), Some(hour), rs.int(3))
+    }.list
+      .apply()
+    fillZeroHours(rows)
   }
 
   def listCameras()(implicit session: DBSession): Seq[String] = {
