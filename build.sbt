@@ -56,8 +56,8 @@ lazy val api = (project in file("."))
       "org.apache.commons" % "commons-math3" % "3.6.1"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
-    // 17.0.21.1 (Zulu 17.70.201) fixes CVE-2026-114938 (Java2Shell / Java4Shell).
-    dockerBaseImage := "azul-zulu:17.70-17.0.21.1-jre-headless-almalinux10",
+    // 25.0.5.1 (Zulu 25.38.201) fixes CVE-2026-114938 (Java2Shell / Java4Shell).
+    dockerBaseImage := "azul-zulu:25.38-25.0.5.1-jre-headless-almalinux10",
     dockerUsername := Some("ponkotuy"),
     dockerUpdateLatest := true,
     Docker / daemonUserUid := Some("1000"),

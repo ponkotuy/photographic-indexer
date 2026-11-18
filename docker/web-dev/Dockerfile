@@ -1,7 +1,7 @@
 # Development image for running `sbt ~warStart` inside docker-compose.dev.yml.
 # The source tree is bind-mounted at /app, so only the toolchain lives here.
 # Same JDK as the production image (dockerBaseImage in build.sbt), but the JDK flavor since sbt compiles here.
-FROM azul-zulu:17.70-17.0.21.1-jdk-headless-almalinux10
+FROM azul-zulu:25.38-25.0.5.1-jdk-headless-almalinux10
 
 ARG SBT_VERSION=2.1.0
 ARG UID=1000

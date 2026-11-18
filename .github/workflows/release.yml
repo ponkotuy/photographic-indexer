@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: zulu
-          java-version: '17.0.21.1+2' # Zulu 17.70.201; keep in sync with .tool-versions
+          java-version: '25.0.5.1+2' # Zulu 25.38.201; keep in sync with .tool-versions
           cache: sbt
 
       - name: Setup sbt
