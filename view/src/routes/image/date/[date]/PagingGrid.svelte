@@ -9,10 +9,7 @@
     pageSize: number;
     totalItems: number;
   };
-  const { page: initialPage, pageSize: initialPageSize, totalItems }: Props = $props();
-
-  let page = $state(initialPage);
-  let pageSize = $state(initialPageSize);
+  const { page, pageSize, totalItems }: Props = $props();
 
   function updatePage(e: CustomEvent<{ page?: number; pageSize?: number }>) {
     const query = new URLSearchParams();

@@ -19,8 +19,9 @@
   import type { ImageData } from '#lib/image_type.ts';
   import { onMount } from 'svelte';
 
-  let { image: _image }: { image: ImageData } = $props();
-  const image = $state(_image);
+  let { image }: { image: ImageData } = $props();
+  // Writable $derived: updated locally on tag add/remove, and reset when `image` changes.
+  let tags = $derived(image.tags);
 
   let open = $state(false);
   let tagName = $state('');
@@ -42,7 +43,7 @@
   async function setTag(tag: TagType) {
     const result = await fetch(host() + `/app/images/${image.id}/tag/${tag.id}`, { method: 'PUT' });
     if (result.ok) {
-      image.tags.push(tag);
+      tags = [...tags, tag];
     }
   }
 
@@ -51,7 +52,7 @@
       method: 'DELETE'
     });
     if (result.ok) {
-      image.tags = image.tags.filter((t) => t.id !== tag.id);
+      tags = tags.filter((t) => t.id !== tag.id);
     }
   }
 
@@ -60,13 +61,13 @@
   }
 </script>
 
-{#each image.tags as tag (tag.id)}
+{#each tags as tag (tag.id)}
   <Tag filter on:close={() => removeTag(tag)} style="vertical-align: bottom;">{tag.name}</Tag>
 {/each}
 <OverflowMenu style="width: auto; height: auto; display: inline;">
   <Button slot="menu" icon={Add} size="small">Tag</Button>
   {#each allTags as tag (tag.id)}
-    {#if !image.tags.map((t) => t.id).includes(tag.id)}
+    {#if !tags.map((t) => t.id).includes(tag.id)}
       <OverflowMenuItem text={tag.name} on:click={() => setTag(tag)} />
     {/if}
   {/each}
