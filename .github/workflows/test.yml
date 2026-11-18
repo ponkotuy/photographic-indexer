@@ -12,10 +12,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
-          distribution: temurin
-          java-version-file: .tool-versions
+          distribution: zulu
+          java-version: '17.0.21.1+2' # Zulu 17.70.201; keep in sync with .tool-versions
           cache: sbt
 
       - name: Setup sbt
