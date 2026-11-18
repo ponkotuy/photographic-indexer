@@ -45,7 +45,6 @@ docker compose run flickr             # one-shot Flickr crawl (needs FLICKR_* en
 ### One-time setup
 Before first build/run:
 ```shell
-(cd docker/flyway/drivers && ./download_mysql.sh)   # flyway MySQL JDBC driver
 (cd clip-server && ./download_model.sh)             # CLIP model weights
 ```
 

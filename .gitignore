@@ -85,9 +85,6 @@ metals.sbt
 # ignore config
 .env
 
-# ignore drivers
-docker/flyway/drivers/*.jar
-
 # ignore python
 venv
 __pycache__
