@@ -22,7 +22,7 @@ sbt testFull               # run all tests (munit + scalatra-scalatest)
 sbt "testOnly *ImageWithAllSuite"   # run a single suite
 ```
 
-The DB **must** be up for the backend to start. Use `docker compose -f docker-compose.dev.yml up` (exposes MySQL on 3306 + clip-server on 8000). Run migrations with `docker compose -f docker-compose.dev.yml --profile migration up`.
+The DB **must** be up for the backend to start. `docker compose -f docker-compose.dev.yml up` starts everything (MySQL :3306, clip-server :8000, backend `sbt ~warStart` :8080, vite :5173) with the source tree bind-mounted for live reload; use `up db clip-server` to run only the dependencies and run sbt/vite on the host. The backend dev image is `docker/web-dev/Dockerfile`; its `target/` dirs are named volumes so they don't collide with the host's sbt. Run migrations with `docker compose -f docker-compose.dev.yml --profile migration up`.
 
 Required `.env` keys for local dev (see `.env.init`): `ENV_MYSQL_ROOT_PASSWORD`, `ENV_MYSQL_PASSWORD`, `ENV_APP_PHOTOS_DIR`. Optional: `ENV_APP_EMAIL`, `ENV_FLICKR_KEY`, `ENV_FLICKR_SECRET`, `ENV_DB_URL`, `ENV_CLIP_SERVER_URL`.
 

@@ -47,11 +47,21 @@ $ docker compose run flickr
 ## Development
 The use of asdf or mise is recommended. (Enable JDK/nodejs)
 
+### All-in-docker
+```shell
+$ docker compose -f docker-compose.dev.yml up
+```
+
+Starts DB, clip-server, backend (`sbt ~warStart` on :8080) and frontend (vite dev server on :5173).
+The source tree is bind-mounted, so editing files under `src/` or `view/src/` reloads automatically.
+Containers run as UID/GID 1000 by default; set `DEV_UID` / `DEV_GID` in `.env` if yours differ.
+To run only some of them on the host instead, start the rest by name (e.g. `docker compose -f docker-compose.dev.yml up db clip-server`).
+
 ### Backend(Scala+Scalatra)
 Requires `exiftool` to be installed on your system.
 
 ```shell
-$ docker compose -f docker-compose.dev.yml up # up DB
+$ docker compose -f docker-compose.dev.yml up db clip-server # up dependencies only
 $ sbt ~warStart
 ```
 

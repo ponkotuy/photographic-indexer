@@ -30,3 +30,55 @@ services:
     ports:
       - 8000:8000
     tty: true
+  web:
+    build:
+      context: docker/web-dev
+      args:
+        UID: ${DEV_UID:-1000}
+        GID: ${DEV_GID:-1000}
+    # `~warStart` recompiles and restarts Jetty whenever a file under src/ changes.
+    # `--server` keeps sbt in the foreground instead of sbt 2's default thin-client mode.
+    command: sbt --server ~warStart
+    # `~` watch mode exits immediately when stdin is closed.
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      # Keep build outputs separate from the host's sbt/IDE so they don't clobber each other.
+      - web-target:/app/target
+      - web-project-target:/app/project/target
+      - sbt-cache:/home/dev/.cache
+      - sbt-home:/home/dev/.sbt
+      - ${ENV_APP_PHOTOS_DIR}:/docker/photographic-indexer/photos
+    environment:
+      - ENV_MYSQL_PASSWORD
+      - ENV_DB_URL=jdbc:mysql://db:3306/pindexer
+      - ENV_APP_PHOTOS_DIR=/docker/photographic-indexer/photos
+      - ENV_APP_EMAIL
+      - ENV_CLIP_SERVER_URL=http://clip-server:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      clip-server:
+        condition: service_started
+  view:
+    image: node:24.16.0-bullseye-slim
+    user: ${DEV_UID:-1000}:${DEV_GID:-1000}
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./view:/app
+    environment:
+      # Server-side fetches can't reach the backend via localhost:8080 inside this container.
+      - DEV_BACKEND_ORIGIN=http://web:8080
+    depends_on:
+      - web
+volumes:
+  web-target:
+  web-project-target:
+  sbt-cache:
+  sbt-home:
