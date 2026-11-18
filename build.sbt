@@ -23,9 +23,9 @@ ThisBuild / javaOptions += defaultJOption
 Test / fork := true
 Test / parallelExecution := false
 
-val installExiftool = "apt-get update && " +
-  "apt-get install exiftool -y --no-install-recommends && " +
-  "apt-get -y clean && rm -rf /var/lib/apt/lists/*"
+val installPackages = "dnf install -y epel-release && " +
+  "dnf install -y --setopt=install_weak_deps=False perl-Image-ExifTool && " +
+  "dnf clean all && rm -rf /var/cache/dnf"
 
 lazy val api = (project in file("."))
   .enablePlugins(JavaAppPackaging)
@@ -56,7 +56,8 @@ lazy val api = (project in file("."))
       "org.apache.commons" % "commons-math3" % "3.6.1"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),
-    dockerBaseImage := "amd64/eclipse-temurin:17-jre-jammy",
+    // 17.0.21.1 (Zulu 17.70.201) fixes CVE-2026-114938 (Java2Shell / Java4Shell).
+    dockerBaseImage := "azul-zulu:17.70-17.0.21.1-jre-headless-almalinux10",
     dockerUsername := Some("ponkotuy"),
     dockerUpdateLatest := true,
     Docker / daemonUserUid := Some("1000"),
@@ -64,7 +65,7 @@ lazy val api = (project in file("."))
       f -> s"view/$to"
     },
     dockerCommands ++= Cmd("USER", "root") ::
-      Cmd("RUN", installExiftool) ::
+      Cmd("RUN", installPackages) ::
       Cmd("USER", "1000:0") ::
       ExecCmd("CMD", "-J" + defaultJOption) :: Nil,
     dockerEntrypoint := "bin/jetty-launcher" :: Nil,
