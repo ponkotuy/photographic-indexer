@@ -61,8 +61,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      clip-server:
-        condition: service_started
   view:
     image: node:24.16.0-bullseye-slim
     user: ${DEV_UID:-1000}:${DEV_GID:-1000}

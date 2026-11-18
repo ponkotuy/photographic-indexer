@@ -1,14 +1,15 @@
 # Development image for running `sbt ~warStart` inside docker-compose.dev.yml.
 # The source tree is bind-mounted at /app, so only the toolchain lives here.
-FROM eclipse-temurin:17-jdk-jammy
+# Same JDK as the production image (dockerBaseImage in build.sbt), but the JDK flavor since sbt compiles here.
+FROM azul-zulu:17.70-17.0.21.1-jdk-headless-almalinux10
 
 ARG SBT_VERSION=2.0.0
 ARG UID=1000
 ARG GID=1000
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends exiftool curl && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN dnf install -y epel-release && \
+    dnf install -y --setopt=install_weak_deps=False perl-Image-ExifTool tar gzip && \
+    dnf clean all && rm -rf /var/cache/dnf
 
 # Link to /usr/bin/sbt (same path as a typical host install) so that .bsp/sbt.json,
 # which sbt rewrites on startup into the shared source tree, stays valid for the host IDE.
