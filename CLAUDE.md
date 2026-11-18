@@ -91,6 +91,6 @@ Tagging a GitHub release triggers `.github/workflows/release.yml`, which builds 
 
 ## Code style
 
-- Scala 3 with `-no-indent -rewrite -source 3.4-migration` (braced syntax, not significant indentation). Formatted by scalafmt 3.10.1 — `maxColumn = 120`, `spaces.inImportCurlyBraces = true`, `spaces.inInterpolatedStringCurlyBraces = true`.
+- Scala 3 with `-no-indent -rewrite -source 3.4-migration` (braced syntax, not significant indentation). Formatted by scalafmt 3.11.5 — `maxColumn = 120`, `spaces.inImportCurlyBraces = true`, `spaces.inInterpolatedStringCurlyBraces = true`.
 - Frontend formatted by Prettier + eslint (`npm run lint` / `npm run format`).
 - Toolchain pinned in `.tool-versions` (Zulu 17.70.201 = JDK 17.0.21.1, Node 24.16.0) — use asdf or mise.

@@ -2,12 +2,12 @@ import com.typesafe.sbt.packager.docker.*
 import com.earldouglas.sbt.war.SbtWar
 import NativePackagerHelper.*
 
-val ScalatraVersion = "3.1.0"
-val CirceVersion = "0.14.15"
-val JettyVersion = "12.0.30"
+val ScalatraVersion = "3.2.1"
+val CirceVersion = "0.14.17"
+val JettyVersion = "12.1.15"
 val defaultJOption = "--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED"
 
-ThisBuild / scalaVersion := "3.7.4"
+ThisBuild / scalaVersion := "3.10.1"
 ThisBuild / organization := "com.ponkotuy"
 ThisBuild / scalacOptions ++= Seq(
   "-unchecked",
@@ -40,19 +40,19 @@ lazy val api = (project in file("."))
       "org.scalatra" %% "scalatra-json-jakarta" % ScalatraVersion,
       "org.scalatra" %% "scalatra-forms-jakarta" % ScalatraVersion,
       "org.scalatra" %% "scalatra-scalatest-jakarta" % ScalatraVersion % "test",
-      "org.scalameta" %% "munit" % "1.1.0" % Test,
-      "com.h2database" % "h2" % "2.4.240" % Test,
-      "ch.qos.logback" % "logback-classic" % "1.5.23" % "runtime",
+      "org.scalameta" %% "munit" % "1.3.6" % Test,
+      "com.h2database" % "h2" % "2.5.252" % Test,
+      "ch.qos.logback" % "logback-classic" % "1.6.7" % "runtime",
       "org.eclipse.jetty.ee10" % "jetty-ee10-webapp" % JettyVersion,
       "jakarta.servlet" % "jakarta.servlet-api" % "6.1.0" % "provided",
       "org.scalikejdbc" %% "scalikejdbc" % "4.3.5",
       "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % "4.3.5",
-      "com.mysql" % "mysql-connector-j" % "8.4.0",
+      "com.mysql" % "mysql-connector-j" % "26.10.0",
       "io.circe" %% "circe-core" % CirceVersion,
       "io.circe" %% "circe-generic" % CirceVersion,
       "io.circe" %% "circe-parser" % CirceVersion,
-      "com.typesafe" % "config" % "1.4.5",
-      "org.gbif" % "gbif-parsers" % "0.67",
+      "com.typesafe" % "config" % "1.4.10",
+      "org.gbif" % "gbif-parsers" % "0.69",
       "org.apache.commons" % "commons-math3" % "3.6.1"
     ),
     dockerExposedPorts ++= Seq(8080, 8080),

@@ -19,7 +19,8 @@ trait MyUploadSupport extends HasMultipartConfig { self: ScalatraServlet =>
 
   private def isMultipartRequest(req: HttpServletRequest): Boolean = {
     val isPostOrPut = Set("POST", "PUT", "PATCH").contains(req.getMethod)
-    isPostOrPut && (req.contentType match {
+    isPostOrPut &&
+    (req.contentType match {
       case Some(contentType) => contentType.startsWith("multipart/")
       case _ => false
     })
@@ -37,10 +38,11 @@ trait MyUploadSupport extends HasMultipartConfig { self: ScalatraServlet =>
 
             if (!(item.isFormField)) {
               BodyParams(
-                params.fileParams + ((
-                  item.getFieldName,
-                  item +: params.fileParams.getOrElse(item.getFieldName, List[FileItem]())
-                )),
+                params.fileParams +
+                  ((
+                    item.getFieldName,
+                    item +: params.fileParams.getOrElse(item.getFieldName, List[FileItem]())
+                  )),
                 params.formParams
               )
             } else {

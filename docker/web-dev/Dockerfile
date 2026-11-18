@@ -3,7 +3,7 @@
 # Same JDK as the production image (dockerBaseImage in build.sbt), but the JDK flavor since sbt compiles here.
 FROM azul-zulu:17.70-17.0.21.1-jdk-headless-almalinux10
 
-ARG SBT_VERSION=2.0.0
+ARG SBT_VERSION=2.1.0
 ARG UID=1000
 ARG GID=1000
 
