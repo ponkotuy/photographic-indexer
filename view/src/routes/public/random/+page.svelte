@@ -1,10 +1,10 @@
 <script lang="ts">
   import 'carbon-components-svelte/css/g80.css';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import ExifList from '$lib/ExifList.svelte';
-  import { host } from '$lib/global';
+  import ExifList from '#lib/ExifList.svelte';
+  import { host } from '#lib/global.ts';
   import { page } from '$app/state';
-  import type { ImageData } from '$lib/image_type';
+  import type { ImageData } from '#lib/image_type.ts';
 
   let { data }: { data: ImageData } = $props();
 

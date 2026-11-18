@@ -1,13 +1,13 @@
 <script lang="ts">
   import 'carbon-components-svelte/css/g80.css';
-  import '$lib/app.css';
-  import MyHeader from '$lib/MyHeader.svelte';
+  import '#lib/app.css';
+  import MyHeader from '#lib/MyHeader.svelte';
   import { Button, Column, Content, Grid, Link, Row } from 'carbon-components-svelte';
   import { DateTime } from 'luxon';
-  import { host } from '$lib/global.js';
-  import { thumbnail } from '$lib/image_type.js';
+  import { host } from '#lib/global.ts';
+  import { thumbnail } from '#lib/image_type.ts';
   import { CaretLeft, CaretRight } from 'carbon-icons-svelte';
-  import LoadImage from '$lib/LoadImage.svelte';
+  import LoadImage from '#lib/LoadImage.svelte';
   import MonthsMenu from './MonthsMenu.svelte';
   import type { CalendarPageResult } from './+page';
 

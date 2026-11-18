@@ -1,5 +1,5 @@
-import { host } from '$lib/global';
-import type { ImageData } from '$lib/image_type';
+import { host } from '#lib/global.ts';
+import type { ImageData } from '#lib/image_type.ts';
 import type { PageLoad } from './$types';
 
 export type AggregateDate = {

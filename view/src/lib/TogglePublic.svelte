@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Toggle } from 'carbon-components-svelte';
-  import { host } from '$lib/global';
+  import { host } from '#lib/global.ts';
 
   let { imageId, state = $bindable() }: { imageId: number; state: boolean } = $props();
 

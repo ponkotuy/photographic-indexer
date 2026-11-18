@@ -1,6 +1,6 @@
 <script lang="ts">
   import { StructuredListCell, StructuredListRow } from 'carbon-components-svelte';
-  import type { Exif as ExifType } from '$lib/image_type';
+  import type { Exif as ExifType } from '#lib/image_type.ts';
 
   let { exif }: { exif: ExifType | null } = $props();
 </script>

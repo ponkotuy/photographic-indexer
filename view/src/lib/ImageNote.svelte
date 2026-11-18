@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, ButtonSet, TextInput } from 'carbon-components-svelte';
-  import { host } from '$lib/global';
+  import { host } from '#lib/global.ts';
 
   let { imageId, note = '' }: { imageId: number; note: string | null } = $props();
 

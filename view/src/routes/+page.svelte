@@ -1,8 +1,8 @@
 <script lang="ts">
   import 'carbon-components-svelte/css/g80.css';
-  import '$lib/app.css';
-  import { host } from '$lib/global';
-  import MyHeader from '$lib/MyHeader.svelte';
+  import '#lib/app.css';
+  import { host } from '#lib/global.ts';
+  import MyHeader from '#lib/MyHeader.svelte';
   import {
     Button,
     Content,
@@ -18,10 +18,10 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import type { ResolvedPathname } from '$app/types';
-  import type { ImageData } from '$lib/image_type';
-  import { thumbnail } from '$lib/image_type';
+  import type { ImageData } from '#lib/image_type.ts';
+  import { thumbnail } from '#lib/image_type.ts';
   import { page as pageState } from '$app/state';
-  import LoadImage from '$lib/LoadImage.svelte';
+  import LoadImage from '#lib/LoadImage.svelte';
 
   type DateCount = {
     date: string;
@@ -97,9 +97,9 @@
       <Search id="keyword" bind:value={keyword} />
     </FormGroup>
     <Button type="submit" disabled={disableSubmit(keyword)}>Search</Button>
-    <Button type="button" kind="tertiary" disabled={disableSubmit(keyword)} on:click={searchClip}
-      >SearchCLIP</Button
-    >
+    <Button type="button" kind="tertiary" disabled={disableSubmit(keyword)} on:click={searchClip}>
+      SearchCLIP
+    </Button>
   </Form>
 
   {#if allCount === 0}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import 'carbon-components-svelte/css/g80.css';
-  import MyHeader from '$lib/MyHeader.svelte';
+  import MyHeader from '#lib/MyHeader.svelte';
   import {
     Breadcrumb,
     BreadcrumbItem,
@@ -9,7 +9,7 @@
     ListItem,
     UnorderedList
   } from 'carbon-components-svelte';
-  import { FileType } from '$lib/file_element';
+  import { FileType } from '#lib/file_element.ts';
   import type { DirectoryPageResult } from './+page';
   import * as pathUtil from 'path-browserify';
 

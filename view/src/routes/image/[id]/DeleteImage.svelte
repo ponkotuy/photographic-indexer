@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, Modal } from 'carbon-components-svelte';
-  import { host } from '$lib/global';
+  import { host } from '#lib/global.ts';
   import { TrashCan } from 'carbon-icons-svelte';
 
   let { imageId, withText }: { imageId: number; withText: boolean } = $props();
@@ -20,8 +20,10 @@
     size="small"
     style="width: 120px"
     icon={TrashCan}
-    on:click={() => (open = true)}>Delete</Button
+    on:click={() => (open = true)}
   >
+    Delete
+  </Button>
 {:else}
   <Button
     kind="danger"

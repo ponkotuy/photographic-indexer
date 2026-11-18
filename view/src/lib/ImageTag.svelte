@@ -1,6 +1,6 @@
 <script lang="ts" module>
-  import type { Tag as TagType } from '$lib/image_type';
-  import { host } from '$lib/global';
+  import type { Tag as TagType } from '#lib/image_type.ts';
+  import { host } from '#lib/global.ts';
 
   let loading = $state(false);
   let allTags = $state<TagType[]>([]);
@@ -16,7 +16,7 @@
     TextInput
   } from 'carbon-components-svelte';
   import { Add } from 'carbon-icons-svelte';
-  import type { ImageData } from '$lib/image_type';
+  import type { ImageData } from '#lib/image_type.ts';
   import { onMount } from 'svelte';
 
   let { image: _image }: { image: ImageData } = $props();

@@ -6,7 +6,7 @@
     Modal
   } from 'carbon-components-svelte';
   import { Upload } from 'carbon-icons-svelte';
-  import { host } from '$lib/global';
+  import { host } from '#lib/global.ts';
 
   let { path }: { path: string } = $props();
 

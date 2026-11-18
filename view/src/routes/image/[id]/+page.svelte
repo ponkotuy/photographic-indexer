@@ -1,6 +1,6 @@
 <script lang="ts">
   import 'carbon-components-svelte/css/g80.css';
-  import MyHeader from '$lib/MyHeader.svelte';
+  import MyHeader from '#lib/MyHeader.svelte';
   import {
     Content,
     Link,
@@ -13,16 +13,16 @@
     Tile,
     UnorderedList
   } from 'carbon-components-svelte';
-  import { host } from '$lib/global';
-  import type { ImageData } from '$lib/image_type';
-  import ImageTag from '$lib/ImageTag.svelte';
-  import LoadImage from '$lib/LoadImage.svelte';
+  import { host } from '#lib/global.ts';
+  import type { ImageData } from '#lib/image_type.ts';
+  import ImageTag from '#lib/ImageTag.svelte';
+  import LoadImage from '#lib/LoadImage.svelte';
   import { DateTime } from 'luxon';
   import Exif from './Exif.svelte';
   import DeleteImage from './DeleteImage.svelte';
-  import TogglePublic from '$lib/TogglePublic.svelte';
-  import ReplaceButton from '$lib/ReplaceButton.svelte';
-  import ImageNote from '$lib/ImageNote.svelte';
+  import TogglePublic from '#lib/TogglePublic.svelte';
+  import ReplaceButton from '#lib/ReplaceButton.svelte';
+  import ImageNote from '#lib/ImageNote.svelte';
 
   let { data }: { data: ImageData } = $props();
 

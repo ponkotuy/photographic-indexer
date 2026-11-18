@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import { onMount } from 'svelte';
-  import { host } from '$lib/global';
+  import { host } from '#lib/global.ts';
   import { Calendar } from 'carbon-icons-svelte';
 
   let { now }: { now: string } = $props();

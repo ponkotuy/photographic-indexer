@@ -1,6 +1,6 @@
-import { host } from '$lib/global';
+import { host } from '#lib/global.ts';
 import type { PageLoad } from './$types';
-import type { FileElement } from '$lib/file_element';
+import type { FileElement } from '#lib/file_element.ts';
 
 export type DirectoryPageResult = {
   file: string;

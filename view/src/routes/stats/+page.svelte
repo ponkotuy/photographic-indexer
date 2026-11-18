@@ -1,19 +1,19 @@
 <script lang="ts">
   import 'carbon-components-svelte/css/g80.css';
-  import '$lib/app.css';
-  import MyHeader from '$lib/MyHeader.svelte';
+  import '#lib/app.css';
+  import MyHeader from '#lib/MyHeader.svelte';
   import { Column, Content, Dropdown, Grid, Row } from 'carbon-components-svelte';
   import { untrack } from 'svelte';
   import type { StatsPageResult } from './+page';
-  import type { StatsAggregate } from '$lib/image_type';
+  import type { StatsAggregate } from '#lib/image_type.ts';
   import _ from 'lodash';
   import { Chart } from 'chart.js/auto';
-  import { browser } from '$app/environment';
+  import { browser } from '$app/env';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import type { ResolvedPathname } from '$app/types';
-  import { host } from '$lib/global';
+  import { host } from '#lib/global.ts';
   import { DateTime } from 'luxon';
 
   let { data }: { data: StatsPageResult } = $props();
@@ -104,7 +104,7 @@
     if (!browser) return;
     const url = buildUrl();
     if (url !== page.url.pathname + page.url.search) {
-      goto(url, { replaceState: true, keepFocus: true, noScroll: true });
+      goto(url, { replace: true, reset: false });
     }
   });
 

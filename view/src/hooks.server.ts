@@ -1,7 +1,7 @@
-import { dev } from '$app/environment';
-import { env } from '$env/dynamic/private';
-import { host } from '$lib/global';
-import type { HandleFetch } from '@sveltejs/kit';
+import { dev } from '$app/env';
+import { DEV_BACKEND_ORIGIN } from '$app/env/private';
+import { host } from '#lib/global.ts';
+import type { HandleFetch } from '@sveltejs/kit/hooks';
 
 export const handleFetch = (({ request, fetch }) => {
   if (!dev) {
@@ -10,9 +10,9 @@ export const handleFetch = (({ request, fetch }) => {
     url.port = '8080';
     url.hostname = 'web';
     request = new Request(url.href, request);
-  } else if (env.DEV_BACKEND_ORIGIN && request.url.startsWith(host())) {
+  } else if (DEV_BACKEND_ORIGIN && request.url.startsWith(host())) {
     // Set by docker-compose.dev.yml: inside the view container, localhost:8080 is not the backend.
-    request = new Request(env.DEV_BACKEND_ORIGIN + request.url.slice(host().length), request);
+    request = new Request(DEV_BACKEND_ORIGIN + request.url.slice(host().length), request);
   }
   return fetch(request);
 }) satisfies HandleFetch;

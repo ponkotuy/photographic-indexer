@@ -1,14 +1,14 @@
 <script lang="ts">
   import 'carbon-components-svelte/css/g80.css';
-  import '$lib/app.css';
-  import MyHeader from '$lib/MyHeader.svelte';
+  import '#lib/app.css';
+  import MyHeader from '#lib/MyHeader.svelte';
   import { Button, Column, Content, Dropdown, Grid, Link, Row } from 'carbon-components-svelte';
   import { CaretLeft, CaretRight } from 'carbon-icons-svelte';
-  import { host } from '$lib/global';
-  import { thumbnail, type ImageData } from '$lib/image_type';
+  import { host } from '#lib/global.ts';
+  import { thumbnail, type ImageData } from '#lib/image_type.ts';
   import { DateTime } from 'luxon';
   import type { DatePageResult } from './+page';
-  import LoadImage from '$lib/LoadImage.svelte';
+  import LoadImage from '#lib/LoadImage.svelte';
   import PagingGrid from './PagingGrid.svelte';
 
   let { data }: { data: DatePageResult } = $props();
@@ -57,8 +57,9 @@
           Yesterday
         </Button>
       </Column>
-      <Column lg={12} style="text-align: center;"><h2>{data.date}({data.images.length})</h2></Column
-      >
+      <Column lg={12} style="text-align: center;">
+        <h2>{data.date}({data.images.length})</h2>
+      </Column>
       <Column lg={2}>
         <Button href="/image/date/{tomorrow(data.date)}" kind="ghost">
           Tomorrow

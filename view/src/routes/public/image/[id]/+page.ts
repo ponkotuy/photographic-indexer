@@ -1,4 +1,4 @@
-import { host } from '$lib/global';
+import { host } from '#lib/global.ts';
 import type { PageLoad } from './$types';
 
 export const load = (async ({ params, fetch }): Promise<ImageData> => {
