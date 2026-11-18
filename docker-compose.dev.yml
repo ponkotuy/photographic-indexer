@@ -62,7 +62,7 @@ services:
       db:
         condition: service_healthy
   view:
-    image: node:24.16.0-bullseye-slim
+    image: node:26.13.1-trixie-slim
     user: ${DEV_UID:-1000}:${DEV_GID:-1000}
     working_dir: /app
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
